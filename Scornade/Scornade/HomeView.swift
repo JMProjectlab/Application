@@ -1,0 +1,135 @@
+import SwiftUI
+
+struct HomeView: View {
+    @EnvironmentObject var store: Store
+    @State private var filter = "all"
+
+    private var games: [Game] {
+        filter == "all" ? GameCatalog.all : GameCatalog.all.filter { $0.category == filter }
+    }
+    private let columns = [GridItem(.adaptive(minimum: 150), spacing: 12)]
+
+    var body: some View {
+        NavigationStack(path: $store.path) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    if let active = store.activeSession {
+                        Button { store.path.append(active.id) } label: {
+                            ActiveSessionCard(session: active)
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    ScrollView(.horizontal) {
+                        HStack(spacing: 8) {
+                            ForEach(GameCatalog.categories, id: \.key) { cat in
+                                FilterPill(label: cat.label, selected: filter == cat.key) {
+                                    filter = cat.key
+                                }
+                            }
+                        }
+                    }
+                    .scrollIndicators(.hidden)
+
+                    LazyVGrid(columns: columns, spacing: 12) {
+                        ForEach(games) { game in
+                            NavigationLink(value: game) { GameCard(game: game) }
+                                .buttonStyle(.plain)
+                        }
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("Scornade")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink { StatsView() } label: { Image(systemName: "chart.bar") }
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink { PlayersView() } label: { Image(systemName: "person.2") }
+                }
+            }
+            .navigationDestination(for: Game.self) { game in
+                NewGameView(game: game) { newID in store.path.append(newID) }
+            }
+            .navigationDestination(for: UUID.self) { id in
+                if let s = store.session(id: id), s.gameId == "coinche" {
+                    CoincheScoringView(sessionID: id)
+                } else if let s = store.session(id: id),
+                   let g = GameCatalog.game(id: s.gameId),
+                   g.engine == .contractPoints, g.isTeamGame {
+                    BeloteScoringView(sessionID: id)
+                } else if let s = store.session(id: id), s.gameId == "tarot" {
+                    TarotScoringView(sessionID: id)
+                } else if let s = store.session(id: id), s.gameId == "papayoo" {
+                    PayooScoringView(sessionID: id)
+                } else if let s = store.session(id: id), s.gameId == "yams" {
+                    YamsScoringView(sessionID: id)
+                } else if let s = store.session(id: id), s.gameId == "flechettes" {
+                    FlechettesScoringView(sessionID: id)
+                } else if let s = store.session(id: id), s.gameId == "421" {
+                    Game421ScoringView(sessionID: id)
+                } else {
+                    ScoringView(sessionID: id)
+                }
+            }
+        }
+    }
+}
+
+struct ActiveSessionCard: View {
+    let session: ScoreSession
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text("EN COURS").font(.caption2.weight(.semibold)).foregroundStyle(Color.brand)
+                Spacer()
+                Text("Manche \(session.rounds.count)").font(.caption).foregroundStyle(.secondary)
+            }
+            HStack(spacing: 8) {
+                Image(systemName: session.symbol).foregroundStyle(Color.brand)
+                Text(session.gameName).font(.headline)
+            }
+            Text(session.entrants.indices.map { "\(session.entrants[$0].name) \(session.total($0))" }
+                .joined(separator: " · "))
+                .font(.caption).foregroundStyle(.secondary).lineLimit(1)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.brandLight)
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.brand, lineWidth: 2))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+
+struct GameCard: View {
+    let game: Game
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Image(systemName: game.symbol).font(.title2).foregroundStyle(Color.brand)
+            Text(game.name).font(.subheadline.weight(.medium))
+            Text(game.isTeamGame ? "Équipe" : "Individuel")
+                .font(.caption2).foregroundStyle(.secondary)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.secondarySystemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+
+struct FilterPill: View {
+    let label: String
+    let selected: Bool
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            Text(label).font(.subheadline)
+                .padding(.horizontal, 14).padding(.vertical, 7)
+                .background(selected ? Color.brandLight : Color(.secondarySystemBackground))
+                .foregroundStyle(selected ? Color.brandDark : Color.secondary)
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
+    }
+}
