@@ -2,6 +2,7 @@ import SwiftUI
 
 struct YamsScoringView: View {
     @EnvironmentObject var store: Store
+    @Environment(\.locale) private var locale
     let sessionID: UUID
 
     @State private var selected = 0
@@ -38,7 +39,7 @@ struct YamsScoringView: View {
                 if done, let w = winner(session) {
                     WinnerBanner(name: session.entrants[w].name,
                                  detail: "\(total(w)) points",
-                                 shareText: "🎲 \(session.entrants[w].name) remporte le Yam's avec \(total(w)) points ! Compté avec Scornade.")
+                                 shareText: String(localized: "🎲 \(session.entrants[w].name) remporte le Yam's avec \(total(w)) points ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else {
                     card(session)

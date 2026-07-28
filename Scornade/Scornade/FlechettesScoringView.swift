@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FlechettesScoringView: View {
     @EnvironmentObject var store: Store
+    @Environment(\.locale) private var locale
     let sessionID: UUID
 
     @State private var current = 0
@@ -33,7 +34,7 @@ struct FlechettesScoringView: View {
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
                                  detail: "501 → 0 · \(session.rounds.count) volées",
-                                 shareText: "🎯 \(session.entrants[w].name) remporte les fléchettes en \(session.rounds.count) volées ! Compté avec Scornade.")
+                                 shareText: String(localized: "🎯 \(session.entrants[w].name) remporte les fléchettes en \(session.rounds.count) volées ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else {
                     entryCard(session)

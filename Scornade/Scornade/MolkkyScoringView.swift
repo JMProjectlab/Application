@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MolkkyScoringView: View {
     @EnvironmentObject var store: Store
+    @Environment(\.locale) private var locale
     let sessionID: UUID
 
     @State private var current = 0
@@ -37,7 +38,7 @@ struct MolkkyScoringView: View {
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
                                  detail: "50 points pile · \(session.rounds.count) lancers",
-                                 shareText: "🏆 \(session.entrants[w].name) remporte le Mölkky avec 50 points pile ! Compté avec Scornade.")
+                                 shareText: String(localized: "🏆 \(session.entrants[w].name) remporte le Mölkky avec 50 points pile ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else {
                     entryCard(session)

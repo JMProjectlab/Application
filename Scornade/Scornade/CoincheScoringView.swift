@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CoincheScoringView: View {
     @EnvironmentObject var store: Store
+    @Environment(\.locale) private var locale
     let sessionID: UUID
 
     @State private var taker: Int?
@@ -46,7 +47,7 @@ struct CoincheScoringView: View {
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
                                  detail: "\(session.total(w)) – \(session.total(1 - w)) · \(session.rounds.count) donnes",
-                                 shareText: "🃏 \(session.entrants[w].name) remporte la Coinche \(session.total(w)) – \(session.total(1 - w)) en \(session.rounds.count) donnes ! Compté avec Scornade.")
+                                 shareText: String(localized: "🃏 \(session.entrants[w].name) remporte la Coinche \(session.total(w)) – \(session.total(1 - w)) en \(session.rounds.count) donnes ! Compté avec Scornade.", locale: locale))
                     endGameButtons()
                 } else {
                     donneCard(session)

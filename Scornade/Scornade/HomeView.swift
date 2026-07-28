@@ -126,7 +126,7 @@ struct FilterPill: View {
     let action: () -> Void
     var body: some View {
         Button(action: action) {
-            Text(label).font(.subheadline)
+            Text(LocalizedStringKey(label)).font(.subheadline)
                 .padding(.horizontal, 14).padding(.vertical, 7)
                 .background(selected ? Color.brandLight : Color(.secondarySystemBackground))
                 .foregroundStyle(selected ? Color.brandDark : Color.secondary)

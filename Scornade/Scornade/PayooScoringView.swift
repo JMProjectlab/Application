@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PayooScoringView: View {
     @EnvironmentObject var store: Store
+    @Environment(\.locale) private var locale
     let sessionID: UUID
 
     @State private var inputs: [String] = []
@@ -34,7 +35,7 @@ struct PayooScoringView: View {
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
                                  detail: "\(session.total(w)) pts · \(session.rounds.count) manches",
-                                 shareText: "🏆 \(session.entrants[w].name) remporte \(session.gameName) avec \(session.total(w)) points en \(session.rounds.count) manches ! Compté avec Scornade.")
+                                 shareText: String(localized: "🏆 \(session.entrants[w].name) remporte \(session.gameName) avec \(session.total(w)) points en \(session.rounds.count) manches ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else {
                     entryCard(session)

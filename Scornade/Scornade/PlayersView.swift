@@ -6,6 +6,7 @@ struct PlayersView: View {
     @State private var newEmail = ""
     @State private var showDeleteConfirm = false
     @AppStorage("sm.languagePreference") private var languagePreference = "system"
+    @Environment(\.locale) private var locale
 
     var body: some View {
         Form {
@@ -74,9 +75,9 @@ struct PlayersView: View {
 
     private func accountLabel(_ u: UserAccount) -> String {
         switch u.mode {
-        case .apple: return "\(u.name) · Apple"
-        case .google: return "\(u.name) · Google"
-        case .guest: return "Invité"
+        case .apple: return String(localized: "\(u.name) · Apple", locale: locale)
+        case .google: return String(localized: "\(u.name) · Google", locale: locale)
+        case .guest: return String(localized: "Invité", locale: locale)
         }
     }
 }

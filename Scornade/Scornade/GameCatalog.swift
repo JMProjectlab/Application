@@ -67,7 +67,8 @@ enum GameCatalog {
     static func game(id: String) -> Game? { all.first { $0.id == id } }
 
     static let categories: [(key: String, label: String)] = [
-        ("all", "Tous"), ("cartes", "Cartes"), ("societe", "Société"),
-        ("sport", "Sport"), ("des", "Dés"),
+        ("all", "Tous"), ("cartes", "Cartes"),
+        ("societe", "Société"), ("sport", "Sport"),
+        ("des", "Dés"),
     ]
 }

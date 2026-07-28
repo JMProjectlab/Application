@@ -2,6 +2,7 @@ import SwiftUI
 
 struct Game421ScoringView: View {
     @EnvironmentObject var store: Store
+    @Environment(\.locale) private var locale
     let sessionID: UUID
 
     @State private var loser: Int?
@@ -54,7 +55,7 @@ struct Game421ScoringView: View {
                 scoreboard(session)
                 if finished(session), let w = winnerIndex(session) {
                     WinnerBanner(name: session.entrants[w].name, detail: "Plus de jetons !",
-                                 shareText: "🎲 \(session.entrants[w].name) remporte le 421, dernier avec des jetons ! Compté avec Scornade.")
+                                 shareText: String(localized: "🎲 \(session.entrants[w].name) remporte le 421, dernier avec des jetons ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else if isCharge(session) {
                     chargeCard(session)

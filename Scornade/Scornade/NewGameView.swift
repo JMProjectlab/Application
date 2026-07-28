@@ -96,7 +96,7 @@ struct NewGameView: View {
         .sheet(isPresented: $showRules) {
             NavigationStack {
                 ScrollView {
-                    Text(game.rules)
+                    Text(LocalizedStringKey(game.rules))
                         .font(.body)
                         .padding()
                 }
