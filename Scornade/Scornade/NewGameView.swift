@@ -10,6 +10,7 @@ struct NewGameView: View {
     @State private var target: Int
     @State private var showAddField = false
     @State private var newPlayerName = ""
+    @State private var showRules = false
     @FocusState private var nameFieldFocused: Bool
 
     init(game: Game, onStart: @escaping (UUID) -> Void) {
@@ -86,6 +87,29 @@ struct NewGameView: View {
         }
         .navigationTitle(game.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button { showRules = true } label: { Image(systemName: "questionmark.circle") }
+                    .disabled(game.rules.isEmpty)
+            }
+        }
+        .sheet(isPresented: $showRules) {
+            NavigationStack {
+                ScrollView {
+                    Text(game.rules)
+                        .font(.body)
+                        .padding()
+                }
+                .navigationTitle("Règles · \(game.name)")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Fermer") { showRules = false }
+                    }
+                }
+            }
+            .presentationDetents([.medium])
+        }
     }
 
     private var stepSize: Int {

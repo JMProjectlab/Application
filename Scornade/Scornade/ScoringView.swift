@@ -47,7 +47,8 @@ struct ScoringView: View {
 
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
-                                 detail: "\(session.total(w)) pts · \(session.rounds.count) manches")
+                                 detail: "\(session.total(w)) pts · \(session.rounds.count) manches",
+                                 shareText: "🏆 \(session.entrants[w].name) remporte \(session.gameName) avec \(session.total(w)) points en \(session.rounds.count) manches ! Compté avec Scornade.")
                     VStack(spacing: 8) {
                         Button { store.resetSession(sessionID: sessionID, keepSeries: false) } label: {
                             Label("Rejouer (0 – 0)", systemImage: "arrow.counterclockwise").frame(maxWidth: .infinity)
@@ -189,8 +190,15 @@ struct EntrantRow: View {
 struct WinnerBanner: View {
     let name: String
     let detail: String
+    let shareText: String
     var body: some View {
         VStack(spacing: 4) {
+            HStack {
+                Spacer()
+                ShareLink(item: shareText) {
+                    Image(systemName: "square.and.arrow.up").foregroundStyle(Color(hex: "0F6E56"))
+                }
+            }
             Image(systemName: "trophy.fill").font(.title2).foregroundStyle(Color(hex: "BA7517"))
             Text("\(name) remporte la partie !").font(.headline)
             Text(detail).font(.caption).foregroundStyle(.secondary)

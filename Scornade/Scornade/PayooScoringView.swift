@@ -33,7 +33,8 @@ struct PayooScoringView: View {
 
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
-                                 detail: "\(session.total(w)) pts · \(session.rounds.count) manches")
+                                 detail: "\(session.total(w)) pts · \(session.rounds.count) manches",
+                                 shareText: "🏆 \(session.entrants[w].name) remporte \(session.gameName) avec \(session.total(w)) points en \(session.rounds.count) manches ! Compté avec Scornade.")
                     endButtons()
                 } else {
                     entryCard(session)

@@ -69,6 +69,9 @@
 		2B780B092FE09D4F00B4E0E3 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B780B082FE09D4F00B4E0E3 /* Store.swift */; };
 		2B780B0A2FE09D4F00B4E0E3 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B780B082FE09D4F00B4E0E3 /* Store.swift */; };
 		2B780B0B2FE09D4F00B4E0E3 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B780B082FE09D4F00B4E0E3 /* Store.swift */; };
+		FF2C3721EBD162444AF4C595 /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
+		18CEAEE99D4BA51A302F592A /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
+		557412B687F5EA26A542B399 /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +120,7 @@
 		2B780AF72FE09D2A00B4E0E3 /* GameCatalog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameCatalog.swift; sourceTree = "<group>"; };
 		2B780AF82FE09D2A00B4E0E3 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		2B780B082FE09D4F00B4E0E3 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MolkkyScoringView.swift; sourceTree = "<group>"; };
 		91B298673E8CA46763FEA936 /* Scornade.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Scornade.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -182,6 +186,7 @@
 				2B780AF02FE09CF000B4E0E3 /* Game421ScoringView.swift */,
 				2B780ADD2FE09B1B00B4E0E3 /* YamsScoringView.swift */,
 				2B780ACD2FE0999400B4E0E3 /* CoincheScoringView.swift */,
+				31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */,
 				2B780A942FE0932200B4E0E3 /* ScoringView.swift */,
 				2B780A8F2FE0932100B4E0E3 /* ScornadeApp.swift */,
 				2B780A892FE0932100B4E0E3 /* StatsView.swift */,
@@ -372,6 +377,7 @@
 				2B780AB52FE0932200B4E0E3 /* BeloteScoringView.swift in Sources */,
 				2B780AC12FE0932200B4E0E3 /* Theme.swift in Sources */,
 				2B780B022FE09D2A00B4E0E3 /* GameCatalog.swift in Sources */,
+				FF2C3721EBD162444AF4C595 /* MolkkyScoringView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,6 +404,7 @@
 				2B780AEE2FE09B1B00B4E0E3 /* FlechettesScoringView.swift in Sources */,
 				2B780AF22FE09CF000B4E0E3 /* Game421ScoringView.swift in Sources */,
 				2B780B062FE09D2A00B4E0E3 /* Models.swift in Sources */,
+				18CEAEE99D4BA51A302F592A /* MolkkyScoringView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,6 +432,7 @@
 				2B780B042FE09D2A00B4E0E3 /* GameCatalog.swift in Sources */,
 				2B780A792FE092F500B4E0E3 /* ScornadeUITests.swift in Sources */,
 				2B780AB72FE0932200B4E0E3 /* BeloteScoringView.swift in Sources */,
+				557412B687F5EA26A542B399 /* MolkkyScoringView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

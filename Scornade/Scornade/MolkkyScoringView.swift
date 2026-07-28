@@ -1,14 +1,16 @@
 import SwiftUI
 
-struct FlechettesScoringView: View {
+struct MolkkyScoringView: View {
     @EnvironmentObject var store: Store
     let sessionID: UUID
 
     @State private var current = 0
     @State private var entryStr = ""
     @State private var note: String?
+    @State private var missStreak: [Int] = []
+    @State private var eliminated: [Bool] = []
 
-    private let quick = [26, 41, 45, 60, 85, 100, 140, 180]
+    private let quick = Array(1...12)
     private var session: ScoreSession? { store.session(id: sessionID) }
 
     var body: some View {
@@ -23,17 +25,19 @@ struct FlechettesScoringView: View {
                 .foregroundStyle(.secondary)
             }
         }
+        .onAppear { ensureTracking(count: session?.entrants.count ?? 0) }
     }
 
     @ViewBuilder
     private func content(_ session: ScoreSession) -> some View {
+        let _ = ensureTracking(count: session.entrants.count)
         ScrollView {
             VStack(spacing: 14) {
                 scoreboard(session)
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
-                                 detail: "501 → 0 · \(session.rounds.count) volées",
-                                 shareText: "🎯 \(session.entrants[w].name) remporte les fléchettes en \(session.rounds.count) volées ! Compté avec Scornade.")
+                                 detail: "50 points pile · \(session.rounds.count) lancers",
+                                 shareText: "🏆 \(session.entrants[w].name) remporte le Mölkky avec 50 points pile ! Compté avec Scornade.")
                     endButtons()
                 } else {
                     entryCard(session)
@@ -48,48 +52,51 @@ struct FlechettesScoringView: View {
     // MARK: Scoreboard
 
     private func scoreboard(_ session: ScoreSession) -> some View {
-        let leader = session.entrants.indices.min(by: { session.total($0) < session.total($1) })
+        let leader = session.entrants.indices.max(by: { session.total($0) < session.total($1) })
         return VStack(spacing: 8) {
             ForEach(session.entrants.indices, id: \.self) { i in
                 let pair = Palette.pair(session.entrants[i].colorIndex)
-                Button { current = i } label: {
+                Button { if !isEliminated(i) { current = i } } label: {
                     HStack(spacing: 10) {
                         Avatar(name: session.entrants[i].name, colorIndex: session.entrants[i].colorIndex, size: 30)
                         Text(session.entrants[i].name).font(.subheadline)
-                        if i == leader, session.rounds.count > 0 {
-                            Image(systemName: "target").font(.caption2).foregroundStyle(Color.brand)
+                        if isEliminated(i) {
+                            Text("éliminé").font(.caption2.weight(.medium)).foregroundStyle(Color(hex: "A32D2D"))
+                        } else if i == leader, session.rounds.count > 0 {
+                            Image(systemName: "cylinder.fill").font(.caption2).foregroundStyle(Color.brand)
                         }
                         Spacer()
                         Text("\(session.total(i))").font(.system(size: 22, weight: .semibold))
                     }
                     .padding(.horizontal, 12).padding(.vertical, 10)
-                    .background(pair.bg.opacity(current == i ? 0.6 : 0.35))
-                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(current == i ? Color.brand : Color.clear, lineWidth: 2))
+                    .background(pair.bg.opacity(isEliminated(i) ? 0.15 : (current == i ? 0.6 : 0.35)))
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(current == i && !isEliminated(i) ? Color.brand : Color.clear, lineWidth: 2))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 .buttonStyle(.plain)
+                .disabled(isEliminated(i))
             }
         }
     }
 
-    // MARK: Saisie d'une volée
+    // MARK: Saisie d'un lancer
 
     private func entryCard(_ session: ScoreSession) -> some View {
-        let remaining = session.total(current)
+        let currentTotal = session.total(current)
         return VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Volée de \(session.entrants[current].name)").font(.caption.weight(.medium)).foregroundStyle(.secondary)
+                Text("Lancer de \(session.entrants[current].name)").font(.caption.weight(.medium)).foregroundStyle(.secondary)
                 Spacer()
-                Text("reste \(remaining)").font(.caption.weight(.medium)).foregroundStyle(Color.brand)
+                Text("\(currentTotal) / 50").font(.caption.weight(.medium)).foregroundStyle(Color.brand)
             }
             HStack(spacing: 6) {
-                TextField("Points (0–180)", text: $entryStr).keyboardType(.numberPad)
+                TextField("Quilles (0–12)", text: $entryStr).keyboardType(.numberPad)
                     .multilineTextAlignment(.center).frame(maxWidth: .infinity).textFieldStyle(.roundedBorder)
                 Button { validate(session, Int(entryStr) ?? -1) } label: {
                     Text("Valider").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(Int(entryStr) == nil)
+                .disabled(Int(entryStr).map { $0 < 0 || $0 > 12 } ?? true)
             }
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
                 ForEach(quick, id: \.self) { q in
@@ -102,7 +109,7 @@ struct FlechettesScoringView: View {
             }
             HStack(spacing: 8) {
                 Button { validate(session, 0) } label: {
-                    Label("Manqué (0)", systemImage: "xmark").frame(maxWidth: .infinity)
+                    Label("Raté (0)", systemImage: "xmark").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
                 Button { store.undoLastRound(sessionID: sessionID); note = nil } label: {
@@ -123,8 +130,8 @@ struct FlechettesScoringView: View {
 
     private func endButtons() -> some View {
         VStack(spacing: 8) {
-            Button { store.resetSession(sessionID: sessionID, keepSeries: false) } label: {
-                Label("Rejouer (501)", systemImage: "arrow.counterclockwise").frame(maxWidth: .infinity)
+            Button { store.resetSession(sessionID: sessionID, keepSeries: false); resetTracking() } label: {
+                Label("Rejouer", systemImage: "arrow.counterclockwise").frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent).controlSize(.large)
             Button { store.popToRoot() } label: {
@@ -137,30 +144,64 @@ struct FlechettesScoringView: View {
     // MARK: Logique
 
     private func validate(_ session: ScoreSession, _ score: Int) {
-        guard score >= 0, score <= 180 else { return }
-        let remaining = session.total(current)
-        let newRemaining = remaining - score
-        if newRemaining < 0 || newRemaining == 1 {
-            // Bust : le score n'est pas décompté (impossible de finir sur 1 avec un double)
-            record(session, 0)
-            note = "Bust ! La volée ne compte pas."
+        guard score >= 0, score <= 12 else { return }
+        let currentTotal = session.total(current)
+        let newTotal = currentTotal + score
+        var delta: Int
+        if newTotal > 50 {
+            delta = 25 - currentTotal
+            note = "Raté ! Retour à 25 points."
         } else {
-            record(session, score)
+            delta = score
             note = nil
-            if newRemaining > 0 { advance(session) }
         }
+        record(session, delta)
+
+        if score == 0 {
+            missStreak[current] += 1
+            if missStreak[current] >= 3 { eliminated[current] = true }
+        } else {
+            missStreak[current] = 0
+        }
+
         entryStr = ""
+        if newTotal != 50 { advance(session) }
     }
 
-    private func record(_ session: ScoreSession, _ score: Int) {
+    private func record(_ session: ScoreSession, _ delta: Int) {
         var deltas = Array(repeating: 0, count: session.entrants.count)
-        if deltas.indices.contains(current) { deltas[current] = score }
+        if deltas.indices.contains(current) { deltas[current] = delta }
         store.addRound(sessionID: sessionID, deltas: deltas)
     }
 
     private func advance(_ session: ScoreSession) {
         let n = session.entrants.count
         guard n > 0 else { return }
-        current = (current + 1) % n
+        var next = (current + 1) % n
+        var loops = 0
+        while isEliminated(next), loops < n {
+            next = (next + 1) % n
+            loops += 1
+        }
+        current = next
+    }
+
+    private func isEliminated(_ i: Int) -> Bool { eliminated.indices.contains(i) && eliminated[i] }
+
+    private func ensureTracking(count: Int) {
+        if missStreak.count != count {
+            DispatchQueue.main.async {
+                if missStreak.count != count {
+                    missStreak = Array(repeating: 0, count: count)
+                    eliminated = Array(repeating: false, count: count)
+                }
+            }
+        }
+    }
+
+    private func resetTracking() {
+        missStreak = Array(repeating: 0, count: missStreak.count)
+        eliminated = Array(repeating: false, count: eliminated.count)
+        current = 0
     }
 }

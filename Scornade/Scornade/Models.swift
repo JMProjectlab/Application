@@ -35,6 +35,7 @@ struct Game: Identifiable, Hashable {
     var isTeamGame: Bool
     var defaultTarget: Int
     var higherWins: Bool    // true: highest total wins; false: lowest wins
+    var rules: String = ""  // rappel rapide des règles, affiché depuis NewGameView
 }
 
 // A team or a solo player taking part in a session.

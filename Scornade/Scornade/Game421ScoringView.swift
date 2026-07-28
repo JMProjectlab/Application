@@ -53,7 +53,8 @@ struct Game421ScoringView: View {
                 phaseHeader(session)
                 scoreboard(session)
                 if finished(session), let w = winnerIndex(session) {
-                    WinnerBanner(name: session.entrants[w].name, detail: "Plus de jetons !")
+                    WinnerBanner(name: session.entrants[w].name, detail: "Plus de jetons !",
+                                 shareText: "🎲 \(session.entrants[w].name) remporte le 421, dernier avec des jetons ! Compté avec Scornade.")
                     endButtons()
                 } else if isCharge(session) {
                     chargeCard(session)

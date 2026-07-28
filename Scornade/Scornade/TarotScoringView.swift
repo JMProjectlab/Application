@@ -40,7 +40,8 @@ struct TarotScoringView: View {
 
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
-                                 detail: "\(session.total(w)) pts · \(session.rounds.count) donnes")
+                                 detail: "\(session.total(w)) pts · \(session.rounds.count) donnes",
+                                 shareText: "🃏 \(session.entrants[w].name) remporte le Tarot avec \(session.total(w)) points en \(session.rounds.count) donnes ! Compté avec Scornade.")
                     endButtons()
                 } else {
                     donneCard(session)
