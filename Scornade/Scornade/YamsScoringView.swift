@@ -199,7 +199,7 @@ struct YamsScoringView: View {
 
     private func chip(_ label: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(label).font(.subheadline).frame(minWidth: 40).padding(.vertical, 6).padding(.horizontal, 4)
+            Text(LocalizedStringKey(label)).font(.subheadline).frame(minWidth: 40).padding(.vertical, 6).padding(.horizontal, 4)
                 .background(selected ? Color.brandLight : Color(.secondarySystemBackground))
                 .foregroundStyle(selected ? Color.brandDark : Color.secondary)
                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(selected ? Color.brand : Color.clear, lineWidth: 1.5))

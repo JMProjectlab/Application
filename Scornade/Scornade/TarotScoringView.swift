@@ -250,7 +250,7 @@ struct TarotScoringView: View {
 
     private func chip(_ label: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(label).font(.subheadline).lineLimit(1)
+            Text(LocalizedStringKey(label)).font(.subheadline).lineLimit(1)
                 .frame(maxWidth: .infinity).padding(.vertical, 8)
                 .background(selected ? Color.brandLight : Color(.secondarySystemBackground))
                 .foregroundStyle(selected ? Color.brandDark : Color.secondary)

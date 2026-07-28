@@ -283,7 +283,7 @@ struct BeloteScoringView: View {
     private func bonusToggle(_ label: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack {
-                Text(label).font(.caption)
+                Text(LocalizedStringKey(label)).font(.caption)
                 Spacer()
                 Text(on ? "Oui" : "Non").font(.caption2.weight(.medium))
                     .padding(.horizontal, 7).padding(.vertical, 2)

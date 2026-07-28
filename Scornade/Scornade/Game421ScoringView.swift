@@ -222,7 +222,7 @@ struct Game421ScoringView: View {
 
     private func chip(_ label: String, selected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Text(label).font(.caption.weight(.medium)).lineLimit(1).minimumScaleFactor(0.7)
+            Text(LocalizedStringKey(label)).font(.caption.weight(.medium)).lineLimit(1).minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity).padding(.vertical, 8)
                 .background(selected ? Color.brandLight : Color(.secondarySystemBackground))
                 .foregroundStyle(selected ? Color.brandDark : Color.secondary)

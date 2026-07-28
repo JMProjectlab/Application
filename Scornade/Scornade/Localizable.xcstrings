@@ -1859,6 +1859,149 @@
           }
         }
       }
+    },
+    "Prise": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take"
+          }
+        }
+      }
+    },
+    "Garde": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guard"
+          }
+        }
+      }
+    },
+    "Garde sans": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guard without"
+          }
+        }
+      }
+    },
+    "Garde contre": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guard against"
+          }
+        }
+      }
+    },
+    "Aucun": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
+          }
+        }
+      }
+    },
+    "Preneur": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taker"
+          }
+        }
+      }
+    },
+    "Défense": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Defense"
+          }
+        }
+      }
+    },
+    "Coinché ×2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doubled ×2"
+          }
+        }
+      }
+    },
+    "Surcoinché ×4": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redoubled ×4"
+          }
+        }
+      }
+    },
+    "Belote É1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belote T1"
+          }
+        }
+      }
+    },
+    "Belote É2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belote T2"
+          }
+        }
+      }
+    },
+    "Capot É1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capot T1"
+          }
+        }
+      }
+    },
+    "Capot É2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capot T2"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
