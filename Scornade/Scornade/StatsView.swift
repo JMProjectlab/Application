@@ -184,7 +184,7 @@ struct StatsView: View {
     private func statBlock(_ value: String, _ label: String) -> some View {
         VStack(spacing: 2) {
             Text(value).font(.headline)
-            Text(label).font(.caption2).foregroundStyle(.secondary)
+            Text(LocalizedStringKey(label)).font(.caption2).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
     }

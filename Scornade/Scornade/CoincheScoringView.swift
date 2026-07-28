@@ -46,7 +46,7 @@ struct CoincheScoringView: View {
 
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
-                                 detail: "\(session.total(w)) – \(session.total(1 - w)) · \(session.rounds.count) donnes",
+                                 detail: String(localized: "\(session.total(w)) – \(session.total(1 - w)) · \(session.rounds.count) donnes", locale: locale),
                                  shareText: String(localized: "🃏 \(session.entrants[w].name) remporte la Coinche \(session.total(w)) – \(session.total(1 - w)) en \(session.rounds.count) donnes ! Compté avec Scornade.", locale: locale))
                     endGameButtons()
                 } else {

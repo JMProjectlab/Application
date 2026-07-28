@@ -33,7 +33,7 @@ struct FlechettesScoringView: View {
                 scoreboard(session)
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
-                                 detail: "501 → 0 · \(session.rounds.count) volées",
+                                 detail: String(localized: "501 → 0 · \(session.rounds.count) volées", locale: locale),
                                  shareText: String(localized: "🎯 \(session.entrants[w].name) remporte les fléchettes en \(session.rounds.count) volées ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else {
@@ -144,7 +144,7 @@ struct FlechettesScoringView: View {
         if newRemaining < 0 || newRemaining == 1 {
             // Bust : le score n'est pas décompté (impossible de finir sur 1 avec un double)
             record(session, 0)
-            note = "Bust ! La volée ne compte pas."
+            note = String(localized: "Bust ! La volée ne compte pas.", locale: locale)
         } else {
             record(session, score)
             note = nil

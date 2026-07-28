@@ -38,7 +38,7 @@ struct YamsScoringView: View {
                 scoreboard(session)
                 if done, let w = winner(session) {
                     WinnerBanner(name: session.entrants[w].name,
-                                 detail: "\(total(w)) points",
+                                 detail: String(localized: "\(total(w)) points", locale: locale),
                                  shareText: String(localized: "🎲 \(session.entrants[w].name) remporte le Yam's avec \(total(w)) points ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else {

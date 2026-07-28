@@ -41,7 +41,7 @@ struct TarotScoringView: View {
 
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
-                                 detail: "\(session.total(w)) pts · \(session.rounds.count) donnes",
+                                 detail: String(localized: "\(session.total(w)) pts · \(session.rounds.count) donnes", locale: locale),
                                  shareText: String(localized: "🃏 \(session.entrants[w].name) remporte le Tarot avec \(session.total(w)) points en \(session.rounds.count) donnes ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else {

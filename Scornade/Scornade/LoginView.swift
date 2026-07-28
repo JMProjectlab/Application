@@ -3,6 +3,7 @@ import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var store: Store
+    @Environment(\.locale) private var locale
     @State private var authError: String?
 
     var body: some View {
@@ -72,7 +73,7 @@ struct LoginView: View {
         switch result {
         case .success(let auth):
             guard let cred = auth.credential as? ASAuthorizationAppleIDCredential else {
-                authError = "Identifiants Apple non reconnus."
+                authError = String(localized: "Identifiants Apple non reconnus.", locale: locale)
                 return
             }
             let name = [cred.fullName?.givenName, cred.fullName?.familyName]

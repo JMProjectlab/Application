@@ -37,7 +37,7 @@ struct MolkkyScoringView: View {
                 scoreboard(session)
                 if session.isFinished, let w = session.winnerIndex {
                     WinnerBanner(name: session.entrants[w].name,
-                                 detail: "50 points pile · \(session.rounds.count) lancers",
+                                 detail: String(localized: "50 points pile · \(session.rounds.count) lancers", locale: locale),
                                  shareText: String(localized: "🏆 \(session.entrants[w].name) remporte le Mölkky avec 50 points pile ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else {
@@ -151,7 +151,7 @@ struct MolkkyScoringView: View {
         var delta: Int
         if newTotal > 50 {
             delta = 25 - currentTotal
-            note = "Raté ! Retour à 25 points."
+            note = String(localized: "Raté ! Retour à 25 points.", locale: locale)
         } else {
             delta = score
             note = nil
