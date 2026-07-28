@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import SwiftUI
+import CloudKit
 
 @MainActor
 final class Store: ObservableObject {
@@ -12,25 +13,43 @@ final class Store: ObservableObject {
     private let playersKey = "sm.players"
     private let sessionsKey = "sm.sessions"
     private let userKey = "sm.user"
-    private let kvs = NSUbiquitousKeyValueStore.default
+
+    // MARK: CloudKit
+
+    // Doit correspondre à com.apple.developer.icloud-container-identifiers
+    // dans Scornade.entitlements (iCloud.<bundle identifier>).
+    private let container = CKContainer(identifier: "iCloud.JMProject.Scornade")
+    private lazy var privateDB = container.privateCloudDatabase
+
+    private static let playerRecordType = "Player"
+    private static let sessionRecordType = "ScoreSession"
+    private static let payloadKey = "payload"
+
+    private let knownPlayerIDsKey = "sm.cloudKnownPlayerIDs"
+    private let knownSessionIDsKey = "sm.cloudKnownSessionIDs"
+    private var knownPlayerRecordIDs: Set<String> = []
+    private var knownSessionRecordIDs: Set<String> = []
+
+    // Le mode invité reste strictement local : on ne touche jamais CloudKit.
+    private var syncEnabled: Bool {
+        guard let mode = currentUser?.mode else { return false }
+        return mode != .guest
+    }
 
     init() {
+        loadKnownRecordIDs()
         load()
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(cloudChanged),
-            name: NSUbiquitousKeyValueStore.didChangeExternallyNotification,
-            object: kvs
-        )
-        kvs.synchronize()
-        if players.isEmpty {
-            players = [
-                Player(name: "Jimmy", colorIndex: 0),
-                Player(name: "Marie", colorIndex: 2),
-                Player(name: "Paul", colorIndex: 1),
-                Player(name: "Sophie", colorIndex: 3),
-            ]
-            save()
+        Task {
+            await pullFromCloud()
+            if players.isEmpty {
+                players = [
+                    Player(name: "Jimmy", colorIndex: 0),
+                    Player(name: "Marie", colorIndex: 2),
+                    Player(name: "Paul", colorIndex: 1),
+                    Player(name: "Sophie", colorIndex: 3),
+                ]
+                save()
+            }
         }
     }
 
@@ -222,6 +241,7 @@ final class Store: ObservableObject {
         if mode != .guest, !players.contains(where: { $0.name == name }) {
             addPlayer(name: name, email: email)
         }
+        Task { await pullFromCloud() }
     }
 
     func signInGuest() {
@@ -237,15 +257,15 @@ final class Store: ObservableObject {
     /// Efface toutes les données de l'utilisateur : joueurs, parties et compte,
     /// en local ET dans iCloud. Action irréversible (exigée par Apple).
     func deleteAllData() {
+        let wasSyncing = syncEnabled
         players = []
         sessions = []
         currentUser = nil
         path = NavigationPath()
         for key in [playersKey, sessionsKey, userKey] {
             UserDefaults.standard.removeObject(forKey: key)
-            kvs.removeObject(forKey: key)
         }
-        kvs.synchronize()
+        Task { await wipeCloudData(wasSyncing: wasSyncing) }
     }
 
     private func saveUser() {
@@ -254,44 +274,168 @@ final class Store: ObservableObject {
         }
     }
 
-    // MARK: Persistence
+    // MARK: Local persistence (cache instantané, hors-ligne)
 
-    @objc private func cloudChanged() {
-        load()
-    }
-
-    func reloadFromCloud() { load() }
-
-    private func cloudOrLocal(_ key: String) -> Data? {
-        kvs.data(forKey: key) ?? UserDefaults.standard.data(forKey: key)
-    }
+    func reloadFromCloud() { Task { await pullFromCloud() } }
 
     private func save() {
+        saveLocalCacheOnly()
+        Task { await pushToCloud() }
+    }
+
+    private func saveLocalCacheOnly() {
         let enc = JSONEncoder()
         if let p = try? enc.encode(players) {
-            kvs.set(p, forKey: playersKey)
             UserDefaults.standard.set(p, forKey: playersKey)
         }
         if let s = try? enc.encode(sessions) {
-            kvs.set(s, forKey: sessionsKey)
             UserDefaults.standard.set(s, forKey: sessionsKey)
         }
-        kvs.synchronize()
     }
 
     private func load() {
         let dec = JSONDecoder()
-        if let p = cloudOrLocal(playersKey),
+        if let p = UserDefaults.standard.data(forKey: playersKey),
            let decoded = try? dec.decode([Player].self, from: p) {
             players = decoded
         }
-        if let s = cloudOrLocal(sessionsKey),
+        if let s = UserDefaults.standard.data(forKey: sessionsKey),
            let decoded = try? dec.decode([ScoreSession].self, from: s) {
             sessions = decoded
         }
         if let u = UserDefaults.standard.data(forKey: userKey),
            let decoded = try? dec.decode(UserAccount.self, from: u) {
             currentUser = decoded
+        }
+    }
+
+    private func loadKnownRecordIDs() {
+        knownPlayerRecordIDs = Set(UserDefaults.standard.stringArray(forKey: knownPlayerIDsKey) ?? [])
+        knownSessionRecordIDs = Set(UserDefaults.standard.stringArray(forKey: knownSessionIDsKey) ?? [])
+    }
+
+    private func persistKnownRecordIDs() {
+        UserDefaults.standard.set(Array(knownPlayerRecordIDs), forKey: knownPlayerIDsKey)
+        UserDefaults.standard.set(Array(knownSessionRecordIDs), forKey: knownSessionIDsKey)
+    }
+
+    // MARK: CloudKit sync
+    //
+    // Base privée CloudKit (zone par défaut) : chaque joueur et chaque partie sont
+    // sérialisés en JSON dans un unique champ "payload". On pousse l'état complet à
+    // chaque `save()` et on tire les données au lancement / retour au premier plan.
+    // Le mode invité ne déclenche jamais de synchro (promesse de confidentialité).
+
+    private func makeRecord<T: Encodable>(id: UUID, type: String, value: T) -> CKRecord? {
+        guard let data = try? JSONEncoder().encode(value) else { return nil }
+        let record = CKRecord(recordType: type, recordID: CKRecord.ID(recordName: id.uuidString))
+        record[Self.payloadKey] = data as CKRecordValue
+        return record
+    }
+
+    private func fetchAllRecords(type: String) async throws -> [CKRecord] {
+        var all: [CKRecord] = []
+        var cursor: CKQueryOperation.Cursor?
+        repeat {
+            let matchResults: [(CKRecord.ID, Result<CKRecord, Error>)]
+            let nextCursor: CKQueryOperation.Cursor?
+            if let cursor {
+                (matchResults, nextCursor) = try await privateDB.records(continuingMatchFrom: cursor)
+            } else {
+                let query = CKQuery(recordType: type, predicate: NSPredicate(value: true))
+                (matchResults, nextCursor) = try await privateDB.records(matching: query)
+            }
+            all += matchResults.compactMap { try? $0.1.get() }
+            cursor = nextCursor
+        } while cursor != nil
+        return all
+    }
+
+    private func pushToCloud() async {
+        guard syncEnabled else { return }
+        guard (try? await container.accountStatus()) == .available else { return }
+
+        let currentPlayerIDs = Set(players.map(\.id.uuidString))
+        let currentSessionIDs = Set(sessions.map(\.id.uuidString))
+        let deletedIDs = knownPlayerRecordIDs.subtracting(currentPlayerIDs)
+            .union(knownSessionRecordIDs.subtracting(currentSessionIDs))
+
+        let recordsToSave =
+            players.compactMap { makeRecord(id: $0.id, type: Self.playerRecordType, value: $0) } +
+            sessions.compactMap { makeRecord(id: $0.id, type: Self.sessionRecordType, value: $0) }
+        let recordIDsToDelete = deletedIDs.map { CKRecord.ID(recordName: $0) }
+
+        guard !recordsToSave.isEmpty || !recordIDsToDelete.isEmpty else { return }
+
+        do {
+            _ = try await privateDB.modifyRecords(saving: recordsToSave,
+                                                   deleting: recordIDsToDelete,
+                                                   savePolicy: .changedKeys)
+            knownPlayerRecordIDs = currentPlayerIDs
+            knownSessionRecordIDs = currentSessionIDs
+            persistKnownRecordIDs()
+        } catch {
+            // Pas de réseau / iCloud momentanément indisponible : on réessaiera
+            // au prochain save() ou reloadFromCloud().
+        }
+    }
+
+    private func pullFromCloud() async {
+        guard syncEnabled else { return }
+        do {
+            guard try await container.accountStatus() == .available else { return }
+            let playerRecords = try await fetchAllRecords(type: Self.playerRecordType)
+            let sessionRecords = try await fetchAllRecords(type: Self.sessionRecordType)
+
+            let decoder = JSONDecoder()
+            let remotePlayers = playerRecords.compactMap { record -> Player? in
+                guard let data = record[Self.payloadKey] as? Data else { return nil }
+                return try? decoder.decode(Player.self, from: data)
+            }
+            let remoteSessions = sessionRecords.compactMap { record -> ScoreSession? in
+                guard let data = record[Self.payloadKey] as? Data else { return nil }
+                return try? decoder.decode(ScoreSession.self, from: data)
+            }
+
+            mergePlayers(remotePlayers)
+            mergeSessions(remoteSessions)
+            knownPlayerRecordIDs.formUnion(playerRecords.map(\.recordID.recordName))
+            knownSessionRecordIDs.formUnion(sessionRecords.map(\.recordID.recordName))
+            persistKnownRecordIDs()
+            saveLocalCacheOnly()
+        } catch {
+            // Hors-ligne, ou conteneur pas encore provisionné : on garde les données locales.
+        }
+    }
+
+    /// Fusionne sans jamais supprimer localement : une absence côté serveur peut
+    /// simplement signifier que l'entrée locale n'a pas encore été poussée.
+    private func mergePlayers(_ remote: [Player]) {
+        guard !remote.isEmpty else { return }
+        var byID = Dictionary(uniqueKeysWithValues: players.map { ($0.id, $0) })
+        for p in remote { byID[p.id] = p }
+        players = Array(byID.values)
+    }
+
+    private func mergeSessions(_ remote: [ScoreSession]) {
+        guard !remote.isEmpty else { return }
+        var byID = Dictionary(uniqueKeysWithValues: sessions.map { ($0.id, $0) })
+        for s in remote { byID[s.id] = s }
+        sessions = Array(byID.values).sorted { $0.date > $1.date }
+    }
+
+    private func wipeCloudData(wasSyncing: Bool) async {
+        guard wasSyncing else { return }
+        guard (try? await container.accountStatus()) == .available else { return }
+        let idsToDelete = knownPlayerRecordIDs.union(knownSessionRecordIDs).map { CKRecord.ID(recordName: $0) }
+        guard !idsToDelete.isEmpty else { return }
+        do {
+            _ = try await privateDB.modifyRecords(saving: [], deleting: idsToDelete)
+            knownPlayerRecordIDs = []
+            knownSessionRecordIDs = []
+            persistKnownRecordIDs()
+        } catch {
+            // best-effort : les données locales sont déjà effacées.
         }
     }
 }

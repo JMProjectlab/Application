@@ -3,6 +3,7 @@ import SwiftUI
 @main
 struct ScornadeApp: App {
     @StateObject private var store = Store()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
@@ -15,6 +16,9 @@ struct ScornadeApp: App {
             }
             .environmentObject(store)
             .tint(Color.brand)
+        }
+        .onChange(of: scenePhase) { phase in
+            if phase == .active { store.reloadFromCloud() }
         }
     }
 }
