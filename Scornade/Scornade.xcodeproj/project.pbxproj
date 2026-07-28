@@ -72,6 +72,9 @@
 		FF2C3721EBD162444AF4C595 /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
 		18CEAEE99D4BA51A302F592A /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
 		557412B687F5EA26A542B399 /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
+		81AD0E789CEE8F07740CA219 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 71D0F52B79DE89AB805F249D /* Localizable.xcstrings */; };
+		8EC103FEF847091EB97CF2EE /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 71D0F52B79DE89AB805F249D /* Localizable.xcstrings */; };
+		B307C15017F94AA1F5FBEFFB /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 71D0F52B79DE89AB805F249D /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,6 +124,7 @@
 		2B780AF82FE09D2A00B4E0E3 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		2B780B082FE09D4F00B4E0E3 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MolkkyScoringView.swift; sourceTree = "<group>"; };
+		71D0F52B79DE89AB805F249D /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		91B298673E8CA46763FEA936 /* Scornade.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Scornade.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -196,6 +200,7 @@
 				2B780A632FE092F400B4E0E3 /* Preview Content */,
 				2B780A872FE0932000B4E0E3 /* Scornade-Bridging-Header.h */,
 				91B298673E8CA46763FEA936 /* Scornade.entitlements */,
+				71D0F52B79DE89AB805F249D /* Localizable.xcstrings */,
 			);
 			path = Scornade;
 			sourceTree = "<group>";
@@ -307,9 +312,10 @@
 			};
 			buildConfigurationList = 2B780A552FE092F100B4E0E3 /* Build configuration list for PBXProject "Scornade" */;
 			compatibilityVersion = "Xcode 14.0";
-			developmentRegion = en;
+			developmentRegion = fr;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				fr,
 				en,
 				Base,
 			);
@@ -333,6 +339,7 @@
 				2B780ABE2FE0932200B4E0E3 /* README.md in Resources */,
 				2B780A652FE092F400B4E0E3 /* Preview Assets.xcassets in Resources */,
 				2B780A622FE092F400B4E0E3 /* Assets.xcassets in Resources */,
+				81AD0E789CEE8F07740CA219 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +348,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B780ABF2FE0932200B4E0E3 /* README.md in Resources */,
+				8EC103FEF847091EB97CF2EE /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,6 +357,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B780AC02FE0932200B4E0E3 /* README.md in Resources */,
+				B307C15017F94AA1F5FBEFFB /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

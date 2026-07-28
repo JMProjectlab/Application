@@ -5,9 +5,19 @@ struct PlayersView: View {
     @State private var newName = ""
     @State private var newEmail = ""
     @State private var showDeleteConfirm = false
+    @AppStorage("sm.languagePreference") private var languagePreference = "system"
 
     var body: some View {
         Form {
+            Section("Langue") {
+                Picker("Langue", selection: $languagePreference) {
+                    Text("Système (iOS)").tag("system")
+                    Text("Français").tag("fr")
+                    Text("English").tag("en")
+                }
+                .pickerStyle(.menu)
+            }
+
             Section("Ajouter un joueur") {
                 TextField("Nom", text: $newName)
                 TextField("E-mail (optionnel, pour la synchro)", text: $newEmail)
