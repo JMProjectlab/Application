@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 extension Color {
     init(hex: String) {
@@ -12,10 +13,16 @@ extension Color {
         )
     }
 
-    // Brand
-    static let brand = Color(hex: "534AB7")
-    static let brandLight = Color(hex: "EEEDFE")
-    static let brandDark = Color(hex: "3C3489")
+    /// Couleur adaptative clair/sombre (façon Asset Catalog, définie en code).
+    init(light: Color, dark: Color) {
+        self.init(UIColor { $0.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light) })
+    }
+
+    // Brand — repris de la charte graphique du portfolio ("blueprint / vellum"),
+    // variantes clair/sombre officielles de la charte.
+    static let brand = Color(light: Color(hex: "2C86C9"), dark: Color(hex: "5FB6E8"))       // --line
+    static let brandLight = Color(light: Color(hex: "D9E9F6"), dark: Color(hex: "143454"))  // --surface-2
+    static let brandDark = Color(light: Color(hex: "123C63"), dark: Color(hex: "EAF1F6"))   // --accent / --ink
 }
 
 // Per-player / per-team color pairs (background + foreground text)
