@@ -101,7 +101,7 @@ struct BeloteScoringView: View {
         HStack(spacing: 10) {
             teamScore(session, team: 0, bg: Color.brandLight, fg: Color.brandDark, bar: Color.brand)
             VStack { Text("\(session.target)").font(.headline); Text("objectif").font(.caption2).foregroundStyle(.secondary) }
-            teamScore(session, team: 1, bg: Color(hex: "FAEEDA"), fg: Color(hex: "633806"), bar: Color(hex: "BA7517"))
+            teamScore(session, team: 1, bg: Color.teamTwoLight, fg: Color.teamTwoDark, bar: Color.teamTwo)
         }
     }
 
@@ -207,7 +207,7 @@ struct BeloteScoringView: View {
                     Button { suit = sym } label: {
                         Text(sym)
                             .font(.title3)
-                            .foregroundStyle(sym == "♥" || sym == "♦" ? Color(hex: "A32D2D") : Color.primary)
+                            .foregroundStyle(sym == "♥" || sym == "♦" ? Color.danger : Color.primary)
                             .frame(width: 44, height: 38)
                             .background(suit == sym ? Color.brandLight : Color(.secondarySystemBackground))
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(suit == sym ? Color.brand : Color.clear, lineWidth: 2))
@@ -229,7 +229,7 @@ struct BeloteScoringView: View {
             Text(capot != nil ? "Capot — points automatiques"
                  : (sum == total ? "\(p0) + \(p1) = 162 ✓" : "\(p0) + \(p1) = \(sum) (doit faire 162)"))
                 .font(.caption)
-                .foregroundStyle(capot != nil || sum == total ? Color(hex: "0F6E56") : Color(hex: "A32D2D"))
+                .foregroundStyle(capot != nil || sum == total ? Color.success : Color.danger)
         }
     }
 
@@ -251,8 +251,8 @@ struct BeloteScoringView: View {
         Button { taker = team } label: {
             Text(label).font(.subheadline.weight(.medium)).lineLimit(1)
                 .frame(maxWidth: .infinity).padding(.vertical, 9)
-                .background(taker == team ? (team == 0 ? Color.brandLight : Color(hex: "FAEEDA")) : Color(.secondarySystemBackground))
-                .foregroundStyle(taker == team ? (team == 0 ? Color.brandDark : Color(hex: "633806")) : Color.secondary)
+                .background(taker == team ? (team == 0 ? Color.brandLight : Color.teamTwoLight) : Color(.secondarySystemBackground))
+                .foregroundStyle(taker == team ? (team == 0 ? Color.brandDark : Color.teamTwoDark) : Color.secondary)
                 .overlay(RoundedRectangle(cornerRadius: 8).stroke(taker == team ? Color.brand : Color.clear, lineWidth: 2))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
         }
@@ -276,7 +276,7 @@ struct BeloteScoringView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(8)
-        .background(team == 0 ? Color.brandLight : Color(hex: "FAEEDA"))
+        .background(team == 0 ? Color.brandLight : Color.teamTwoLight)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
@@ -312,8 +312,8 @@ struct BeloteScoringView: View {
         }
         .padding(11)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(made ? Color(hex: "E1F5EE") : Color(hex: "FCEBEB"))
-        .foregroundStyle(made ? Color(hex: "085041") : Color(hex: "791F1F"))
+        .background(made ? Color.successLight : Color.dangerLight)
+        .foregroundStyle(made ? Color.success : Color.danger)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
@@ -329,7 +329,7 @@ struct BeloteScoringView: View {
                     Text("É\(r.takerTeam + 1) prend \(r.suit)").font(.caption)
                     Text(r.contractMade ? "✓" : "chute")
                         .font(.caption2.weight(.medium))
-                        .foregroundStyle(r.contractMade ? Color(hex: "0F6E56") : Color(hex: "A32D2D"))
+                        .foregroundStyle(r.contractMade ? Color.success : Color.danger)
                     Spacer()
                     Text("\(d[0]) – \(d[1])").font(.caption.weight(.medium))
                     Button { loadForEdit(idx) } label: { Image(systemName: "pencil").font(.caption) }

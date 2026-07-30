@@ -197,15 +197,15 @@ struct WinnerBanner: View {
             HStack {
                 Spacer()
                 ShareLink(item: shareText) {
-                    Image(systemName: "square.and.arrow.up").foregroundStyle(Color(hex: "0F6E56"))
+                    Image(systemName: "square.and.arrow.up").foregroundStyle(Color.success)
                 }
             }
-            Image(systemName: "trophy.fill").font(.title2).foregroundStyle(Color(hex: "BA7517"))
+            Image(systemName: "trophy.fill").font(.title2).foregroundStyle(Color.gold)
             Text("\(name) remporte la partie !").font(.headline)
             Text(detail).font(.caption).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity).padding()
-        .background(Color(hex: "E1F5EE"))
+        .background(Color.successLight)
         .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }

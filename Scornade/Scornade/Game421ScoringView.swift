@@ -116,7 +116,7 @@ struct Game421ScoringView: View {
                     Avatar(name: session.entrants[i].name, colorIndex: session.entrants[i].colorIndex, size: 30)
                     Text(session.entrants[i].name).font(.subheadline)
                     if i == leader, !isCharge(session) {
-                        Image(systemName: "crown.fill").font(.caption2).foregroundStyle(Color(hex: "C99A2E"))
+                        Image(systemName: "crown.fill").font(.caption2).foregroundStyle(Color.crownGold)
                     }
                     Spacer()
                     Text("\(jetons.indices.contains(i) ? jetons[i] : 0)").font(.system(size: 22, weight: .semibold))

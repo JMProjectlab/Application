@@ -75,7 +75,7 @@ struct PayooScoringView: View {
                     Avatar(name: session.entrants[i].name, colorIndex: session.entrants[i].colorIndex, size: 30)
                     Text(session.entrants[i].name).font(.subheadline)
                     if i == leader, session.rounds.count > 0 {
-                        Image(systemName: "crown.fill").font(.caption2).foregroundStyle(Color(hex: "C99A2E"))
+                        Image(systemName: "crown.fill").font(.caption2).foregroundStyle(Color.crownGold)
                     }
                     Spacer()
                     Text("\(session.total(i))").font(.system(size: 20, weight: .medium))
@@ -110,7 +110,7 @@ struct PayooScoringView: View {
                 Spacer()
                 Text("\(sum) / 250")
                     .font(.caption.weight(.medium))
-                    .foregroundStyle(sum == roundTotal ? Color(hex: "0F6E56") : Color(hex: "A32D2D"))
+                    .foregroundStyle(sum == roundTotal ? Color.success : Color.danger)
             }
             Button { validate(session) } label: {
                 Label("Valider la manche", systemImage: "checkmark").frame(maxWidth: .infinity)

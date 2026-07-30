@@ -203,8 +203,8 @@ struct TarotScoringView: View {
         }
         .padding(11)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(made ? Color(hex: "E1F5EE") : Color(hex: "FCEBEB"))
-        .foregroundStyle(made ? Color(hex: "085041") : Color(hex: "791F1F"))
+        .background(made ? Color.successLight : Color.dangerLight)
+        .foregroundStyle(made ? Color.success : Color.danger)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
@@ -220,7 +220,7 @@ struct TarotScoringView: View {
                     Text("\(takerName) · \(contractNames[min(max(r.contract,0),3)])").font(.caption).lineLimit(1)
                     Text(r.contractMade ? "✓" : "chute")
                         .font(.caption2.weight(.medium))
-                        .foregroundStyle(r.contractMade ? Color(hex: "0F6E56") : Color(hex: "A32D2D"))
+                        .foregroundStyle(r.contractMade ? Color.success : Color.danger)
                     Spacer()
                     Button { loadForEdit(idx) } label: { Image(systemName: "pencil").font(.caption) }.buttonStyle(.borderless)
                     Button(role: .destructive) { store.deleteRound(sessionID: sessionID, at: idx) } label: {

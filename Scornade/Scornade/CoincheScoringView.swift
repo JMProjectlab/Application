@@ -81,13 +81,13 @@ struct CoincheScoringView: View {
     private func scoreboard(_ session: ScoreSession) -> some View {
         HStack(spacing: 10) {
             ForEach(0..<2, id: \.self) { i in
-                let pair = Palette.pair(session.entrants[i].colorIndex)
+                let bg: Color = i == 0 ? Color.brandLight : Color.teamTwoLight
                 VStack(spacing: 4) {
                     Text(session.entrants[i].name).font(.caption).foregroundStyle(.secondary).lineLimit(1)
                     Text("\(session.total(i))").font(.system(size: 30, weight: .semibold))
                 }
                 .frame(maxWidth: .infinity).padding(.vertical, 14)
-                .background(pair.bg.opacity(0.45))
+                .background(bg.opacity(0.45))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 if i == 0 {
                     VStack(spacing: 2) {
@@ -161,7 +161,7 @@ struct CoincheScoringView: View {
                     Button { suit = sym } label: {
                         Text(sym)
                             .font(sym.count > 1 ? .subheadline.weight(.semibold) : .title3)
-                            .foregroundStyle(sym == "♥" || sym == "♦" ? Color(hex: "A32D2D") : Color.primary)
+                            .foregroundStyle(sym == "♥" || sym == "♦" ? Color.danger : Color.primary)
                             .frame(maxWidth: .infinity, minHeight: 38)
                             .background(suit == sym ? Color.brandLight : Color(.secondarySystemBackground))
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(suit == sym ? Color.brand : Color.clear, lineWidth: 2))
@@ -220,8 +220,8 @@ struct CoincheScoringView: View {
         }
         .padding(11)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(made ? Color(hex: "E1F5EE") : Color(hex: "FCEBEB"))
-        .foregroundStyle(made ? Color(hex: "085041") : Color(hex: "791F1F"))
+        .background(made ? Color.successLight : Color.dangerLight)
+        .foregroundStyle(made ? Color.success : Color.danger)
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
@@ -238,7 +238,7 @@ struct CoincheScoringView: View {
                     Text("\(name) · \(r.capot ? "Capot" : "\(r.contract)")\(r.suit)\(coincheTag)").font(.caption).lineLimit(1)
                     Text(r.contractMade ? "✓" : "chute")
                         .font(.caption2.weight(.medium))
-                        .foregroundStyle(r.contractMade ? Color(hex: "0F6E56") : Color(hex: "A32D2D"))
+                        .foregroundStyle(r.contractMade ? Color.success : Color.danger)
                     Spacer()
                     Button { loadForEdit(idx) } label: { Image(systemName: "pencil").font(.caption) }.buttonStyle(.borderless)
                     Button(role: .destructive) { store.deleteRound(sessionID: sessionID, at: idx) } label: {

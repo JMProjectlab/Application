@@ -113,7 +113,7 @@ struct FlechettesScoringView: View {
                 .disabled(session.rounds.isEmpty)
             }
             if let note {
-                Text(note).font(.caption.weight(.medium)).foregroundStyle(Color(hex: "A32D2D"))
+                Text(note).font(.caption.weight(.medium)).foregroundStyle(Color.danger)
             }
         }
         .padding(14)

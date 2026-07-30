@@ -62,7 +62,7 @@ struct MolkkyScoringView: View {
                         Avatar(name: session.entrants[i].name, colorIndex: session.entrants[i].colorIndex, size: 30)
                         Text(session.entrants[i].name).font(.subheadline)
                         if isEliminated(i) {
-                            Text("éliminé").font(.caption2.weight(.medium)).foregroundStyle(Color(hex: "A32D2D"))
+                            Text("éliminé").font(.caption2.weight(.medium)).foregroundStyle(Color.danger)
                         } else if i == leader, session.rounds.count > 0 {
                             Image(systemName: "cylinder.fill").font(.caption2).foregroundStyle(Color.brand)
                         }
@@ -120,7 +120,7 @@ struct MolkkyScoringView: View {
                 .disabled(session.rounds.isEmpty)
             }
             if let note {
-                Text(note).font(.caption.weight(.medium)).foregroundStyle(Color(hex: "A32D2D"))
+                Text(note).font(.caption.weight(.medium)).foregroundStyle(Color.danger)
             }
         }
         .padding(14)

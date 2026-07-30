@@ -77,7 +77,7 @@ struct YamsScoringView: View {
                             HStack(spacing: 4) {
                                 Text(session.entrants[i].name).font(.subheadline.weight(.medium)).lineLimit(1)
                                 if i == leader, total(i) > 0 {
-                                    Image(systemName: "crown.fill").font(.caption2).foregroundStyle(Color(hex: "C99A2E"))
+                                    Image(systemName: "crown.fill").font(.caption2).foregroundStyle(Color.crownGold)
                                 }
                             }
                             Text("\(total(i))").font(.title3.weight(.semibold))
@@ -106,13 +106,13 @@ struct YamsScoringView: View {
                 Text("Sous-total").font(.caption).foregroundStyle(.secondary)
                 Spacer()
                 Text("\(upper(p)) / 63").font(.caption.weight(.medium))
-                    .foregroundStyle(upper(p) >= 63 ? Color(hex: "0F6E56") : .secondary)
+                    .foregroundStyle(upper(p) >= 63 ? Color.success : .secondary)
             }
             HStack {
                 Text("Bonus (+35 si ≥ 63)").font(.caption).foregroundStyle(.secondary)
                 Spacer()
                 Text("+\(bonus(p))").font(.caption.weight(.medium))
-                    .foregroundStyle(bonus(p) > 0 ? Color(hex: "0F6E56") : .secondary)
+                    .foregroundStyle(bonus(p) > 0 ? Color.success : .secondary)
             }
 
             Divider()

@@ -182,8 +182,8 @@ struct PlayerAssignRow: View {
             Text(state == 1 ? "Équipe 1" : "Équipe 2")
                 .font(.caption.weight(.medium))
                 .padding(.horizontal, 10).padding(.vertical, 4)
-                .background(state == 1 ? Color.brandLight : Color(hex: "FAEEDA"))
-                .foregroundStyle(state == 1 ? Color.brandDark : Color(hex: "633806"))
+                .background(state == 1 ? Color.brandLight : Color.teamTwoLight)
+                .foregroundStyle(state == 1 ? Color.brandDark : Color.teamTwoDark)
                 .clipShape(Capsule())
         }
     }
