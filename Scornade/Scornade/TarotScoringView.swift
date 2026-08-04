@@ -81,7 +81,7 @@ struct TarotScoringView: View {
                     Avatar(name: session.entrants[i].name, colorIndex: session.entrants[i].colorIndex, size: 30)
                     Text(session.entrants[i].name).font(.subheadline)
                     Spacer()
-                    Text("\(session.total(i))").font(.system(size: 20, weight: .medium))
+                    Text("\(session.total(i))").font(.jmScore(20, weight: .medium))
                 }
                 .padding(.horizontal, 12).padding(.vertical, 8)
                 .background(pair.bg.opacity(0.4))

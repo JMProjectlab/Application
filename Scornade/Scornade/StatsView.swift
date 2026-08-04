@@ -134,7 +134,7 @@ struct StatsView: View {
                 HStack {
                     Text(g.name)
                     Spacer()
-                    Text("\(g.won) V / \(g.played)").foregroundStyle(.secondary)
+                    Text("\(g.won) V / \(g.played)").font(.jmData(14)).foregroundStyle(.secondary)
                 }
             }
         }
@@ -147,7 +147,7 @@ struct StatsView: View {
                     Avatar(name: t.name, colorIndex: t.colorIndex, size: 28)
                     Text(t.name)
                     Spacer()
-                    Text("\(t.wins) V / \(t.total)").foregroundStyle(.secondary)
+                    Text("\(t.wins) V / \(t.total)").font(.jmData(14)).foregroundStyle(.secondary)
                 }
             }
         }
@@ -160,7 +160,7 @@ struct StatsView: View {
                     Avatar(name: o.name, colorIndex: o.colorIndex, size: 28)
                     Text(o.name)
                     Spacer()
-                    Text("\(o.wins) V / \(o.total)").foregroundStyle(.secondary)
+                    Text("\(o.wins) V / \(o.total)").font(.jmData(14)).foregroundStyle(.secondary)
                 }
             }
         }
@@ -183,7 +183,7 @@ struct StatsView: View {
 
     private func statBlock(_ value: String, _ label: String) -> some View {
         VStack(spacing: 2) {
-            Text(value).font(.headline)
+            Text(value).font(.jmScore(17))
             Text(LocalizedStringKey(label)).font(.caption2).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)

@@ -164,7 +164,7 @@ struct EntrantRow: View {
                     }
                 }
                 Spacer()
-                Text("\(total)").font(.system(size: 26, weight: .medium))
+                Text("\(total)").font(.jmScore(26, weight: .medium))
             }
             ProgressView(value: progress).tint(pair.fg)
             HStack(spacing: 8) {

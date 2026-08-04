@@ -18,9 +18,9 @@ struct LoginView: View {
                         .frame(width: 34, height: 46)
                         .rotationEffect(.degrees(-10)).offset(x: -3, y: 2)
                     RoundedRectangle(cornerRadius: 7).fill(.white).frame(width: 34, height: 46)
-                    Text("Sc").font(.system(size: 18, weight: .bold)).foregroundStyle(Color.brand)
+                    Text("Sc").font(.system(size: 18, weight: .semibold)).foregroundStyle(Color.ink)
                 }
-                Text("Scornade").font(.system(size: 30, weight: .semibold))
+                Text("Scornade").font(.jmDisplay).jmTightTracking(34)
                 Text("Comptez. Gagnez. Recommencez.")
                     .font(.subheadline).foregroundStyle(.secondary)
             }

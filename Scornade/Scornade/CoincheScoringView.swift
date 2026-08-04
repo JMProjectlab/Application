@@ -84,7 +84,7 @@ struct CoincheScoringView: View {
                 let bg: Color = i == 0 ? Color.brandLight : Color.teamTwoLight
                 VStack(spacing: 4) {
                     Text(session.entrants[i].name).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-                    Text("\(session.total(i))").font(.system(size: 30, weight: .semibold))
+                    Text("\(session.total(i))").font(.jmScore(30))
                 }
                 .frame(maxWidth: .infinity).padding(.vertical, 14)
                 .background(bg.opacity(0.45))

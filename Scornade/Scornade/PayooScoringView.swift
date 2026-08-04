@@ -78,7 +78,7 @@ struct PayooScoringView: View {
                         Image(systemName: "crown.fill").font(.caption2).foregroundStyle(Color.crownGold)
                     }
                     Spacer()
-                    Text("\(session.total(i))").font(.system(size: 20, weight: .medium))
+                    Text("\(session.total(i))").font(.jmScore(20, weight: .medium))
                 }
                 .padding(.horizontal, 12).padding(.vertical, 8)
                 .background(pair.bg.opacity(0.4))

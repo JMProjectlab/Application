@@ -108,7 +108,7 @@ struct GameCard: View {
     let game: Game
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: game.symbol).font(.title2).foregroundStyle(Color.brand)
+            Image(systemName: game.symbol).font(.title2).foregroundStyle(Color.inkSecondary)
             Text(game.name).font(.subheadline.weight(.medium))
             Text(game.isTeamGame ? "Équipe" : "Individuel")
                 .font(.caption2).foregroundStyle(.secondary)

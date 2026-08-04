@@ -61,7 +61,7 @@ struct FlechettesScoringView: View {
                             Image(systemName: "target").font(.caption2).foregroundStyle(Color.brand)
                         }
                         Spacer()
-                        Text("\(session.total(i))").font(.system(size: 22, weight: .semibold))
+                        Text("\(session.total(i))").font(.jmScore(22))
                     }
                     .padding(.horizontal, 12).padding(.vertical, 10)
                     .background(pair.bg.opacity(current == i ? 0.6 : 0.35))

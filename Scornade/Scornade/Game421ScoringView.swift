@@ -119,7 +119,7 @@ struct Game421ScoringView: View {
                         Image(systemName: "crown.fill").font(.caption2).foregroundStyle(Color.crownGold)
                     }
                     Spacer()
-                    Text("\(jetons.indices.contains(i) ? jetons[i] : 0)").font(.system(size: 22, weight: .semibold))
+                    Text("\(jetons.indices.contains(i) ? jetons[i] : 0)").font(.jmScore(22))
                     Text("jetons").font(.caption2).foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 12).padding(.vertical, 10)

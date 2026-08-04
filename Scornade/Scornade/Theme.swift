@@ -1,6 +1,12 @@
 import SwiftUI
 import UIKit
 
+// MARK: - Couleurs
+//
+// Palette reprise de la charte graphique JMprojectlab : deux neutres (encre,
+// gris nuage) portent presque toute l'interface, et le bleu est le seul accent,
+// réservé à ce qui est actionnable ou sélectionné — jamais décoratif.
+
 extension Color {
     init(hex: String) {
         let scanner = Scanner(string: hex)
@@ -18,45 +24,85 @@ extension Color {
         self.init(UIColor { $0.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light) })
     }
 
-    // Brand — repris de la charte graphique du portfolio ("blueprint / vellum"),
-    // variantes clair/sombre officielles de la charte.
-    static let brand = Color(light: Color(hex: "2C86C9"), dark: Color(hex: "5FB6E8"))       // --line
-    static let brandLight = Color(light: Color(hex: "D9E9F6"), dark: Color(hex: "143454"))  // --surface-2
-    static let brandDark = Color(light: Color(hex: "123C63"), dark: Color(hex: "EAF1F6"))   // --accent / --ink
+    // Neutres de la charte.
+    static let ink = Color(light: Color(hex: "1D1D1F"), dark: Color(hex: "F5F5F7"))
+    static let inkSecondary = Color(light: Color(hex: "6E6E73"), dark: Color(hex: "A1A1A6"))
+    static let cloud = Color(light: Color(hex: "F5F5F7"), dark: Color(hex: "101012"))
+    static let hairline = Color(light: Color(hex: "D2D2D7"), dark: Color(hex: "2A2A2C"))
 
-    // Rouge d'alerte / d'erreur (contrat chuté, bust, saisie invalide) — reprend
-    // le "stamp" de la charte du portfolio.
-    static let danger = Color(light: Color(hex: "C23B27"), dark: Color(hex: "FF6E55"))       // --stamp
-    static let dangerLight = Color(light: Color(hex: "FCEBEB"), dark: Color(hex: "3A1714"))
+    // Le bleu : seul accent de la charte.
+    static let brand = Color(light: Color(hex: "0071E3"), dark: Color(hex: "2997FF"))
+    /// Fond teinté d'un élément sélectionné ou actif (le bleu, très dilué).
+    static let brandLight = Color.brand.opacity(0.12)
+    /// Texte posé sur `brandLight`.
+    static let brandDark = Color(light: Color(hex: "0058B0"), dark: Color(hex: "2997FF"))
 
-    // Vert de succès et or — la charte du portfolio n'a que du bleu et du rouge ;
-    // on garde ces teintes existantes mais on les rend enfin adaptatives clair/sombre.
-    static let success = Color(light: Color(hex: "0F6E56"), dark: Color(hex: "3FD9B0"))
-    static let successLight = Color(light: Color(hex: "E1F5EE"), dark: Color(hex: "123A32"))
-    static let gold = Color(light: Color(hex: "BA7517"), dark: Color(hex: "E0AA4A"))
-    static let crownGold = Color(light: Color(hex: "C99A2E"), dark: Color(hex: "E8C465"))
+    // Retours sémantiques (contrat réussi / chuté, bust, saisie invalide).
+    // La charte ne définit ni vert ni rouge : on s'appuie sur les couleurs
+    // système d'Apple, déjà adaptatives et cohérentes avec le reste d'iOS.
+    static let success = Color(uiColor: .systemGreen)
+    static let successLight = Color(uiColor: .systemGreen).opacity(0.12)
+    static let danger = Color(uiColor: .systemRed)
+    static let dangerLight = Color(uiColor: .systemRed).opacity(0.12)
+    static let gold = Color(uiColor: .systemOrange)
+    static let crownGold = Color(uiColor: .systemYellow)
 
-    // Identité "Équipe 2" dans les jeux à deux équipes (Belote, Coinche) : le rouge
-    // tampon de la charte fait pendant au bleu de l'Équipe 1 (brand).
-    static let teamTwo = danger
-    static let teamTwoLight = Color(light: Color(hex: "FBE7E2"), dark: Color(hex: "3A1B18"))
-    static let teamTwoDark = Color(light: Color(hex: "7A2216"), dark: Color(hex: "FF6E55"))
+    // Jeux à deux équipes (Belote, Coinche) : l'Équipe 1 prend le bleu, l'Équipe 2
+    // prend l'encre — les deux piliers de la charte, sans introduire de teinte tierce.
+    static let teamTwo = Color.ink
+    static let teamTwoLight = Color.ink.opacity(0.08)
+    static let teamTwoDark = Color.ink
 }
 
-// Per-player / per-team color pairs (background + foreground text)
+// MARK: - Typographie
+//
+// Aucune police n'est embarquée : la pile système affiche SF Pro sur iOS, comme
+// le prescrit la charte. Titres jamais plus gras que semi-bold, chasse serrée,
+// et chiffres tabulaires pour que les scores ne sautent pas d'une manche à l'autre.
+
+extension Font {
+    static let jmDisplay = Font.system(size: 34, weight: .semibold)
+    static let jmTitle = Font.system(size: 32, weight: .semibold)
+    static let jmSubtitle = Font.system(size: 22, weight: .semibold)
+    static let jmBody = Font.system(size: 17)
+    static let jmCaption = Font.system(size: 13)
+
+    /// Chiffres de score : SF Pro à chasse tabulaire.
+    static func jmScore(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
+        .system(size: size, weight: weight).monospacedDigit()
+    }
+
+    /// Lignes de données compactes (historique, ratios) : SF Mono.
+    static func jmData(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        .system(size: size, weight: weight, design: .monospaced)
+    }
+}
+
+extension View {
+    /// Chasse serrée des titres de la charte (−0,02 em).
+    func jmTightTracking(_ size: CGFloat) -> some View {
+        tracking(size * -0.02)
+    }
+}
+
+// MARK: - Couleurs joueurs
+//
+// Les avatars doivent rester distinguables entre eux : c'est de l'information, pas
+// de la décoration. On s'appuie sur les teintes système d'Apple plutôt que sur des
+// pastels sur mesure, pour rester dans le registre natif de la charte.
+
 struct Palette {
-    static let pairs: [(bg: Color, fg: Color)] = [
-        (Color(hex: "EEEDFE"), Color(hex: "3C3489")), // purple
-        (Color(hex: "E1F5EE"), Color(hex: "085041")), // teal
-        (Color(hex: "FAECE7"), Color(hex: "712B13")), // coral
-        (Color(hex: "E6F1FB"), Color(hex: "0C447C")), // blue
-        (Color(hex: "FAEEDA"), Color(hex: "633806")), // amber
-        (Color(hex: "FBEAF0"), Color(hex: "72243E")), // pink
+    private static let hues: [Color] = [
+        Color(uiColor: .systemBlue),
+        Color(uiColor: .systemTeal),
+        Color(uiColor: .systemOrange),
+        Color(uiColor: .systemIndigo),
+        Color(uiColor: .systemPink),
+        Color(uiColor: .systemPurple),
     ]
-    static let bars: [Color] = [
-        Color(hex: "534AB7"), Color(hex: "1D9E75"), Color(hex: "D85A30"),
-        Color(hex: "185FA5"), Color(hex: "BA7517"), Color(hex: "993556"),
-    ]
+
+    static let pairs: [(bg: Color, fg: Color)] = hues.map { (bg: $0.opacity(0.14), fg: $0) }
+    static let bars: [Color] = hues
 
     static func pair(_ i: Int) -> (bg: Color, fg: Color) { pairs[i % pairs.count] }
     static func bar(_ i: Int) -> Color { bars[i % bars.count] }

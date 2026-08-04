@@ -80,7 +80,7 @@ struct YamsScoringView: View {
                                     Image(systemName: "crown.fill").font(.caption2).foregroundStyle(Color.crownGold)
                                 }
                             }
-                            Text("\(total(i))").font(.title3.weight(.semibold))
+                            Text("\(total(i))").font(.jmScore(20))
                         }
                         .padding(.horizontal, 14).padding(.vertical, 8)
                         .background(selected == i ? Color.brandLight : Color(.secondarySystemBackground))
@@ -123,7 +123,7 @@ struct YamsScoringView: View {
             HStack {
                 Text("TOTAL").font(.subheadline.weight(.semibold))
                 Spacer()
-                Text("\(total(p))").font(.title3.weight(.bold)).foregroundStyle(Color.brand)
+                Text("\(total(p))").font(.jmScore(22)).foregroundStyle(Color.brand)
             }
         }
         .padding(14)

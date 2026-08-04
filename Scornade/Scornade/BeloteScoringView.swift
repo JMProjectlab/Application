@@ -112,7 +112,7 @@ struct BeloteScoringView: View {
             Text(team == 0 ? "Équipe 1" : "Équipe 2").font(.caption.weight(.medium)).foregroundStyle(fg)
             Text(session.entrants.indices.contains(team) ? session.entrants[team].name : "—")
                 .font(.caption2).foregroundStyle(fg.opacity(0.8)).lineLimit(1)
-            Text("\(totalPts)").font(.system(size: 28, weight: .medium)).foregroundStyle(fg)
+            Text("\(totalPts)").font(.jmScore(28, weight: .medium)).foregroundStyle(fg)
             ProgressView(value: prog).tint(bar)
         }
         .padding(12)
