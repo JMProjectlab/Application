@@ -186,14 +186,20 @@ struct PayooScoringView: View {
     private func autoComplete(_ session: ScoreSession) {
         let n = session.entrants.count
         guard n > 0 else { return }
-        ensureInputs(count: n)
-        let others = (0..<(n - 1)).reduce(0) { $0 + (Int(inputs[$1]) ?? 0) }
-        inputs[n - 1] = String(max(0, roundTotal - others))
+        // `ensureInputs` diffère sa mise à jour au prochain tour de boucle : on
+        // redimensionne ici une copie locale plutôt que d'indexer un tableau
+        // qui peut encore être à l'ancienne taille.
+        var current = inputs
+        if current.count != n { current = Array(repeating: "", count: n) }
+        let others = (0..<(n - 1)).reduce(0) { $0 + (Int(current[$1]) ?? 0) }
+        current[n - 1] = String(max(0, roundTotal - others))
+        inputs = current
     }
 
     private func validate(_ session: ScoreSession) {
-        let deltas = (0..<session.entrants.count).map { Int(inputs[$0]) ?? 0 }
+        let n = session.entrants.count
+        let deltas = (0..<n).map { i in i < inputs.count ? (Int(inputs[i]) ?? 0) : 0 }
         store.addRound(sessionID: sessionID, deltas: deltas)
-        inputs = Array(repeating: "", count: session.entrants.count)
+        inputs = Array(repeating: "", count: n)
     }
 }
