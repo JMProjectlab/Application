@@ -89,7 +89,7 @@ struct ActiveSessionCard: View {
                 Text("Manche \(session.rounds.count)").font(.caption).foregroundStyle(.secondary)
             }
             HStack(spacing: 8) {
-                Image(systemName: session.symbol).foregroundStyle(Color.brand)
+                GameGlyph(gameId: session.gameId, size: 17, tint: .brand)
                 Text(session.gameName).font(.headline)
             }
             Text(session.entrants.indices.map { "\(session.entrants[$0].name) \(session.total($0))" }
@@ -108,7 +108,7 @@ struct GameCard: View {
     let game: Game
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: game.symbol).font(.title2).foregroundStyle(Color.inkSecondary)
+            GameGlyph(gameId: game.id, size: 24)
             Text(game.name).font(.subheadline.weight(.medium))
             Text(game.isTeamGame ? "Équipe" : "Individuel")
                 .font(.caption2).foregroundStyle(.secondary)
