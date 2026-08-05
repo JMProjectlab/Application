@@ -1,0 +1,2030 @@
+{
+  "sourceLanguage": "fr",
+  "strings": {
+    "Ajouter": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
+          }
+        }
+      }
+    },
+    "Ajouter un joueur": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a player"
+          }
+        }
+      }
+    },
+    "Ajoutez des joueurs et terminez une partie pour voir les statistiques apparaître ici.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add players and finish a game to see statistics appear here."
+          }
+        }
+      }
+    },
+    "Annonces & bonus": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bids & bonuses"
+          }
+        }
+      }
+    },
+    "Annuler": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "Annuler la dernière manche": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo last round"
+          }
+        }
+      }
+    },
+    "Atout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trump suit"
+          }
+        }
+      }
+    },
+    "Avec qui (coéquipiers)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "With whom (teammates)"
+          }
+        }
+      }
+    },
+    "Belote — mes prises": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belote — my bids"
+          }
+        }
+      }
+    },
+    "Bilan": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summary"
+          }
+        }
+      }
+    },
+    "Bonus (+35 si ≥ 63)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bonus (+35 if ≥ 63)"
+          }
+        }
+      }
+    },
+    "Bouts": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oudlers"
+          }
+        }
+      }
+    },
+    "Ce joueur n'a pas encore de partie terminée.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This player hasn't finished a game yet."
+          }
+        }
+      }
+    },
+    "Cette action efface tous vos joueurs, vos parties et votre compte, sur cet appareil et dans iCloud. Elle est irréversible.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This erases all your players, games and account, on this device and in iCloud. This action is irreversible."
+          }
+        }
+      }
+    },
+    "Changer de jeu": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change game"
+          }
+        }
+      }
+    },
+    "Compléter à 250": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Complete to 250"
+          }
+        }
+      }
+    },
+    "Compte": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Account"
+          }
+        }
+      }
+    },
+    "Comptez. Gagnez. Recommencez.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Count. Win. Play again."
+          }
+        }
+      }
+    },
+    "Connecté": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signed in"
+          }
+        }
+      }
+    },
+    "Se connecter avec Google": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in with Google"
+          }
+        }
+      }
+    },
+    "Un compte permet de retrouver vos parties sur vos autres appareils.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An account lets you pick your games back up on your other devices."
+          }
+        }
+      }
+    },
+    "La connexion n'est pas configurée sur cette version.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign-in isn't configured in this build."
+          }
+        }
+      }
+    },
+    "La connexion Google n'est pas configurée sur cette version.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google sign-in isn't configured in this build."
+          }
+        }
+      }
+    },
+    "Réponse Google incomplète.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incomplete response from Google."
+          }
+        }
+      }
+    },
+    "Contrat": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contract"
+          }
+        }
+      }
+    },
+    "Contrat annoncé": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bid contract"
+          }
+        }
+      }
+    },
+    "Contre qui (adversaires)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Against whom (opponents)"
+          }
+        }
+      }
+    },
+    "DONNES JOUÉES": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HANDS PLAYED"
+          }
+        }
+      }
+    },
+    "E-mail (optionnel, pour la synchro)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Email (optional, for syncing)"
+          }
+        }
+      }
+    },
+    "EN COURS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "IN PROGRESS"
+          }
+        }
+      }
+    },
+    "Fermer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "HISTORIQUE · balayez pour corriger": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HISTORY · swipe to fix"
+          }
+        }
+      }
+    },
+    "Joueurs": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Players"
+          }
+        }
+      }
+    },
+    "La belle (rejouer en cumulant)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decider (replay, keep series score)"
+          }
+        }
+      }
+    },
+    "Lancer la partie": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start game"
+          }
+        }
+      }
+    },
+    "MANCHES JOUÉES": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ROUNDS PLAYED"
+          }
+        }
+      }
+    },
+    "Manqué (0)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miss (0)"
+          }
+        }
+      }
+    },
+    "Meilleure combinaison du tour": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best combination this round"
+          }
+        }
+      }
+    },
+    "Meilleure main (donne ses jetons)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best hand (gives away tokens)"
+          }
+        }
+      }
+    },
+    "Nom": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "Nom du joueur": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player name"
+          }
+        }
+      }
+    },
+    "Nouveau joueur": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New player"
+          }
+        }
+      }
+    },
+    "Objectif": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target"
+          }
+        }
+      }
+    },
+    "PARTIE INFÉRIEURE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LOWER SECTION"
+          }
+        }
+      }
+    },
+    "PARTIE SUPÉRIEURE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "UPPER SECTION"
+          }
+        }
+      }
+    },
+    "Par jeu": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "By game"
+          }
+        }
+      }
+    },
+    "Partie introuvable": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game not found"
+          }
+        }
+      }
+    },
+    "Petit au bout": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Petit at the end"
+          }
+        }
+      }
+    },
+    "Plus faible main (reçoit)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weakest hand (receives)"
+          }
+        }
+      }
+    },
+    "Poignée": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Handful"
+          }
+        }
+      }
+    },
+    "Points (0–180)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Points (0–180)"
+          }
+        }
+      }
+    },
+    "Points aux cartes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Card points"
+          }
+        }
+      }
+    },
+    "Points du preneur": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taker's points"
+          }
+        }
+      }
+    },
+    "Points marqués": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Points scored"
+          }
+        }
+      }
+    },
+    "Points ramassés cette manche": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Points collected this round"
+          }
+        }
+      }
+    },
+    "Premier à 0 gagne": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "First to 0 wins"
+          }
+        }
+      }
+    },
+    "Qui a la plus faible main ? (il prend les jetons)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Who has the weakest hand? (they take the tokens)"
+          }
+        }
+      }
+    },
+    "Qui prend ?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Who's taking?"
+          }
+        }
+      }
+    },
+    "Quilles (0–12)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skittles (0–12)"
+          }
+        }
+      }
+    },
+    "Raté (0)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miss (0)"
+          }
+        }
+      }
+    },
+    "Rejouer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play again"
+          }
+        }
+      }
+    },
+    "Rejouer (0 – 0)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play again (0 – 0)"
+          }
+        }
+      }
+    },
+    "Rejouer (501)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play again (501)"
+          }
+        }
+      }
+    },
+    "Revanche (0 – 0)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rematch (0 – 0)"
+          }
+        }
+      }
+    },
+    "Réinitialiser les jetons": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset tokens"
+          }
+        }
+      }
+    },
+    "Se déconnecter": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign out"
+          }
+        }
+      }
+    },
+    "Sous-total": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subtotal"
+          }
+        }
+      }
+    },
+    "Statistiques": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Statistics"
+          }
+        }
+      }
+    },
+    "Supprimer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "Supprimer mes données": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete my data"
+          }
+        }
+      }
+    },
+    "TOTAL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TOTAL"
+          }
+        }
+      }
+    },
+    "Terminer la partie": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish game"
+          }
+        }
+      }
+    },
+    "Vainqueur": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Winner"
+          }
+        }
+      }
+    },
+    "Valider": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm"
+          }
+        }
+      }
+    },
+    "Valider la donne": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm hand"
+          }
+        }
+      }
+    },
+    "Valider la manche": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm round"
+          }
+        }
+      }
+    },
+    "Valider le tour": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm turn"
+          }
+        }
+      }
+    },
+    "jetons": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tokens"
+          }
+        }
+      }
+    },
+    "objectif": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "target"
+          }
+        }
+      }
+    },
+    "ou": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "or"
+          }
+        }
+      }
+    },
+    "Équipe 1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team 1"
+          }
+        }
+      }
+    },
+    "Équipe 2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team 2"
+          }
+        }
+      }
+    },
+    "éliminé": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "eliminated"
+          }
+        }
+      }
+    },
+    "Connexion impossible": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign-in failed"
+          }
+        }
+      }
+    },
+    "Supprimer mes données ?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete my data?"
+          }
+        }
+      }
+    },
+    "Identifiants Apple non reconnus.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple credentials not recognized."
+          }
+        }
+      }
+    },
+    "Bust ! La volée ne compte pas.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bust! This throw doesn't count."
+          }
+        }
+      }
+    },
+    "Raté ! Retour à 25 points.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miss! Back to 25 points."
+          }
+        }
+      }
+    },
+    "Capot — points automatiques": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capot — automatic points"
+          }
+        }
+      }
+    },
+    "Contrat réussi": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contract made"
+          }
+        }
+      }
+    },
+    "Contrat chuté": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contract failed"
+          }
+        }
+      }
+    },
+    "chute": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "failed"
+          }
+        }
+      }
+    },
+    "Équipe": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team"
+          }
+        }
+      }
+    },
+    "Individuel": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Individual"
+          }
+        }
+      }
+    },
+    "Touchez pour assigner · re-touchez pour retirer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to assign · tap again to remove"
+          }
+        }
+      }
+    },
+    "Touchez pour ajouter ou retirer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to add or remove"
+          }
+        }
+      }
+    },
+    "Fin de partie libre": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open-ended game"
+          }
+        }
+      }
+    },
+    "le + haut gagne": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "highest wins"
+          }
+        }
+      }
+    },
+    "le + bas gagne": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "lowest wins"
+          }
+        }
+      }
+    },
+    "Oui": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yes"
+          }
+        }
+      }
+    },
+    "Non": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No"
+          }
+        }
+      }
+    },
+    "Langue": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        }
+      }
+    },
+    "Système (iOS)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System (iOS)"
+          }
+        }
+      }
+    },
+    "Français": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Français"
+          }
+        }
+      }
+    },
+    "English": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "English"
+          }
+        }
+      }
+    },
+    "Manche %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Round %lld"
+          }
+        }
+      }
+    },
+    "Manches gagnées · É1 %lld – %lld É2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games won · T1 %lld – %lld T2"
+          }
+        }
+      }
+    },
+    "D%lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "H%lld"
+          }
+        }
+      }
+    },
+    "M%lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "R%lld"
+          }
+        }
+      }
+    },
+    "Donne %lld · Donneur : %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hand %lld · Dealer: %@"
+          }
+        }
+      }
+    },
+    "Défense : %lld points": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Defense: %lld points"
+          }
+        }
+      }
+    },
+    "Grille de %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@'s scoresheet"
+          }
+        }
+      }
+    },
+    "Jetons : %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens: %lld"
+          }
+        }
+      }
+    },
+    "Lancer de %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@'s throw"
+          }
+        }
+      }
+    },
+    "Volée de %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@'s throw"
+          }
+        }
+      }
+    },
+    "Objectif %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target %lld"
+          }
+        }
+      }
+    },
+    "objectif %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "target %lld"
+          }
+        }
+      }
+    },
+    "Pot : %lld jetons": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pot: %lld tokens"
+          }
+        }
+      }
+    },
+    "Règles · %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rules · %@"
+          }
+        }
+      }
+    },
+    "reste %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld left"
+          }
+        }
+      }
+    },
+    "À %@ de parler · touchez pour changer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ to bid · tap to change"
+          }
+        }
+      }
+    },
+    "É%lld prend %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "T%lld takes %@"
+          }
+        }
+      }
+    },
+    "%@ · %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ remporte la partie !": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wins the game!"
+          }
+        }
+      }
+    },
+    "Tous": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All"
+          }
+        }
+      }
+    },
+    "Cartes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cards"
+          }
+        }
+      }
+    },
+    "Société": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Party games"
+          }
+        }
+      }
+    },
+    "Sport": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sports"
+          }
+        }
+      }
+    },
+    "Dés": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dice"
+          }
+        }
+      }
+    },
+    "🏆 %@ remporte %@ avec %lld points en %lld manches ! Compté avec Scornade.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🏆 %@ wins %@ with %lld points in %lld rounds! Scored with Scornade."
+          }
+        }
+      }
+    },
+    "🎯 %@ remporte les fléchettes en %lld volées ! Compté avec Scornade.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🎯 %@ wins Fléchettes in %lld throws! Scored with Scornade."
+          }
+        }
+      }
+    },
+    "🎲 %@ remporte le 421, dernier avec des jetons ! Compté avec Scornade.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🎲 %@ wins 421, last one with tokens left! Scored with Scornade."
+          }
+        }
+      }
+    },
+    "🎲 %@ remporte le Yam's avec %lld points ! Compté avec Scornade.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🎲 %@ wins Yam's with %lld points! Scored with Scornade."
+          }
+        }
+      }
+    },
+    "🃏 %@ remporte le Tarot avec %lld points en %lld donnes ! Compté avec Scornade.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🃏 %@ wins Tarot with %lld points in %lld hands! Scored with Scornade."
+          }
+        }
+      }
+    },
+    "🃏 %@ remporte la Belote %lld – %lld en %lld donnes ! Compté avec Scornade.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🃏 %@ wins Belote %lld – %lld in %lld hands! Scored with Scornade."
+          }
+        }
+      }
+    },
+    "🃏 %@ remporte la Coinche %lld – %lld en %lld donnes ! Compté avec Scornade.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🃏 %@ wins Coinche %lld – %lld in %lld hands! Scored with Scornade."
+          }
+        }
+      }
+    },
+    "🏆 %@ remporte le Mölkky avec 50 points pile ! Compté avec Scornade.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "🏆 %@ wins Mölkky with exactly 50 points! Scored with Scornade."
+          }
+        }
+      }
+    },
+    "Le camp qui prend s'engage à faire au moins 82 des 162 points en jeu (100 en cas de belote annoncée). S'il échoue, tous les points vont à la défense. Premier camp à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The team that takes the bid must score at least 82 of the 162 points in play (100 if belote is announced). If they fail, all points go to the defense. First team to the target wins."
+          }
+        }
+      }
+    },
+    "Comme la belote, mais l'annonce est un contrat chiffré (80 à 160, ou capot) que l'adversaire peut coincher (×2) voire surcoincher (×4). Le camp qui prend doit atteindre son contrat aux points, sous peine de tout perdre.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Like belote, but the bid is a numbered contract (80 to 160, or capot) that the opponents can double (×2) or redouble (×4). The bidding team must reach their contract in points, or lose everything."
+          }
+        }
+      }
+    },
+    "Le preneur annonce prise, garde, garde sans ou garde contre et doit réunir un nombre de points dépendant de ses bouts (oudlers). Poignée et petit au bout apportent des bonus. Le total d'une donne est toujours nul.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The taker bids prise, garde, garde sans or garde contre, and must gather a number of points depending on their oudlers. Handfuls and petit au bout add bonuses. Every hand always sums to zero."
+          }
+        }
+      }
+    },
+    "Jeu à levées où chaque carte négative (dames, valets de cœur, 8 de trèfle...) rapporte des points de pénalité au joueur qui la remporte. Le moins de points possible gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A trick-taking game where each negative card (queens, jack of hearts, 8 of clubs...) gives penalty points to whoever wins the trick. The lowest score wins."
+          }
+        }
+      }
+    },
+    "À chaque manche, les joueurs qui n'ont pas gagné comptent les points des cartes qu'il leur reste en main. Le score cumulé le plus bas à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each round, the players who didn't win count the points of the cards left in their hand. The lowest cumulative score at the target wins."
+          }
+        }
+      }
+    },
+    "Le gagnant d'une manche marque les points des cartes restées en main de ses adversaires. Premier à l'objectif, le score cumulé le plus haut gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The winner of a round scores the points of the cards left in their opponents' hands. First to the target, the highest cumulative score wins."
+          }
+        }
+      }
+    },
+    "Additionnez les valeurs de vos cartes visibles à la fin de chaque manche. Le joueur avec le score cumulé le plus bas à l'objectif remporte la partie.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add up the values of your face-up cards at the end of each round. The player with the lowest cumulative score at the target wins the game."
+          }
+        }
+      }
+    },
+    "Notez le score de chaque joueur à la fin de chaque tour. Le total le plus élevé en fin de partie gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note each player's score at the end of every turn. The highest total at the end of the game wins."
+          }
+        }
+      }
+    },
+    "Chaque joueur part de 501 et retire les points marqués à chaque volée. Interdit de finir sur 1 ; une volée qui dépasse ou laisse 1 point est annulée (bust). Premier à 0 gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each player starts at 501 and subtracts the points scored each throw. You can't finish on 1; a throw that goes below 0 or leaves exactly 1 point is cancelled (bust). First to 0 wins."
+          }
+        }
+      }
+    },
+    "Chaque mène rapporte des points à l'équipe la plus proche du cochonnet. Première équipe à 13 points gagne la partie.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each end scores points for the team closest to the jack. First team to 13 points wins the game."
+          }
+        }
+      }
+    },
+    "Comptez les manches remportées. Premier joueur à 5 manches gagne le match.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Count the games won. First player to 5 games wins the match."
+          }
+        }
+      }
+    },
+    "Remplissez les 13 catégories de la grille au fil des lancers de dés. Un bonus de 35 points est offert si la partie supérieure atteint 63. Le plus gros total gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fill in the 13 categories on the scoresheet as you roll the dice. A 35-point bonus is awarded if the upper section reaches 63. The highest total wins."
+          }
+        }
+      }
+    },
+    "Chaque perdant charge des jetons dans la cave selon sa combinaison de dés. Une fois la cave vide, les jetons circulent entre joueurs : le premier à s'en délester gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each loser puts tokens into the pot based on their dice combination. Once the pot is empty, tokens pass between players: first to get rid of theirs wins."
+          }
+        }
+      }
+    },
+    "Jeu de plis par équipes de deux où la manille (le 10) et l'as valent le plus de points. Comptez les points remportés à chaque donne ; premier camp à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A trick-taking game played in pairs, where the manille (the 10) and the ace are worth the most points. Count the points won each hand; first team to the target wins."
+          }
+        }
+      }
+    },
+    "Comptez les parties gagnées, en tenant compte du cube de doublement le cas échéant. Premier joueur à 7 points de match gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Count the games won, factoring in the doubling cube where applicable. First player to 7 match points wins."
+          }
+        }
+      }
+    },
+    "Notez le score final affiché par la piste (ou calculé manuellement) après les 10 frames de chaque partie. Le plus haut score gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note the final score shown by the lane (or calculated by hand) after the 10 frames of each game. The highest score wins."
+          }
+        }
+      }
+    },
+    "Suivez l'évolution du tapis de jetons de chaque joueur au fil des mains (entrez la variation à chaque étape). Le plus gros tapis à la fin de la session gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Track each player's chip stack as hands are played (enter the change at each step). The biggest stack at the end of the session wins."
+          }
+        }
+      }
+    },
+    "À chaque manche, les joueurs qui n'ont pas gagné comptent les points des dominos qu'il leur reste en main. Le score cumulé le plus bas à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each round, the players who didn't win count the points of the dominoes left in their hand. The lowest cumulative score at the target wins."
+          }
+        }
+      }
+    },
+    "Notez le total de points (bornes parcourues, primes et coups fourrés) marqué par chaque joueur à la fin de chaque manche. Premier à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Note the total points (distance covered, bonuses and coups fourrés) scored by each player at the end of every round. First to the target wins."
+          }
+        }
+      }
+    },
+    "Lancez le mölkky pour faire tomber les quilles : une seule quille abattue rapporte son numéro, plusieurs quilles rapportent leur nombre. Il faut atteindre exactement 50 ; un dépassement fait retomber le score à 25.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Throw the mölkky to knock down skittles: a single skittle scores its number, several skittles score their count. You must reach exactly 50; overshooting drops your score back to 25."
+          }
+        }
+      }
+    },
+    "%lld V / %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld W / %lld"
+          }
+        }
+      }
+    },
+    "Jouées": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Played"
+          }
+        }
+      }
+    },
+    "Gagnées": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Won"
+          }
+        }
+      }
+    },
+    "Perdues": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lost"
+          }
+        }
+      }
+    },
+    "Victoires": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Win rate"
+          }
+        }
+      }
+    },
+    "Prises": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bids taken"
+          }
+        }
+      }
+    },
+    "Réussies": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Made"
+          }
+        }
+      }
+    },
+    "Réussite": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Success rate"
+          }
+        }
+      }
+    },
+    "%lld pts · %lld manches": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld pts · %lld rounds"
+          }
+        }
+      }
+    },
+    "%lld – %lld · %lld donnes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld – %lld · %lld hands"
+          }
+        }
+      }
+    },
+    "501 → 0 · %lld volées": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "501 → 0 · %lld throws"
+          }
+        }
+      }
+    },
+    "Plus de jetons !": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tokens left!"
+          }
+        }
+      }
+    },
+    "%lld pts · %lld donnes": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld pts · %lld hands"
+          }
+        }
+      }
+    },
+    "50 points pile · %lld lancers": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "exactly 50 points · %lld throws"
+          }
+        }
+      }
+    },
+    "Prise": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take"
+          }
+        }
+      }
+    },
+    "Garde": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guard"
+          }
+        }
+      }
+    },
+    "Garde sans": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guard without"
+          }
+        }
+      }
+    },
+    "Garde contre": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guard against"
+          }
+        }
+      }
+    },
+    "Aucun": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
+          }
+        }
+      }
+    },
+    "Preneur": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taker"
+          }
+        }
+      }
+    },
+    "Défense": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Defense"
+          }
+        }
+      }
+    },
+    "Coinché ×2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doubled ×2"
+          }
+        }
+      }
+    },
+    "Surcoinché ×4": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redoubled ×4"
+          }
+        }
+      }
+    },
+    "Belote É1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belote T1"
+          }
+        }
+      }
+    },
+    "Belote É2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belote T2"
+          }
+        }
+      }
+    },
+    "Capot É1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capot T1"
+          }
+        }
+      }
+    },
+    "Capot É2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Capot T2"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

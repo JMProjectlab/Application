@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scornade — compteur de points</title>
+<meta name="description" content="Comptez les points de vos parties de belote, tarot, Yam's, fléchettes, mölkky et bien d'autres. Gratuit, sur téléphone comme sur ordinateur.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231d1d1f'/><text x='16' y='22' font-size='15' font-family='sans-serif' font-weight='600' fill='%23fff' text-anchor='middle'>Sc</text></svg>">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+
+<div id="app" role="application" aria-label="Scornade">
+  <div class="content"><p class="empty">Chargement…</p></div>
+</div>
+
+<dialog class="sheet" id="sheet" aria-label="Règles du jeu"></dialog>
+
+<noscript>
+  <div class="content">
+    <p class="empty">Scornade a besoin de JavaScript pour compter les points.
+    Activez-le dans votre navigateur, puis rechargez la page.</p>
+  </div>
+</noscript>
+
+<script type="module">
+  import { applyTheme, load, onChange } from "./assets/store.js";
+  import { bindEvents, render, setAuth } from "./assets/ui.js";
+  import { initFirebase } from "./assets/firebase.js";
+
+  applyTheme();
+  load();
+  bindEvents();
+  onChange(render);
+  render();
+
+  // La synchronisation ne s'active que si une configuration Firebase existe.
+  // Sinon le site reste en local, et c'est déjà pleinement utilisable.
+  initFirebase()
+    .then((api) => { if (api) { setAuth(api); render(); } })
+    .catch(() => { /* hors ligne, ou SDK injoignable : on reste en local */ });
+
+  // Fermer la feuille des règles au clic sur le fond.
+  const sheet = document.getElementById("sheet");
+  sheet.addEventListener("click", (e) => { if (e.target === sheet) sheet.close(); });
+</script>
+
+</body>
+</html>
