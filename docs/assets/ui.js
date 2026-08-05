@@ -1,0 +1,928 @@
+// Rendu et interactions.
+//
+// Un seul point de rendu : l'état change, on redessine l'écran courant. C'est
+// assez rapide à cette échelle, et ça évite d'avoir à synchroniser à la main
+// une douzaine de fragments de vue.
+
+import { GAMES, CATEGORIES, gameById, HUES, glyph } from "./data.js";
+import * as E from "./engine.js";
+import * as S from "./store.js";
+
+const esc = (v) => String(v).replace(/[&<>"']/g, (c) =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/** État de navigation, hors données. */
+let view = { screen: "home" };
+let scratch = {};          // saisies en cours, jamais persistées
+let auth = null;           // API renvoyée par initFirebase(), ou null
+
+export function setAuth(api) { auth = api; }
+export const requiresSignIn = () => Boolean(auth) && !S.state.user;
+
+export function go(next) {
+  view = next;
+  scratch = {};
+  render();
+  document.querySelector(".content")?.scrollTo({ top: 0 });
+}
+
+// --- fragments partagés ---------------------------------------------------
+
+function avatar(name, colorIndex, small = false) {
+  const hue = HUES[colorIndex % HUES.length];
+  const initials = String(name).trim().slice(0, 2).toUpperCase();
+  return `<span class="avatar${small ? " sm" : ""}" style="background:${hue}22;color:${hue}"
+    aria-hidden="true">${esc(initials)}</span>`;
+}
+
+function toast(message) {
+  document.querySelector(".toast")?.remove();
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.setAttribute("role", "status");
+  el.textContent = message;
+  document.body.append(el);
+  setTimeout(() => el.remove(), 2400);
+}
+
+function openSheet(title, body) {
+  const dlg = document.getElementById("sheet");
+  dlg.innerHTML = `<div class="sheet-head"><h2>${esc(title)}</h2>
+      <button class="ghost" data-act="close-sheet">Fermer</button></div>
+    <div class="sheet-body">${esc(body)}</div>`;
+  dlg.showModal();
+}
+
+// --- écrans ---------------------------------------------------------------
+
+function screenLogin() {
+  return `<div class="login">
+    <div class="mark">Sc</div>
+    <h1>Scornade</h1>
+    <p class="tagline">Comptez. Gagnez. Recommencez.</p>
+    <button class="btn" style="background:var(--ink);color:var(--bg)" data-act="sign-apple">
+      Se connecter avec Apple</button>
+    <div class="sep">ou</div>
+    <button class="btn outline" data-act="sign-google">Se connecter avec Google</button>
+    <p class="legal">Un compte permet de retrouver vos parties sur vos autres appareils.<br>
+      <a href="politique-de-confidentialite.html">Politique de confidentialité</a></p>
+  </div>`;
+}
+
+function screenHome() {
+  const active = S.activeSession();
+  const games = S.state.filter === "all" ? GAMES : GAMES.filter((g) => g.cat === S.state.filter);
+
+  let html = "";
+  if (active) {
+    const line = active.entrants.map((e, i) => `${e.name} ${E.total(active, i)}`).join(" · ");
+    html += `<button class="active-card" data-act="open-session" data-id="${active.id}">
+      <span class="active-top"><span class="tag">EN COURS</span>
+        <span class="sub">Manche ${active.rounds.length}</span></span>
+      <span class="active-name">${glyph(active.gameId, 20)}${esc(active.gameName)}</span>
+      <span class="active-line">${esc(line)}</span></button>`;
+  }
+
+  html += `<div class="pillbar" role="group" aria-label="Filtrer par catégorie">` +
+    CATEGORIES.map(([key, label]) =>
+      `<button class="pill" data-act="filter" data-key="${key}"
+        aria-pressed="${S.state.filter === key}">${label}</button>`).join("") + `</div>`;
+
+  html += `<div class="grid-games">` + games.map((g) =>
+    `<button class="gcard" data-act="pick-game" data-id="${g.id}">
+      <span class="glyph">${glyph(g.id, 26)}</span>
+      <span class="gname">${esc(g.name)}</span>
+      <span class="gtype">${g.team ? "Équipe" : "Individuel"}</span></button>`).join("") + `</div>`;
+
+  return html;
+}
+
+function screenNewGame() {
+  const g = gameById(view.gameId);
+  scratch.assign ??= {};
+  scratch.target ??= g.target;
+
+  const counts = Object.values(scratch.assign);
+  const t1 = counts.filter((v) => v === 1).length;
+  const t2 = counts.filter((v) => v === 2).length;
+  const canStart = g.team ? t1 > 0 && t2 > 0 : t1 >= 2;
+
+  let html = `<h1 style="font-size:28px;margin-bottom:6px">${esc(g.name)}</h1>
+    <p class="hint">${g.team
+      ? "Cliquez pour assigner à une équipe, re-cliquez pour retirer."
+      : "Cliquez pour ajouter ou retirer un joueur."}
+      <button class="ghost" data-act="rules" style="padding:0 4px">Voir les règles</button></p>
+    <div class="card">`;
+
+  html += S.state.players.map((p) => {
+    const st = scratch.assign[p.id] ?? 0;
+    let badge = `<span class="badge off">—</span>`;
+    if (st === 1) badge = `<span class="badge">${g.team ? "Équipe 1" : "Sélectionné"}</span>`;
+    if (st === 2) badge = `<span class="badge neutral">Équipe 2</span>`;
+    return `<div class="row"><button class="score-row" style="border:none;background:none;padding:0;margin:0"
+        data-act="cycle" data-id="${p.id}" aria-pressed="${st > 0}">
+        ${avatar(p.name, p.colorIndex)}<span class="nm">${esc(p.name)}</span>${badge}</button></div>`;
+  }).join("") || `<p class="hint" style="margin:0">Aucun joueur : ajoutez-en un ci-dessous.</p>`;
+
+  html += `<div class="row" style="gap:10px">
+      <input type="text" id="quick-player" placeholder="Nouveau joueur" aria-label="Nom du nouveau joueur">
+      <button class="ghost" data-act="quick-add">Ajouter</button>
+    </div></div>`;
+
+  if (g.engine !== "grid") {
+    const step = g.target > 0 && g.target < 50 ? 1 : (g.engine === "countdown" ? 100 : 50);
+    html += `<div class="section-label">Objectif</div><div class="card">
+      <div style="display:flex;align-items:center;gap:14px">
+        <button class="chip fixed" data-act="target" data-delta="${-step}" aria-label="Diminuer l'objectif">−</button>
+        <div style="flex:1;text-align:center">
+          <div class="tab" style="font-size:19px;font-weight:600">${
+            scratch.target === 0 ? "Fin de partie libre" : `${scratch.target} points`}</div>
+          <div style="font-size:13px;color:var(--ink-2)">${g.high ? "le + haut gagne" : "le + bas gagne"}</div>
+        </div>
+        <button class="chip fixed" data-act="target" data-delta="${step}" aria-label="Augmenter l'objectif">+</button>
+      </div></div>`;
+  }
+
+  html += `<button class="btn primary" data-act="start" ${canStart ? "" : "disabled"}>Lancer la partie</button>
+    <p class="hint" style="text-align:center">${g.team
+      ? "Il faut au moins un joueur par équipe." : "Il faut au moins deux joueurs."}</p>`;
+  return html;
+}
+
+// --- écrans de score ------------------------------------------------------
+
+function winnerBlock(session, detail, shareText, { belle = false, replay = "Rejouer" } = {}) {
+  const w = E.winnerIndex(session);
+  if (w === null) return "";
+  return `<div class="share-bar">
+      <button class="ghost" data-act="share" data-text="${esc(shareText)}">Partager</button></div>
+    <div class="winner"><div class="cup" aria-hidden="true">🏆</div>
+      <div class="wt">${esc(session.entrants[w].name)} remporte la partie !</div>
+      <div class="wd">${esc(detail)}</div></div>` +
+    (belle
+      ? `<button class="btn primary" data-act="replay" data-keep="1">La belle (rejouer en cumulant)</button>
+         <button class="btn secondary" data-act="replay">Revanche (0 – 0)</button>`
+      : `<button class="btn primary" data-act="replay">${esc(replay)}</button>`) +
+    `<button class="btn secondary" data-act="home">Changer de jeu</button>`;
+}
+
+function historyBlock(session, label, rows) {
+  if (!rows) return "";
+  return `<div class="section-label">${label}</div>${rows}`;
+}
+
+function genericRows(session) {
+  if (!session.rounds.length) return "";
+  return session.rounds.map((r, i) => ({ r, i })).reverse().map(({ r, i }) =>
+    `<div class="hist"><span class="ix">M${i + 1}</span>
+      <span class="dt tab">${session.entrants.map((e, j) =>
+        `${esc(e.name.slice(0, 3))} ${r[j] ?? 0}`).join(" · ")}</span>
+      <button class="icon-btn" data-act="del-round" data-i="${i}"
+        aria-label="Supprimer la manche ${i + 1}">✕</button></div>`).join("");
+}
+
+function scoringGeneric(session, game) {
+  const fin = E.isFinished(session);
+  scratch.inputs ??= session.entrants.map(() => "");
+
+  let left = `<div class="card" style="display:flex;justify-content:space-between;font-size:15px;color:var(--ink-2)">
+      <span>Manche ${session.rounds.length + (fin ? 0 : 1)}</span>
+      ${session.target > 0 ? `<span class="tab">Objectif ${session.target}</span>` : ""}</div>`;
+
+  session.entrants.forEach((e, i) => {
+    const t = E.total(session, i);
+    const prog = session.target > 0 ? Math.min(1, Math.max(0, t / session.target)) : 0;
+    const lead = fin && E.winnerIndex(session) === i;
+    left += `<div class="card"${lead ? ' style="outline:1.5px solid var(--blue)"' : ""}>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        ${avatar(e.name, e.colorIndex)}
+        <div style="flex:1"><div style="font-weight:500">${esc(e.name)}</div>
+        ${lead ? `<div style="font-size:13px;color:var(--blue)">Vainqueur</div>` : ""}</div>
+        <div class="tab" style="font-size:26px;font-weight:600;letter-spacing:-.02em">${t}</div>
+      </div>
+      ${session.target > 0
+        ? `<div class="track"><div class="fill" style="background:${HUES[e.colorIndex % HUES.length]};width:${prog * 100}%"></div></div>`
+        : ""}</div>`;
+  });
+
+  let right = "";
+  if (fin) {
+    const w = E.winnerIndex(session);
+    right = winnerBlock(session,
+      `${E.total(session, w)} pts · ${session.rounds.length} manches`,
+      `🏆 ${session.entrants[w].name} remporte ${session.gameName} avec ${E.total(session, w)} points en ${session.rounds.length} manches ! Compté avec Scornade.`,
+      { replay: "Rejouer (0 – 0)" });
+  } else {
+    right = `<div class="card"><p class="hint">Points de la manche</p>` +
+      session.entrants.map((e, i) =>
+        `<div class="row" style="border:none;padding:7px 0">
+          ${avatar(e.name, e.colorIndex, true)}<span class="name">${esc(e.name)}</span>
+          <input type="number" inputmode="numeric" class="num short entry" data-i="${i}"
+            value="${esc(scratch.inputs[i])}" placeholder="0" aria-label="Points de ${esc(e.name)}"></div>`).join("") +
+      `<button class="btn primary" style="margin-top:14px" data-act="validate-generic">Valider la manche</button>
+       </div>`;
+  }
+
+  return { left: left + historyBlock(session, "Historique", genericRows(session)), right };
+}
+
+function scoringPayoo(session) {
+  const fin = E.isFinished(session);
+  scratch.inputs ??= session.entrants.map(() => "");
+  const sum = scratch.inputs.reduce((a, v) => a + (parseInt(v, 10) || 0), 0);
+  const exact = sum === E.PAYOO_ROUND_TOTAL;
+
+  const totals = session.entrants.map((_, i) => E.total(session, i));
+  const lead = totals.indexOf(Math.min(...totals));
+  let left = session.entrants.map((e, i) =>
+    `<div class="score-row">${avatar(e.name, e.colorIndex, true)}
+      <span class="nm">${esc(e.name)}</span>
+      ${session.rounds.length && i === lead ? `<span style="color:var(--yellow)">♛</span>` : ""}
+      <span class="sc">${totals[i]}</span></div>`).join("");
+
+  let right = "";
+  if (fin) {
+    const w = E.winnerIndex(session);
+    right = winnerBlock(session,
+      `${E.total(session, w)} pts · ${session.rounds.length} manches`,
+      `🏆 ${session.entrants[w].name} remporte Papayoo avec ${E.total(session, w)} points en ${session.rounds.length} manches ! Compté avec Scornade.`,
+      { replay: "Rejouer (0 – 0)" });
+  } else {
+    right = `<div class="card"><p class="hint">Points ramassés cette manche</p>` +
+      session.entrants.map((e, i) =>
+        `<div class="row" style="border:none;padding:7px 0">
+          ${avatar(e.name, e.colorIndex, true)}<span class="name">${esc(e.name)}</span>
+          <input type="number" inputmode="numeric" class="num short entry" data-i="${i}"
+            value="${esc(scratch.inputs[i])}" placeholder="0" aria-label="Points de ${esc(e.name)}"></div>`).join("") +
+      `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px">
+         <button class="chip fixed" data-act="payoo-fill">Compléter à 250</button>
+         <span class="tab" style="font-weight:500;color:${exact ? "var(--green)" : "var(--red)"}">${sum} / 250</span>
+       </div>
+       <button class="btn primary" style="margin-top:12px" data-act="payoo-validate"
+         ${exact ? "" : "disabled"}>Valider la manche</button>
+       ${exact ? "" : `<p class="hint" style="margin:10px 0 0">Une manche distribue exactement 250 points.</p>`}
+       </div>`;
+  }
+
+  return { left: left + historyBlock(session, "Manches jouées", genericRows(session)), right };
+}
+
+function scoringBelote(session) {
+  const fin = E.isFinished(session);
+  const f = (scratch.belote ??= { taker: null, suit: null, p0: "", p1: "", b0: false, b1: false, capot: null });
+  const p0 = parseInt(f.p0, 10) || 0;
+  const p1 = parseInt(f.p1, 10) || 0;
+  const sum = p0 + p1;
+  const canValidate = f.taker !== null && f.suit !== null && (f.capot !== null || sum === 162);
+
+  let left = "";
+  if (session.seriesWins) {
+    left += `<p style="text-align:center;font-size:14px;font-weight:500;color:var(--blue);margin:0 0 12px">
+      Manches gagnées · É1 ${session.seriesWins[0]} – ${session.seriesWins[1]} É2</p>`;
+  }
+  left += `<div class="teams">`;
+  [0, 1].forEach((t) => {
+    const tp = E.total(session, t);
+    const prog = session.target > 0 ? Math.min(1, tp / session.target) : 0;
+    left += `<div class="team t${t + 1}"><div class="tl">Équipe ${t + 1}</div>
+      <div class="tn">${esc(session.entrants[t]?.name ?? "—")}</div>
+      <div class="ts">${tp}</div>
+      <div class="track"><div class="fill" style="width:${prog * 100}%"></div></div></div>`;
+    if (t === 0) left += `<div class="objective">objectif<b>${session.target}</b></div>`;
+  });
+  left += `</div>`;
+
+  const rows = session.beloteRounds?.length
+    ? session.beloteRounds.map((r, i) => ({ r, i })).reverse().map(({ r, i }) => {
+        const d = E.beloteDeltas(r);
+        const made = E.beloteContractMade(r);
+        return `<div class="hist"><span class="ix">D${i + 1}</span>
+          <span class="dt">É${r.takerTeam + 1} prend ${r.suit}</span>
+          <span class="st ${made ? "ok" : "ko"}">${made ? "✓" : "chute"}</span>
+          <span class="tab" style="font-size:13px">${d[0]} – ${d[1]}</span>
+          <button class="icon-btn" data-act="del-round" data-i="${i}"
+            aria-label="Supprimer la donne ${i + 1}">✕</button></div>`;
+      }).join("")
+    : "";
+  left += historyBlock(session, "Donnes jouées", rows);
+
+  let right = "";
+  if (fin) {
+    const w = E.winnerIndex(session);
+    right = winnerBlock(session,
+      `${E.total(session, w)} – ${E.total(session, 1 - w)} · ${session.rounds.length} donnes`,
+      `🃏 ${session.entrants[w].name} remporte la Belote ${E.total(session, w)} – ${E.total(session, 1 - w)} en ${session.rounds.length} donnes ! Compté avec Scornade.`,
+      { belle: true });
+  } else {
+    right = `<div class="card">
+      <p class="hint">Qui prend ?</p><div class="chips">` +
+      [0, 1].map((t) => `<button class="chip" data-act="b-taker" data-v="${t}"
+        aria-pressed="${f.taker === t}">${esc(session.entrants[t].name)}</button>`).join("") +
+      `</div><p class="hint">Atout</p><div class="chips">` +
+      ["♠", "♥", "♦", "♣"].map((s) => `<button class="chip suit${s === "♥" || s === "♦" ? " red" : ""}"
+        data-act="b-suit" data-v="${s}" aria-pressed="${f.suit === s}">${s}</button>`).join("") +
+      `</div><p class="hint">Points aux cartes (total 162)</p>
+      <div style="display:flex;gap:12px;margin-bottom:10px">
+        <div style="flex:1"><label class="field" for="b-p0">Équipe 1</label>
+          <input type="number" inputmode="numeric" class="num b-pts" id="b-p0" data-t="0"
+            value="${esc(f.p0)}" placeholder="0" ${f.capot !== null ? "disabled" : ""}></div>
+        <div style="flex:1"><label class="field" for="b-p1">Équipe 2</label>
+          <input type="number" inputmode="numeric" class="num b-pts" id="b-p1" data-t="1"
+            value="${esc(f.p1)}" placeholder="0" ${f.capot !== null ? "disabled" : ""}></div>
+      </div>
+      <p class="note${f.capot !== null || sum === 162 ? " ok" : ""}" style="margin:0 0 12px">${
+        f.capot !== null ? "Capot — points automatiques"
+          : sum === 162 ? `${p0} + ${p1} = 162 ✓` : `${p0} + ${p1} = ${sum} (doit faire 162)`}</p>
+      <p class="hint">Annonces &amp; bonus</p><div class="chips">
+        <button class="chip" data-act="b-belote" data-v="0" aria-pressed="${f.b0}">Belote É1</button>
+        <button class="chip" data-act="b-belote" data-v="1" aria-pressed="${f.b1}">Belote É2</button></div>
+      <div class="chips">
+        <button class="chip" data-act="b-capot" data-v="0" aria-pressed="${f.capot === 0}">Capot É1</button>
+        <button class="chip" data-act="b-capot" data-v="1" aria-pressed="${f.capot === 1}">Capot É2</button></div>`;
+
+    if (canValidate) {
+      const round = { takerTeam: f.taker, suit: f.suit, cardPoints: [p0, p1], belote: [f.b0, f.b1], capotTeam: f.capot };
+      const d = E.beloteDeltas(round);
+      const made = E.beloteContractMade(round);
+      right += `<div class="result ${made ? "ok" : "ko"}">
+        <b>${made ? `${esc(session.entrants[f.taker].name)} réussit son contrat ${f.suit}`
+                  : `${esc(session.entrants[f.taker].name)} est dedans — chute !`}</b>
+        <div class="ln"><span>Équipe 1</span><span>+${d[0]} pts</span></div>
+        <div class="ln"><span>Équipe 2</span><span>+${d[1]} pts</span></div></div>`;
+    }
+    right += `<button class="btn primary" data-act="b-validate" ${canValidate ? "" : "disabled"}>
+      Valider la donne</button></div>`;
+  }
+
+  return { left, right };
+}
+
+function scoringDarts(session) {
+  const fin = E.isFinished(session);
+  scratch.current ??= 0;
+  const totals = session.entrants.map((_, i) => E.total(session, i));
+  const lead = totals.indexOf(Math.min(...totals));
+
+  const left = session.entrants.map((e, i) =>
+    `<button class="score-row" data-act="pick-player" data-i="${i}" aria-pressed="${scratch.current === i}">
+      ${avatar(e.name, e.colorIndex, true)}<span class="nm">${esc(e.name)}</span>
+      ${session.rounds.length && i === lead ? `<span style="color:var(--blue)">◎</span>` : ""}
+      <span class="sc">${totals[i]}</span></button>`).join("");
+
+  let right;
+  if (fin) {
+    const w = E.winnerIndex(session);
+    right = winnerBlock(session, `501 → 0 · ${session.rounds.length} volées`,
+      `🎯 ${session.entrants[w].name} remporte les fléchettes en ${session.rounds.length} volées ! Compté avec Scornade.`,
+      { replay: "Rejouer (501)" });
+  } else {
+    right = `<div class="card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+        <span class="hint" style="margin:0">Volée de ${esc(session.entrants[scratch.current].name)}</span>
+        <span class="tab" style="font-weight:500;color:var(--blue)">reste ${E.total(session, scratch.current)}</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input type="number" inputmode="numeric" class="num" id="dart-input"
+          placeholder="Points (0–180)" aria-label="Points de la volée">
+        <button class="chip fixed" data-act="dart-submit">Valider</button></div>
+      <div class="chips">` +
+      [26, 41, 45, 60, 85, 100, 140, 180].map((q) =>
+        `<button class="chip" data-act="dart" data-v="${q}">${q}</button>`).join("") +
+      `</div><div class="chips">
+        <button class="chip" data-act="dart" data-v="0">Manqué (0)</button>
+        <button class="chip" data-act="undo" ${session.rounds.length ? "" : "disabled"}>Annuler</button></div>
+      ${scratch.note ? `<p class="note">${esc(scratch.note)}</p>` : ""}</div>`;
+  }
+  return { left, right };
+}
+
+function scoringMolkky(session) {
+  const fin = E.isFinished(session);
+  scratch.current ??= 0;
+  const totals = session.entrants.map((_, i) => E.total(session, i));
+  const lead = totals.indexOf(Math.max(...totals));
+
+  const left = session.entrants.map((e, i) => {
+    const out = session.molkkyOut?.[i];
+    return `<button class="score-row${out ? " out" : ""}" data-act="pick-player" data-i="${i}"
+      aria-pressed="${scratch.current === i}" ${out ? "disabled" : ""}>
+      ${avatar(e.name, e.colorIndex, true)}<span class="nm">${esc(e.name)}</span>
+      ${out ? `<span style="color:var(--red);font-size:13px">éliminé</span>`
+            : session.rounds.length && i === lead ? `<span style="color:var(--blue)">⬤</span>` : ""}
+      <span class="sc">${totals[i]}</span></button>`;
+  }).join("");
+
+  let right;
+  if (fin) {
+    const w = E.winnerIndex(session);
+    right = winnerBlock(session, `50 points pile · ${session.rounds.length} lancers`,
+      `🏆 ${session.entrants[w].name} remporte le Mölkky avec 50 points pile ! Compté avec Scornade.`);
+  } else {
+    right = `<div class="card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+        <span class="hint" style="margin:0">Lancer de ${esc(session.entrants[scratch.current].name)}</span>
+        <span class="tab" style="font-weight:500;color:var(--blue)">${E.total(session, scratch.current)} / 50</span></div>
+      <div class="chips">` +
+      Array.from({ length: 12 }, (_, k) => k + 1).map((q) =>
+        `<button class="chip fixed" data-act="molkky" data-v="${q}">${q}</button>`).join("") +
+      `</div><div class="chips">
+        <button class="chip" data-act="molkky" data-v="0">Raté (0)</button>
+        <button class="chip" data-act="undo" ${session.rounds.length ? "" : "disabled"}>Annuler</button></div>
+      ${scratch.note ? `<p class="note">${esc(scratch.note)}</p>` : ""}
+      <p class="hint" style="margin:12px 0 0">Trois ratés d'affilée éliminent le joueur.</p></div>`;
+  }
+  return { left, right };
+}
+
+function scoringYams(session) {
+  const done = E.yamsAllFilled(session) || session.manuallyFinished;
+  scratch.selected ??= 0;
+  const p = Math.min(scratch.selected, session.entrants.length - 1);
+
+  const left = `<div class="pillbar">` + session.entrants.map((e, i) =>
+    `<button class="pill" data-act="yams-player" data-i="${i}" aria-pressed="${scratch.selected === i}">
+      ${esc(e.name)} · ${E.yamsTotal(session, i)}</button>`).join("") + `</div>`;
+
+  if (done) {
+    const totals = session.entrants.map((_, i) => E.yamsTotal(session, i));
+    const w = totals.indexOf(Math.max(...totals));
+    return {
+      left,
+      right: `<div class="share-bar"><button class="ghost" data-act="share"
+          data-text="🎲 ${esc(session.entrants[w].name)} remporte le Yam's avec ${totals[w]} points ! Compté avec Scornade.">Partager</button></div>
+        <div class="winner"><div class="cup" aria-hidden="true">🏆</div>
+          <div class="wt">${esc(session.entrants[w].name)} remporte la partie !</div>
+          <div class="wd">${totals[w]} points</div></div>
+        <button class="btn primary" data-act="replay">Rejouer</button>
+        <button class="btn secondary" data-act="home">Changer de jeu</button>`,
+    };
+  }
+
+  let right = `<div class="card"><h2 style="font-size:19px;margin-bottom:12px">Grille de ${esc(session.entrants[p].name)}</h2>
+    <div class="section-label" style="margin-top:0">Partie supérieure</div>`;
+  for (let c = 0; c < 6; c++) {
+    const v = E.yamsCell(session, p, c);
+    right += `<div class="yrow"><span class="yl">${E.YAMS_CATEGORIES[c][0]}</span>
+      <input type="number" inputmode="numeric" class="num yams-cell" data-p="${p}" data-c="${c}"
+        value="${v < 0 ? "" : v}" placeholder="—" aria-label="${E.YAMS_CATEGORIES[c][0]}"></div>`;
+  }
+  right += `<div class="ysum${E.yamsUpper(session, p) >= 63 ? " good" : ""}">
+      <span>Sous-total</span><b>${E.yamsUpper(session, p)} / 63</b></div>
+    <div class="ysum${E.yamsBonus(session, p) > 0 ? " good" : ""}">
+      <span>Bonus (+35 si ≥ 63)</span><b>+${E.yamsBonus(session, p)}</b></div>
+    <div class="section-label">Partie inférieure</div>`;
+  for (let c = 6; c < 13; c++) {
+    const v = E.yamsCell(session, p, c);
+    const fixed = E.YAMS_CATEGORIES[c][1];
+    right += `<div class="yrow"><span class="yl">${E.YAMS_CATEGORIES[c][0]}</span>`;
+    right += fixed !== null
+      ? `<button class="chip fixed" data-act="yams-fixed" data-p="${p}" data-c="${c}" data-v="${fixed}"
+           aria-pressed="${v === fixed}">${fixed}</button>
+         <button class="chip fixed" data-act="yams-fixed" data-p="${p}" data-c="${c}" data-v="0"
+           aria-pressed="${v === 0}">0</button>`
+      : `<input type="number" inputmode="numeric" class="num yams-cell" data-p="${p}" data-c="${c}"
+           value="${v < 0 ? "" : v}" placeholder="—" aria-label="${E.YAMS_CATEGORIES[c][0]}">`;
+    right += `</div>`;
+  }
+  right += `<div class="ytotal"><span style="font-weight:500">TOTAL</span>
+    <span class="val">${E.yamsTotal(session, p)}</span></div></div>`;
+
+  return { left, right };
+}
+
+function screenScoring() {
+  const session = S.sessionById(view.id);
+  if (!session) return `<div class="empty">Partie introuvable.</div>`;
+  const game = gameById(session.gameId);
+
+  let parts;
+  if (game.id === "belote") parts = scoringBelote(session);
+  else if (game.engine === "payoo") parts = scoringPayoo(session);
+  else if (game.engine === "countdown") parts = scoringDarts(session);
+  else if (game.engine === "molkky") parts = scoringMolkky(session);
+  else if (game.engine === "grid") parts = scoringYams(session);
+  else parts = scoringGeneric(session, game);
+
+  const head = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+      <button class="ghost" data-act="home">‹ Jeux</button>
+      <h1 style="flex:1;font-size:24px">${esc(session.gameName)}</h1>
+      ${E.isFinished(session) ? "" :
+        `<button class="ghost" data-act="finish">Terminer</button>`}
+    </div>`;
+
+  return head + `<div class="split"><div>${parts.left}</div><div>${parts.right}</div></div>`;
+}
+
+function screenPlayers() {
+  let html = `<h1 style="font-size:28px;margin-bottom:18px">Joueurs</h1>
+    <div class="card"><div class="row" style="gap:10px;border:none;padding:0">
+      <input type="text" id="new-player" placeholder="Nom du joueur" aria-label="Nom du joueur">
+      <button class="ghost" data-act="add-player">Ajouter</button></div></div>`;
+
+  html += `<div class="card">` + (S.state.players.map((p) =>
+    `<div class="row">${avatar(p.name, p.colorIndex)}
+      <span class="name">${esc(p.name)}</span>
+      <button class="icon-btn" data-act="del-player" data-id="${p.id}"
+        aria-label="Supprimer ${esc(p.name)}">Supprimer</button></div>`).join("")
+    || `<p class="hint" style="margin:0">Aucun joueur pour l'instant.</p>`) + `</div>`;
+
+  html += `<div class="section-label">Apparence</div><div class="card">
+    <label class="field" for="theme-select">Thème</label>
+    <select id="theme-select">
+      <option value="system">Automatique (système)</option>
+      <option value="light">Clair</option>
+      <option value="dark">Sombre</option>
+    </select></div>`;
+
+  html += `<div class="section-label">Compte</div><div class="card">`;
+  if (S.state.user) {
+    html += `<div class="row" style="border:none;padding:0 0 12px">
+      <span class="name">${esc(S.state.user.name)}</span>
+      <span class="sub">${S.state.user.mode === "apple" ? "Apple" : "Google"}</span></div>`;
+  } else {
+    html += `<p class="hint">Aucun compte : les parties restent dans ce navigateur.</p>`;
+  }
+  html += `</div>`;
+  if (S.state.user) html += `<button class="btn secondary" data-act="sign-out">Se déconnecter</button>`;
+  html += `<button class="btn danger" data-act="wipe">Supprimer mes données</button>`;
+  return html;
+}
+
+function screenStats() {
+  if (!S.state.players.length) {
+    return `<h1 style="font-size:28px;margin-bottom:18px">Statistiques</h1>
+      <div class="empty">Ajoutez des joueurs et terminez une partie pour voir les statistiques apparaître ici.</div>`;
+  }
+  scratch.statPlayer ??= S.state.players[0].id;
+  const player = S.playerById(scratch.statPlayer) ?? S.state.players[0];
+
+  let played = 0, won = 0;
+  const perGame = new Map(), teammates = new Map(), opponents = new Map();
+
+  S.state.sessions.filter(E.isFinished).forEach((s) => {
+    const mine = s.entrants.findIndex((e) => e.playerIds.includes(player.id));
+    if (mine < 0) return;
+    const win = E.winnerIndex(s) === mine;
+    played++; if (win) won++;
+
+    const g = perGame.get(s.gameId) ?? { name: s.gameName, p: 0, w: 0 };
+    g.p++; if (win) g.w++; perGame.set(s.gameId, g);
+
+    s.entrants[mine].playerIds.filter((id) => id !== player.id).forEach((id) => {
+      const t = teammates.get(id) ?? { p: 0, w: 0 };
+      t.p++; if (win) t.w++; teammates.set(id, t);
+    });
+    s.entrants.forEach((e, idx) => {
+      if (idx === mine) return;
+      e.playerIds.forEach((id) => {
+        const o = opponents.get(id) ?? { p: 0, w: 0 };
+        o.p++; if (win) o.w++; opponents.set(id, o);
+      });
+    });
+  });
+
+  const rate = played ? Math.round((won / played) * 100) : 0;
+
+  let html = `<h1 style="font-size:28px;margin-bottom:18px">Statistiques</h1>
+    <div class="card"><label class="field" for="stat-player">Joueur</label>
+      <select id="stat-player">` + S.state.players.map((p) =>
+        `<option value="${p.id}"${p.id === player.id ? " selected" : ""}>${esc(p.name)}</option>`).join("") +
+    `</select></div>
+    <div class="section-label">Bilan</div><div class="card"><div class="statgrid">
+      <div><div class="v">${played}</div><div class="k">Jouées</div></div>
+      <div><div class="v">${won}</div><div class="k">Gagnées</div></div>
+      <div><div class="v">${Math.max(0, played - won)}</div><div class="k">Perdues</div></div>
+      <div><div class="v">${rate}%</div><div class="k">Victoires</div></div></div></div>`;
+
+  const list = (title, map, byPlayer) => {
+    if (!map.size) return "";
+    return `<div class="section-label">${title}</div><div class="card">` +
+      [...map.entries()].map(([key, v]) => {
+        const who = byPlayer ? S.playerById(key) : null;
+        const name = byPlayer ? (who?.name ?? "Joueur retiré") : v.name;
+        return `<div class="row">${byPlayer ? avatar(name, who?.colorIndex ?? 0, true) : ""}
+          <span class="name">${esc(name)}</span>
+          <span class="ratio">${v.w} V / ${v.p}</span></div>`;
+      }).join("") + `</div>`;
+  };
+
+  html += list("Par jeu", perGame, false);
+  html += list("Avec qui (coéquipiers)", teammates, true);
+  html += list("Contre qui (adversaires)", opponents, true);
+  if (!played) html += `<div class="empty">Ce joueur n'a pas encore de partie terminée.</div>`;
+  return html;
+}
+
+// --- rendu ----------------------------------------------------------------
+
+const NAV = [
+  ["home", "Jeux"],
+  ["players", "Joueurs"],
+  ["stats", "Statistiques"],
+];
+
+export function render() {
+  const root = document.getElementById("app");
+
+  if (requiresSignIn()) {
+    root.innerHTML = `<div class="shell"><div class="content">${screenLogin()}</div></div>`;
+    return;
+  }
+
+  let body;
+  switch (view.screen) {
+    case "new": body = screenNewGame(); break;
+    case "score": body = screenScoring(); break;
+    case "players": body = screenPlayers(); break;
+    case "stats": body = screenStats(); break;
+    default: body = screenHome();
+  }
+
+  const rail = `<nav class="rail" aria-label="Navigation principale">
+      <div class="brand">Scornade</div>` +
+    NAV.map(([key, label]) =>
+      `<button class="rail-link" data-act="nav" data-screen="${key}"
+        ${view.screen === key ? 'aria-current="page"' : ""}>${label}</button>`).join("") +
+    `<div class="rail-foot">
+      ${S.state.user ? `<button class="rail-link" data-act="sign-out">Se déconnecter</button>` : ""}
+      <a class="rail-link" href="politique-de-confidentialite.html">Confidentialité</a>
+    </div></nav>`;
+
+  const topbar = `<header class="topbar">
+      <div class="brand">Scornade</div>` +
+    NAV.filter(([k]) => k !== view.screen).map(([key, label]) =>
+      `<button class="ghost" data-act="nav" data-screen="${key}">${label}</button>`).join("") +
+    `</header>`;
+
+  root.innerHTML = `<div class="shell">${rail}<div style="flex:1;display:flex;flex-direction:column">
+      ${topbar}<main class="content">${body}</main></div></div>`;
+
+  const themeSelect = document.getElementById("theme-select");
+  if (themeSelect) themeSelect.value = S.getTheme();
+}
+
+// --- interactions ---------------------------------------------------------
+
+function currentSession() { return view.id ? S.sessionById(view.id) : null; }
+
+function playTurn(session, outcome) {
+  if (!outcome) return;
+  const deltas = session.entrants.map(() => 0);
+  deltas[scratch.current] = outcome.delta;
+  const note = outcome.note;
+  const advance = outcome.advance;
+  S.addRound(session, deltas);
+  scratch.note = note;
+  if (advance) {
+    const n = session.entrants.length;
+    let next = (scratch.current + 1) % n;
+    let guard = 0;
+    while (session.molkkyOut?.[next] && guard < n) { next = (next + 1) % n; guard++; }
+    scratch.current = next;
+  }
+}
+
+export function bindEvents() {
+  const root = document.getElementById("app");
+
+  root.addEventListener("click", (ev) => {
+    const el = ev.target.closest("[data-act]");
+    if (!el) return;
+    const act = el.dataset.act;
+    const session = currentSession();
+
+    switch (act) {
+      case "nav": go({ screen: el.dataset.screen }); break;
+      case "home": go({ screen: "home" }); break;
+      case "filter": S.state.filter = el.dataset.key; render(); break;
+      case "pick-game": go({ screen: "new", gameId: el.dataset.id }); break;
+      case "open-session": go({ screen: "score", id: el.dataset.id }); break;
+
+      case "rules": {
+        const g = gameById(view.gameId);
+        openSheet(`Règles · ${g.name}`, g.rules);
+        break;
+      }
+      case "close-sheet": document.getElementById("sheet").close(); break;
+
+      case "cycle": {
+        const g = gameById(view.gameId);
+        const id = el.dataset.id;
+        const cur = scratch.assign[id] ?? 0;
+        scratch.assign[id] = cur >= (g.team ? 2 : 1) ? 0 : cur + 1;
+        render();
+        break;
+      }
+      case "target": {
+        scratch.target = Math.max(0, Math.min(10000, scratch.target + Number(el.dataset.delta)));
+        render();
+        break;
+      }
+      case "quick-add": {
+        const input = document.getElementById("quick-player");
+        const name = input.value.trim();
+        if (name) { S.addPlayer(name); render(); }
+        break;
+      }
+      case "start": {
+        const g = gameById(view.gameId);
+        const a = scratch.assign;
+        let entrants;
+        if (g.team) {
+          const t1 = S.state.players.filter((p) => a[p.id] === 1);
+          const t2 = S.state.players.filter((p) => a[p.id] === 2);
+          entrants = [
+            { name: t1.map((p) => p.name).join(" + "), colorIndex: 0, playerIds: t1.map((p) => p.id) },
+            { name: t2.map((p) => p.name).join(" + "), colorIndex: 3, playerIds: t2.map((p) => p.id) },
+          ];
+        } else {
+          entrants = S.state.players.filter((p) => a[p.id] === 1)
+            .map((p) => ({ name: p.name, colorIndex: p.colorIndex, playerIds: [p.id] }));
+        }
+        const created = S.createSession(g, entrants, scratch.target);
+        go({ screen: "score", id: created.id });
+        break;
+      }
+
+      case "validate-generic": {
+        S.addRound(session, scratch.inputs.map((v) => parseInt(v, 10) || 0));
+        scratch.inputs = null;
+        render();
+        break;
+      }
+      case "payoo-fill": {
+        const n = session.entrants.length;
+        const others = scratch.inputs.slice(0, n - 1).reduce((a, v) => a + (parseInt(v, 10) || 0), 0);
+        scratch.inputs[n - 1] = String(Math.max(0, E.PAYOO_ROUND_TOTAL - others));
+        render();
+        break;
+      }
+      case "payoo-validate": {
+        const values = scratch.inputs.map((v) => parseInt(v, 10) || 0);
+        if (values.reduce((a, b) => a + b, 0) !== E.PAYOO_ROUND_TOTAL) return;
+        S.addRound(session, values);
+        scratch.inputs = null;
+        render();
+        break;
+      }
+      case "del-round": S.deleteRound(session, Number(el.dataset.i)); render(); break;
+      case "undo": S.undoRound(session); scratch.note = null; render(); break;
+      case "finish": S.finishSession(session); toast("Partie terminée."); render(); break;
+      case "replay":
+        S.resetSession(session, el.dataset.keep === "1");
+        scratch = {};
+        render();
+        break;
+
+      case "b-taker": scratch.belote.taker = Number(el.dataset.v); render(); break;
+      case "b-suit": scratch.belote.suit = el.dataset.v; render(); break;
+      case "b-belote": {
+        const k = el.dataset.v === "0" ? "b0" : "b1";
+        scratch.belote[k] = !scratch.belote[k];
+        render();
+        break;
+      }
+      case "b-capot": {
+        const v = Number(el.dataset.v);
+        const f = scratch.belote;
+        if (f.capot === v) { f.capot = null; f.p0 = ""; f.p1 = ""; }
+        else { f.capot = v; f.p0 = "0"; f.p1 = "0"; }
+        render();
+        break;
+      }
+      case "b-validate": {
+        const f = scratch.belote;
+        const round = {
+          takerTeam: f.taker, suit: f.suit,
+          cardPoints: [parseInt(f.p0, 10) || 0, parseInt(f.p1, 10) || 0],
+          belote: [f.b0, f.b1], capotTeam: f.capot,
+        };
+        session.beloteRounds.push(round);
+        S.addRound(session, E.beloteDeltas(round));
+        scratch.belote = null;
+        render();
+        break;
+      }
+
+      case "pick-player": scratch.current = Number(el.dataset.i); render(); break;
+      case "dart": playTurn(session, E.dartsThrow(session, scratch.current, Number(el.dataset.v))); render(); break;
+      case "dart-submit": {
+        const value = parseInt(document.getElementById("dart-input").value, 10);
+        if (Number.isNaN(value)) return;
+        playTurn(session, E.dartsThrow(session, scratch.current, value));
+        render();
+        break;
+      }
+      case "molkky": {
+        const score = Number(el.dataset.v);
+        const before = scratch.current;
+        playTurn(session, E.molkkyThrow(session, before, score));
+        if (score === 0) {
+          session.molkkyMisses[before] += 1;
+          if (session.molkkyMisses[before] >= 3) {
+            session.molkkyOut[before] = true;
+            scratch.note = "Trois ratés — joueur éliminé.";
+          }
+        } else session.molkkyMisses[before] = 0;
+        S.commit();
+        render();
+        break;
+      }
+
+      case "yams-player": scratch.selected = Number(el.dataset.i); render(); break;
+      case "yams-fixed": {
+        session.yamsGrid[Number(el.dataset.p)][Number(el.dataset.c)] = Number(el.dataset.v);
+        if (E.yamsAllFilled(session)) session.manuallyFinished = true;
+        S.commit();
+        render();
+        break;
+      }
+
+      case "add-player": {
+        const input = document.getElementById("new-player");
+        const name = input.value.trim();
+        if (name) { S.addPlayer(name); render(); }
+        break;
+      }
+      case "del-player": S.removePlayer(el.dataset.id); render(); break;
+
+      case "sign-apple": auth?.signInApple().catch((e) => toast(e.message)); break;
+      case "sign-google": auth?.signInGoogle().catch((e) => toast(e.message)); break;
+      case "sign-out":
+        (auth ? auth.signOut() : Promise.resolve()).finally(() => { S.signOut(); go({ screen: "home" }); });
+        break;
+      case "wipe": {
+        if (!confirm("Effacer définitivement vos joueurs, vos parties et votre compte ?")) return;
+        S.deleteEverything().finally(() => { toast("Données supprimées."); go({ screen: "home" }); });
+        break;
+      }
+
+      case "share": {
+        const text = el.dataset.text;
+        if (navigator.share) navigator.share({ text }).catch(() => {});
+        else navigator.clipboard?.writeText(text).then(() => toast("Résultat copié."));
+        break;
+      }
+    }
+  });
+
+  root.addEventListener("input", (ev) => {
+    const el = ev.target;
+    const session = currentSession();
+
+    if (el.classList.contains("entry")) {
+      scratch.inputs[Number(el.dataset.i)] = el.value;
+      // Papayoo affiche un compteur vivant : il faut redessiner à la frappe.
+      if (session && gameById(session.gameId).engine === "payoo") renderKeepingFocus();
+      return;
+    }
+    if (el.classList.contains("b-pts")) {
+      const t = Number(el.dataset.t);
+      const f = scratch.belote;
+      if (el.value === "") { f[t === 0 ? "p0" : "p1"] = ""; return; }
+      const n = Math.max(0, Math.min(162, parseInt(el.value, 10) || 0));
+      f[t === 0 ? "p0" : "p1"] = String(n);
+      f[t === 0 ? "p1" : "p0"] = String(162 - n);   // le complément à 162 se déduit
+      renderKeepingFocus();
+      return;
+    }
+    if (el.classList.contains("yams-cell")) {
+      const p = Number(el.dataset.p), c = Number(el.dataset.c);
+      session.yamsGrid[p][c] = el.value.trim() === "" ? -1 : Math.max(0, parseInt(el.value, 10) || 0);
+      if (E.yamsAllFilled(session)) { session.manuallyFinished = true; S.commit(); render(); return; }
+      S.commit();
+    }
+  });
+
+  root.addEventListener("change", (ev) => {
+    if (ev.target.id === "stat-player") { scratch.statPlayer = ev.target.value; render(); }
+    if (ev.target.id === "theme-select") S.setTheme(ev.target.value);
+  });
+
+  root.addEventListener("keydown", (ev) => {
+    if (ev.key !== "Enter") return;
+    const id = ev.target.id;
+    if (id === "dart-input") {
+      const value = parseInt(ev.target.value, 10);
+      if (!Number.isNaN(value)) { playTurn(currentSession(), E.dartsThrow(currentSession(), scratch.current, value)); render(); }
+    }
+    if (id === "new-player" || id === "quick-player") {
+      const name = ev.target.value.trim();
+      if (name) { S.addPlayer(name); render(); }
+    }
+  });
+}
+
+/** Le rendu remplace tout : on remet le curseur là où il était. */
+function renderKeepingFocus() {
+  const active = document.activeElement;
+  const key = active?.id || (active?.classList.contains("entry") ? `entry-${active.dataset.i}` : null);
+  const start = active?.selectionStart, end = active?.selectionEnd;
+  render();
+  if (!key) return;
+  const back = key.startsWith("entry-")
+    ? document.querySelector(`.entry[data-i="${key.slice(6)}"]`)
+    : document.getElementById(key);
+  if (!back) return;
+  back.focus();
+  try { back.setSelectionRange(start, end); } catch { /* input[type=number] refuse */ }
+}

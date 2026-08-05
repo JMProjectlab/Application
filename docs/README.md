@@ -1,0 +1,58 @@
+# Site Scornade
+
+Version web de l'application, à parité de fonctionnalités : catalogue des jeux,
+configuration d'une partie, comptage, statistiques. Une colonne sur téléphone,
+rail de navigation et écran de score en deux colonnes à partir de 900 px.
+
+## Mettre en ligne
+
+Dépôt GitHub → **Settings → Pages** → Source : `Deploy from a branch`,
+branche `main`, dossier **`/docs`**.
+
+Le site est alors publié sur `https://<compte>.github.io/Application/`, et la
+politique de confidentialité sur `.../politique-de-confidentialite.html` — c'est
+cette adresse-là qu'attend App Store Connect.
+
+Aucune étape de compilation : ce sont des modules ES chargés directement par le
+navigateur.
+
+## Brancher la synchronisation
+
+Sans configuration Firebase, le site tourne en local : les parties vivent dans
+le navigateur, sans compte. C'est volontaire — on peut le déployer et s'en
+servir avant d'avoir monté le projet Firebase.
+
+Pour activer les comptes et la synchronisation avec l'app iOS :
+
+1. Console Firebase → **Paramètres du projet → Vos applications → Web** →
+   enregistrer une application web, copier l'objet de configuration.
+2. Le coller dans `assets/firebase-config.js`, à la place des `REMPLACER`.
+3. **Authentication → Settings → Domaines autorisés** : ajouter
+   `<compte>.github.io`, sinon la fenêtre de connexion sera refusée.
+
+Ces clés ne sont pas des secrets : elles partent dans le navigateur de chaque
+visiteur. Ce qui protège les données, ce sont les règles Firestore
+(`firestore.rules` à la racine du dépôt), qui n'autorisent chaque compte que sur
+ses propres documents.
+
+## Organisation
+
+| Fichier | Rôle |
+|---|---|
+| `index.html` | Page unique, amorçage des modules |
+| `assets/data.js` | Les 20 jeux, leurs règles et leurs pictogrammes |
+| `assets/engine.js` | Calculs de score — portage de `Models.swift` |
+| `assets/store.js` | État, `localStorage`, fusion avec le serveur |
+| `assets/firebase.js` | Connexion et Firestore, chargés à la demande |
+| `assets/ui.js` | Rendu des écrans et interactions |
+| `assets/app.css` | Charte JMprojectlab, clair et sombre |
+
+## Le point de vigilance
+
+`engine.js` et `Models.swift` calculent la même chose deux fois, dans deux
+langages. **Une correction d'un côté doit être reportée de l'autre** : c'est ce
+que coûte le choix de deux clients natifs sur une base de données commune.
+
+Les moteurs sont couverts par des tests (donnes de belote, bust aux fléchettes,
+retour à 25 au mölkky, bonus du Yam's, détection du vainqueur) — voir la section
+correspondante dans l'historique du dépôt si tu veux les rejouer.

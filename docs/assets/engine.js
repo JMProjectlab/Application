@@ -1,0 +1,106 @@
+// Moteurs de score — portage direct de Models.swift.
+// Toute correction faite ici doit l'être aussi côté Swift, et réciproquement :
+// c'est le prix d'avoir deux clients natifs sur une base de données commune.
+
+/** Total d'un participant. En compte à rebours, on part de l'objectif. */
+export function total(session, i) {
+  const sum = session.rounds.reduce((acc, r) => acc + (r[i] ?? 0), 0);
+  return session.direction === "countdown" ? Math.max(0, session.target - sum) : sum;
+}
+
+export function reachedEnd(session) {
+  const idx = session.entrants.map((_, i) => i);
+  if (session.direction === "countdown") return idx.some((i) => total(session, i) <= 0);
+  return session.target > 0 && idx.some((i) => total(session, i) >= session.target);
+}
+
+export const isFinished = (s) => s.manuallyFinished || reachedEnd(s);
+
+export function winnerIndex(session) {
+  if (!isFinished(session) || !session.entrants.length) return null;
+  const totals = session.entrants.map((_, i) => total(session, i));
+  if (session.direction === "countdown") return totals.indexOf(Math.min(...totals));
+  return session.higherWins ? totals.indexOf(Math.max(...totals)) : totals.indexOf(Math.min(...totals));
+}
+
+// --- Belote : BeloteRound.deltas() ---------------------------------------
+
+export function beloteContractMade(r) {
+  if (r.capotTeam !== null && r.capotTeam !== undefined) return true;
+  return r.cardPoints[r.takerTeam] >= 82;
+}
+
+export function beloteDeltas(r) {
+  const s = [0, 0];
+  if (r.capotTeam !== null && r.capotTeam !== undefined) {
+    const c = r.capotTeam, o = 1 - c;
+    s[c] = 252 + (r.belote[c] ? 20 : 0);
+    s[o] = r.belote[o] ? 20 : 0;
+    return s;
+  }
+  if (r.cardPoints[r.takerTeam] >= 82) {
+    for (let t = 0; t < 2; t++) s[t] = r.cardPoints[t] + (r.belote[t] ? 20 : 0);
+  } else {
+    // Le preneur est dedans : les 162 points partent à la défense.
+    const d = 1 - r.takerTeam;
+    s[d] = 162 + (r.belote[d] ? 20 : 0);
+    s[r.takerTeam] = r.belote[r.takerTeam] ? 20 : 0;
+  }
+  return s;
+}
+
+// --- Yam's ----------------------------------------------------------------
+
+export const YAMS_CATEGORIES = [
+  ["As (1)", null], ["Deux (2)", null], ["Trois (3)", null], ["Quatre (4)", null],
+  ["Cinq (5)", null], ["Six (6)", null], ["Brelan", null], ["Carré", null],
+  ["Full", 25], ["Petite suite", 30], ["Grande suite", 40], ["Yam's", 50], ["Chance", null],
+];
+
+export const yamsCell = (s, p, c) => s.yamsGrid?.[p]?.[c] ?? -1;
+
+export function yamsUpper(s, p) {
+  let t = 0;
+  for (let c = 0; c < 6; c++) t += Math.max(0, yamsCell(s, p, c));
+  return t;
+}
+export function yamsLower(s, p) {
+  let t = 0;
+  for (let c = 6; c < 13; c++) t += Math.max(0, yamsCell(s, p, c));
+  return t;
+}
+export const yamsBonus = (s, p) => (yamsUpper(s, p) >= 63 ? 35 : 0);
+export const yamsTotal = (s, p) => yamsUpper(s, p) + yamsBonus(s, p) + yamsLower(s, p);
+
+export function yamsAllFilled(s) {
+  if (!s.entrants.length) return false;
+  return s.entrants.every((_, p) =>
+    Array.from({ length: 13 }, (_, c) => c).every((c) => yamsCell(s, p, c) >= 0));
+}
+
+// --- Fléchettes -----------------------------------------------------------
+
+/** Renvoie le delta à enregistrer et le message éventuel. */
+export function dartsThrow(session, playerIndex, score) {
+  if (score < 0 || score > 180) return null;
+  const remaining = total(session, playerIndex);
+  const next = remaining - score;
+  // Impossible de finir sur 1 : une volée qui dépasse ou laisse 1 est annulée.
+  if (next < 0 || next === 1) {
+    return { delta: 0, note: "Bust ! La volée ne compte pas.", advance: true };
+  }
+  return { delta: score, note: null, advance: next > 0 };
+}
+
+// --- Mölkky ---------------------------------------------------------------
+
+export const PAYOO_ROUND_TOTAL = 250;
+
+export function molkkyThrow(session, playerIndex, score) {
+  if (score < 0 || score > 12) return null;
+  const current = total(session, playerIndex);
+  const next = current + score;
+  // Dépasser 50 fait retomber à 25.
+  if (next > 50) return { delta: 25 - current, note: "Raté ! Retour à 25 points.", advance: true };
+  return { delta: score, note: null, advance: next !== 50 };
+}
