@@ -6,6 +6,13 @@ struct ScornadeApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage("sm.languagePreference") private var languagePreference = "system"
 
+    init() {
+        // Doit précéder la création du Store, qui interroge Auth dès son init.
+        // L'autoclosure d'un @StateObject n'est évaluée qu'au premier accès au
+        // corps de la vue, donc après ce init : l'ordre est garanti.
+        FirebaseSupport.configureIfPossible()
+    }
+
     // "system" laisse SwiftUI suivre la langue de l'appareil (comportement par défaut).
     private var localeOverride: Locale? {
         languagePreference == "system" ? nil : Locale(identifier: languagePreference)

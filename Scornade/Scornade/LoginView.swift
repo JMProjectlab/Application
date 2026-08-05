@@ -1,10 +1,13 @@
 import SwiftUI
 import AuthenticationServices
+import CryptoKit
+import FirebaseAuth
 
 struct LoginView: View {
     @EnvironmentObject var store: Store
     @Environment(\.locale) private var locale
     @State private var authError: String?
+    @State private var currentNonce: String?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -30,6 +33,12 @@ struct LoginView: View {
             VStack(spacing: 12) {
                 SignInWithAppleButton(.continue) { request in
                     request.requestedScopes = [.fullName, .email]
+                    // Firebase exige un nonce haché : il lie le jeton d'identité
+                    // renvoyé par Apple à cette demande précise, ce qui empêche
+                    // qu'un jeton intercepté serve à se connecter ailleurs.
+                    let nonce = AppleNonce.random()
+                    currentNonce = nonce
+                    request.nonce = AppleNonce.sha256(nonce)
                 } onCompletion: { result in
                     handleApple(result)
                 }
@@ -76,14 +85,65 @@ struct LoginView: View {
                 authError = String(localized: "Identifiants Apple non reconnus.", locale: locale)
                 return
             }
+            // Apple ne transmet le nom qu'à la toute première connexion : on le
+            // capte ici, sinon on retombera sur le libellé générique.
             let name = [cred.fullName?.givenName, cred.fullName?.familyName]
                 .compactMap { $0 }.joined(separator: " ")
-            store.signIn(id: cred.user,
-                         name: name.isEmpty ? "Joueur Apple" : name,
-                         email: cred.email,
-                         mode: .apple)
+            let displayName = name.isEmpty ? "Joueur Apple" : name
+
+            // Sans Firebase configuré, on reste sur une session purement locale
+            // plutôt que d'échouer : l'app doit rester utilisable.
+            guard FirebaseSupport.isAvailable,
+                  let nonce = currentNonce,
+                  let tokenData = cred.identityToken,
+                  let token = String(data: tokenData, encoding: .utf8) else {
+                store.signIn(id: cred.user, name: displayName, email: cred.email, mode: .apple)
+                return
+            }
+
+            let credential = OAuthProvider.appleCredential(withIDToken: token,
+                                                           rawNonce: nonce,
+                                                           fullName: cred.fullName)
+            Auth.auth().signIn(with: credential) { authResult, error in
+                currentNonce = nil
+                if let error {
+                    authError = error.localizedDescription
+                    return
+                }
+                store.signIn(id: authResult?.user.uid ?? cred.user,
+                             name: displayName,
+                             email: cred.email ?? authResult?.user.email,
+                             mode: .apple)
+            }
         case .failure(let error):
+            currentNonce = nil
+            // L'utilisateur qui referme la feuille Apple n'a pas besoin d'alerte.
+            if (error as? ASAuthorizationError)?.code == .canceled { return }
             authError = error.localizedDescription
         }
+    }
+}
+
+/// Nonce à usage unique pour « Se connecter avec Apple » via Firebase.
+enum AppleNonce {
+    static func random(length: Int = 32) -> String {
+        let charset = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        var result = ""
+        var remaining = length
+        while remaining > 0 {
+            var byte: UInt8 = 0
+            guard SecRandomCopyBytes(kSecRandomDefault, 1, &byte) == errSecSuccess else { continue }
+            if byte < charset.count {
+                result.append(charset[Int(byte)])
+                remaining -= 1
+            }
+        }
+        return result
+    }
+
+    static func sha256(_ input: String) -> String {
+        SHA256.hash(data: Data(input.utf8))
+            .map { String(format: "%02x", $0) }
+            .joined()
     }
 }

@@ -140,14 +140,14 @@
   <p>En mode invité, aucune donnée ne quitte votre appareil : pas de compte créé, pas d'envoi vers Apple ni vers aucun serveur. Vos joueurs et vos parties restent stockés uniquement en local et sont supprimés si vous désinstallez l'application.</p>
 
   <h2>Où sont stockées les données</h2>
-  <p>Si vous vous connectez avec Apple, vos joueurs et vos parties sont synchronisés dans <strong>votre espace privé iCloud</strong> (CloudKit d'Apple), propre à votre compte Apple. Personne d'autre que vous — ni <span class="fill">[Nom de l'éditeur]</span>, ni un autre utilisateur de l'application — n'y a accès. Ces données sont hébergées par Apple selon ses propres engagements de confidentialité et de sécurité.</p>
+  <p>Si vous vous connectez avec Apple, vos joueurs et vos parties sont synchronisés dans <strong>Google Firebase</strong> (services Firebase Authentication et Cloud Firestore), sur des serveurs situés dans l'<strong>Union européenne</strong>. Vos données sont rangées sous un identifiant propre à votre compte : les règles de sécurité du serveur n'autorisent leur lecture et leur écriture qu'à vous seul. Ni <span class="fill">[Nom de l'éditeur]</span>, ni un autre utilisateur de l'application n'y a accès.</p>
   <p>Une copie locale est également conservée sur votre appareil pour un fonctionnement instantané, y compris hors connexion.</p>
 
   <h2>Avec qui les données sont partagées</h2>
-  <p>Scornade ne vend, ne loue et ne partage vos données avec aucune régie publicitaire ni aucun tiers commercial. Le seul destinataire technique est <strong>Apple</strong>, en tant que sous-traitant, pour :</p>
+  <p>Scornade ne vend, ne loue et ne partage vos données avec aucune régie publicitaire ni aucun tiers commercial. Les seuls destinataires techniques, en tant que sous-traitants, sont :</p>
   <ul>
-    <li>l'authentification via « Se connecter avec Apple » ;</li>
-    <li>le stockage et la synchronisation via iCloud (CloudKit).</li>
+    <li><strong>Apple</strong>, pour l'authentification via « Se connecter avec Apple » ;</li>
+    <li><strong>Google Ireland Limited</strong> (Firebase), pour l'hébergement et la synchronisation de vos joueurs et de vos parties.</li>
   </ul>
 
   <h2>Combien de temps les données sont conservées</h2>
@@ -156,7 +156,7 @@
   <h2>Vos droits</h2>
   <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité de vos données.</p>
   <div class="card">
-    <strong>Pour supprimer vos données</strong> : ouvrez Scornade → onglet Joueurs → « Supprimer mes données ». Cette action efface immédiatement et irréversiblement vos joueurs, vos parties et votre compte, sur cet appareil et dans iCloud.
+    <strong>Pour supprimer vos données</strong> : ouvrez Scornade → onglet Joueurs → « Supprimer mes données ». Cette action efface immédiatement et irréversiblement vos joueurs, vos parties et votre compte, sur cet appareil comme sur le serveur.
   </div>
   <p>Pour toute autre demande (accès, rectification, question), contactez <span class="fill">[adresse e-mail de contact]</span>. Vous pouvez aussi introduire une réclamation auprès de la CNIL (<a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>).</p>
 
@@ -164,7 +164,7 @@
   <p>Scornade ne cible pas spécifiquement les enfants et ne collecte pas sciemment de données concernant des mineurs de moins de 15 ans sans l'accord d'un parent ou tuteur légal.</p>
 
   <h2>Sécurité</h2>
-  <p>Les données transitent et sont stockées via les infrastructures sécurisées d'Apple (authentification, chiffrement en transit et au repos gérés par iCloud/CloudKit).</p>
+  <p>Les échanges sont chiffrés en transit (TLS) et les données chiffrées au repos par Google Firebase. L'accès est cloisonné par compte au moyen de règles de sécurité côté serveur : une requête portant sur les données d'un autre utilisateur est rejetée par le serveur lui-même, et non seulement par l'application.</p>
 
   <h2>Modifications de cette politique</h2>
   <p>Cette politique peut être mise à jour, notamment en cas d'ajout de fonctionnalité impliquant de nouvelles données. La date de mise à jour en haut de page reflète la dernière version.</p>

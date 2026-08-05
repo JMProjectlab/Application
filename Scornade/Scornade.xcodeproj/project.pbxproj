@@ -72,6 +72,9 @@
 		FF2C3721EBD162444AF4C595 /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
 		18CEAEE99D4BA51A302F592A /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
 		557412B687F5EA26A542B399 /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
+		4A94CFC44BC1E191D1C51848 /* FirebaseSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B929D90F2A1B1DDC458F7F /* FirebaseSupport.swift */; };
+		9E489D09D5CBF42E41C91147 /* FirebaseSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B929D90F2A1B1DDC458F7F /* FirebaseSupport.swift */; };
+		D9BF11A49118A8DDE5F7DE8F /* FirebaseSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B929D90F2A1B1DDC458F7F /* FirebaseSupport.swift */; };
 		DC0D1D2559D15C0712C73D0F /* GameGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2406A7D244492F436A9EFA4 /* GameGlyph.swift */; };
 		565118EACA54992A26A8315C /* GameGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2406A7D244492F436A9EFA4 /* GameGlyph.swift */; };
 		051A70913AF7364053DAA475 /* GameGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2406A7D244492F436A9EFA4 /* GameGlyph.swift */; };
@@ -129,6 +132,7 @@
 		31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MolkkyScoringView.swift; sourceTree = "<group>"; };
 		71D0F52B79DE89AB805F249D /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D2406A7D244492F436A9EFA4 /* GameGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameGlyph.swift; sourceTree = "<group>"; };
+		39B929D90F2A1B1DDC458F7F /* FirebaseSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseSupport.swift; sourceTree = "<group>"; };
 		91B298673E8CA46763FEA936 /* Scornade.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Scornade.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -196,6 +200,7 @@
 				2B780ACD2FE0999400B4E0E3 /* CoincheScoringView.swift */,
 				31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */,
 				D2406A7D244492F436A9EFA4 /* GameGlyph.swift */,
+				39B929D90F2A1B1DDC458F7F /* FirebaseSupport.swift */,
 				2B780A942FE0932200B4E0E3 /* ScoringView.swift */,
 				2B780A8F2FE0932100B4E0E3 /* ScornadeApp.swift */,
 				2B780A892FE0932100B4E0E3 /* StatsView.swift */,
@@ -393,6 +398,7 @@
 				2B780B022FE09D2A00B4E0E3 /* GameCatalog.swift in Sources */,
 				FF2C3721EBD162444AF4C595 /* MolkkyScoringView.swift in Sources */,
 				DC0D1D2559D15C0712C73D0F /* GameGlyph.swift in Sources */,
+				4A94CFC44BC1E191D1C51848 /* FirebaseSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,6 +427,7 @@
 				2B780B062FE09D2A00B4E0E3 /* Models.swift in Sources */,
 				18CEAEE99D4BA51A302F592A /* MolkkyScoringView.swift in Sources */,
 				565118EACA54992A26A8315C /* GameGlyph.swift in Sources */,
+				9E489D09D5CBF42E41C91147 /* FirebaseSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -450,6 +457,7 @@
 				2B780AB72FE0932200B4E0E3 /* BeloteScoringView.swift in Sources */,
 				557412B687F5EA26A542B399 /* MolkkyScoringView.swift in Sources */,
 				051A70913AF7364053DAA475 /* GameGlyph.swift in Sources */,
+				D9BF11A49118A8DDE5F7DE8F /* FirebaseSupport.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

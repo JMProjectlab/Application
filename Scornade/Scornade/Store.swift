@@ -1,7 +1,8 @@
 import Foundation
 import Combine
 import SwiftUI
-import CloudKit
+import FirebaseAuth
+import FirebaseFirestore
 
 @MainActor
 final class Store: ObservableObject {
@@ -14,43 +15,55 @@ final class Store: ObservableObject {
     private let sessionsKey = "sm.sessions"
     private let userKey = "sm.user"
 
-    // MARK: CloudKit
+    // MARK: Firestore
+    //
+    // Arborescence : users/{uid}/players/{id} et users/{uid}/sessions/{id}.
+    // Chaque document porte le modèle sérialisé en JSON dans un champ `payload`,
+    // plus un `updatedAt` pour l'ordonnancement. Firestore n'accepte pas les
+    // tableaux de tableaux, or `rounds` et `yamsGrid` en sont : le JSON évite
+    // d'avoir à les envelopper, et donne au futur client web exactement la même
+    // forme de données qu'ici.
+    //
+    // Conséquence assumée : la réconciliation se fait au document entier, pas au
+    // champ. Deux appareils qui modifient la même partie en même temps s'écrasent
+    // (le dernier écrit gagne). C'est acceptable tant qu'une partie est tenue par
+    // un seul appareil à la fois ; le partage à plusieurs demandera un vrai
+    // découpage en sous-collection de manches.
 
-    // Doit correspondre à com.apple.developer.icloud-container-identifiers
-    // dans Scornade.entitlements (iCloud.<bundle identifier>).
-    private let container = CKContainer(identifier: "iCloud.JMProject.Scornade")
-    private lazy var privateDB = container.privateCloudDatabase
+    private static let payloadField = "payload"
+    private static let updatedAtField = "updatedAt"
 
-    private static let playerRecordType = "Player"
-    private static let sessionRecordType = "ScoreSession"
-    private static let payloadKey = "payload"
+    private lazy var db = Firestore.firestore()
+    private var playersListener: ListenerRegistration?
+    private var sessionsListener: ListenerRegistration?
 
-    private let knownPlayerIDsKey = "sm.cloudKnownPlayerIDs"
-    private let knownSessionIDsKey = "sm.cloudKnownSessionIDs"
-    private var knownPlayerRecordIDs: Set<String> = []
-    private var knownSessionRecordIDs: Set<String> = []
+    /// Dernier JSON réellement envoyé pour chaque document, pour ne pousser que
+    /// ce qui a changé plutôt que la collection entière à chaque sauvegarde.
+    private var pushedPlayers: [String: String] = [:]
+    private var pushedSessions: [String: String] = [:]
 
-    // Le mode invité reste strictement local : on ne touche jamais CloudKit.
+    /// Le mode invité reste strictement local : on ne contacte jamais Firebase,
+    /// conformément à ce qu'annonce l'écran de connexion.
     private var syncEnabled: Bool {
+        guard FirebaseSupport.isAvailable, Auth.auth().currentUser != nil else { return false }
         guard let mode = currentUser?.mode else { return false }
         return mode != .guest
     }
 
+    private var uid: String? { Auth.auth().currentUser?.uid }
+
     init() {
-        loadKnownRecordIDs()
         load()
-        Task {
-            await pullFromCloud()
-            if players.isEmpty {
-                players = [
-                    Player(name: "Jimmy", colorIndex: 0),
-                    Player(name: "Marie", colorIndex: 2),
-                    Player(name: "Paul", colorIndex: 1),
-                    Player(name: "Sophie", colorIndex: 3),
-                ]
-                save()
-            }
+        if players.isEmpty {
+            players = [
+                Player(name: "Jimmy", colorIndex: 0),
+                Player(name: "Marie", colorIndex: 2),
+                Player(name: "Paul", colorIndex: 1),
+                Player(name: "Sophie", colorIndex: 3),
+            ]
+            saveLocalCacheOnly()
         }
+        startSyncIfSignedIn()
     }
 
     // MARK: Players
@@ -241,7 +254,7 @@ final class Store: ObservableObject {
         if mode != .guest, !players.contains(where: { $0.name == name }) {
             addPlayer(name: name, email: email)
         }
-        Task { await pullFromCloud() }
+        startSyncIfSignedIn()
     }
 
     func signInGuest() {
@@ -250,22 +263,41 @@ final class Store: ObservableObject {
     }
 
     func signOut() {
+        stopSync()
+        try? Auth.auth().signOut()
         currentUser = nil
         UserDefaults.standard.removeObject(forKey: userKey)
     }
 
     /// Efface toutes les données de l'utilisateur : joueurs, parties et compte,
-    /// en local ET dans iCloud. Action irréversible (exigée par Apple).
+    /// en local ET côté serveur. Action irréversible (exigée par Apple).
     func deleteAllData() {
+        let ids = (players.map(\.id.uuidString), sessions.map(\.id.uuidString))
         let wasSyncing = syncEnabled
+        let user = Auth.auth().currentUser
+
+        stopSync()
         players = []
         sessions = []
         currentUser = nil
         path = NavigationPath()
+        pushedPlayers = [:]
+        pushedSessions = [:]
         for key in [playersKey, sessionsKey, userKey] {
             UserDefaults.standard.removeObject(forKey: key)
         }
-        Task { await wipeCloudData(wasSyncing: wasSyncing) }
+
+        guard wasSyncing, let uid = user?.uid else { return }
+        let root = db.collection("users").document(uid)
+        Task {
+            let batch = db.batch()
+            for id in ids.0 { batch.deleteDocument(root.collection("players").document(id)) }
+            for id in ids.1 { batch.deleteDocument(root.collection("sessions").document(id)) }
+            try? await batch.commit()
+            // Le compte lui-même part avec les données : c'est ce qu'exige la
+            // règle 5.1.1(v) d'Apple sur la suppression de compte depuis l'app.
+            try? await user?.delete()
+        }
     }
 
     private func saveUser() {
@@ -274,13 +306,13 @@ final class Store: ObservableObject {
         }
     }
 
-    // MARK: Local persistence (cache instantané, hors-ligne)
+    // MARK: Persistance locale (chargement instantané, hors-ligne)
 
-    func reloadFromCloud() { Task { await pullFromCloud() } }
+    func reloadFromCloud() { startSyncIfSignedIn() }
 
     private func save() {
         saveLocalCacheOnly()
-        Task { await pushToCloud() }
+        pushChanges()
     }
 
     private func saveLocalCacheOnly() {
@@ -309,103 +341,83 @@ final class Store: ObservableObject {
         }
     }
 
-    private func loadKnownRecordIDs() {
-        knownPlayerRecordIDs = Set(UserDefaults.standard.stringArray(forKey: knownPlayerIDsKey) ?? [])
-        knownSessionRecordIDs = Set(UserDefaults.standard.stringArray(forKey: knownSessionIDsKey) ?? [])
+    // MARK: Synchronisation Firestore
+
+    private func startSyncIfSignedIn() {
+        stopSync()
+        guard syncEnabled, let uid else { return }
+        let root = db.collection("users").document(uid)
+
+        playersListener = root.collection("players").addSnapshotListener { [weak self] snap, _ in
+            guard let snap else { return }
+            let remote = Self.decodeAll(Player.self, from: snap.documents)
+            Task { @MainActor in self?.mergePlayers(remote) }
+        }
+        sessionsListener = root.collection("sessions").addSnapshotListener { [weak self] snap, _ in
+            guard let snap else { return }
+            let remote = Self.decodeAll(ScoreSession.self, from: snap.documents)
+            Task { @MainActor in self?.mergeSessions(remote) }
+        }
+
+        // Ce qui existe déjà en local et pas encore côté serveur part au premier envoi.
+        pushChanges()
     }
 
-    private func persistKnownRecordIDs() {
-        UserDefaults.standard.set(Array(knownPlayerRecordIDs), forKey: knownPlayerIDsKey)
-        UserDefaults.standard.set(Array(knownSessionRecordIDs), forKey: knownSessionIDsKey)
+    private func stopSync() {
+        playersListener?.remove(); playersListener = nil
+        sessionsListener?.remove(); sessionsListener = nil
     }
 
-    // MARK: CloudKit sync
-    //
-    // Base privée CloudKit (zone par défaut) : chaque joueur et chaque partie sont
-    // sérialisés en JSON dans un unique champ "payload". On pousse l'état complet à
-    // chaque `save()` et on tire les données au lancement / retour au premier plan.
-    // Le mode invité ne déclenche jamais de synchro (promesse de confidentialité).
-
-    private func makeRecord<T: Encodable>(id: UUID, type: String, value: T) -> CKRecord? {
-        guard let data = try? JSONEncoder().encode(value) else { return nil }
-        let record = CKRecord(recordType: type, recordID: CKRecord.ID(recordName: id.uuidString))
-        record[Self.payloadKey] = data as CKRecordValue
-        return record
-    }
-
-    private func fetchAllRecords(type: String) async throws -> [CKRecord] {
-        var all: [CKRecord] = []
-        var cursor: CKQueryOperation.Cursor?
-        repeat {
-            let matchResults: [(CKRecord.ID, Result<CKRecord, Error>)]
-            let nextCursor: CKQueryOperation.Cursor?
-            if let cursor {
-                (matchResults, nextCursor) = try await privateDB.records(continuingMatchFrom: cursor)
-            } else {
-                let query = CKQuery(recordType: type, predicate: NSPredicate(value: true))
-                (matchResults, nextCursor) = try await privateDB.records(matching: query)
-            }
-            all += matchResults.compactMap { try? $0.1.get() }
-            cursor = nextCursor
-        } while cursor != nil
-        return all
-    }
-
-    private func pushToCloud() async {
-        guard syncEnabled else { return }
-        guard (try? await container.accountStatus()) == .available else { return }
-
-        let currentPlayerIDs = Set(players.map(\.id.uuidString))
-        let currentSessionIDs = Set(sessions.map(\.id.uuidString))
-        let deletedIDs = knownPlayerRecordIDs.subtracting(currentPlayerIDs)
-            .union(knownSessionRecordIDs.subtracting(currentSessionIDs))
-
-        let recordsToSave =
-            players.compactMap { makeRecord(id: $0.id, type: Self.playerRecordType, value: $0) } +
-            sessions.compactMap { makeRecord(id: $0.id, type: Self.sessionRecordType, value: $0) }
-        let recordIDsToDelete = deletedIDs.map { CKRecord.ID(recordName: $0) }
-
-        guard !recordsToSave.isEmpty || !recordIDsToDelete.isEmpty else { return }
-
-        do {
-            _ = try await privateDB.modifyRecords(saving: recordsToSave,
-                                                   deleting: recordIDsToDelete,
-                                                   savePolicy: .changedKeys)
-            knownPlayerRecordIDs = currentPlayerIDs
-            knownSessionRecordIDs = currentSessionIDs
-            persistKnownRecordIDs()
-        } catch {
-            // Pas de réseau / iCloud momentanément indisponible : on réessaiera
-            // au prochain save() ou reloadFromCloud().
+    private nonisolated static func decodeAll<T: Decodable>(_ type: T.Type,
+                                                            from docs: [QueryDocumentSnapshot]) -> [T] {
+        let dec = JSONDecoder()
+        return docs.compactMap { doc in
+            guard let json = doc[payloadField] as? String,
+                  let data = json.data(using: .utf8) else { return nil }
+            return try? dec.decode(T.self, from: data)
         }
     }
 
-    private func pullFromCloud() async {
-        guard syncEnabled else { return }
-        do {
-            guard try await container.accountStatus() == .available else { return }
-            let playerRecords = try await fetchAllRecords(type: Self.playerRecordType)
-            let sessionRecords = try await fetchAllRecords(type: Self.sessionRecordType)
+    /// N'envoie que les documents dont le JSON a changé, et supprime ceux qui ont
+    /// disparu localement.
+    private func pushChanges() {
+        guard syncEnabled, let uid else { return }
+        let root = db.collection("users").document(uid)
+        let enc = JSONEncoder()
 
-            let decoder = JSONDecoder()
-            let remotePlayers = playerRecords.compactMap { record -> Player? in
-                guard let data = record[Self.payloadKey] as? Data else { return nil }
-                return try? decoder.decode(Player.self, from: data)
-            }
-            let remoteSessions = sessionRecords.compactMap { record -> ScoreSession? in
-                guard let data = record[Self.payloadKey] as? Data else { return nil }
-                return try? decoder.decode(ScoreSession.self, from: data)
-            }
+        let batch = db.batch()
+        var writes = 0
 
-            mergePlayers(remotePlayers)
-            mergeSessions(remoteSessions)
-            knownPlayerRecordIDs.formUnion(playerRecords.map(\.recordID.recordName))
-            knownSessionRecordIDs.formUnion(sessionRecords.map(\.recordID.recordName))
-            persistKnownRecordIDs()
-            saveLocalCacheOnly()
-        } catch {
-            // Hors-ligne, ou conteneur pas encore provisionné : on garde les données locales.
+        func stage<T: Encodable & Identifiable>(_ items: [T],
+                                                into collection: String,
+                                                cache: inout [String: String]) where T.ID == UUID {
+            let current = Set(items.map(\.id.uuidString))
+            for item in items {
+                let key = item.id.uuidString
+                guard let data = try? enc.encode(item),
+                      let json = String(data: data, encoding: .utf8),
+                      cache[key] != json else { continue }
+                batch.setData([Self.payloadField: json,
+                               Self.updatedAtField: FieldValue.serverTimestamp()],
+                              forDocument: root.collection(collection).document(key))
+                cache[key] = json
+                writes += 1
+            }
+            // Les clés sont relevées d'abord : on ne mute pas le dictionnaire
+            // pendant qu'on le parcourt.
+            let removed = cache.keys.filter { !current.contains($0) }
+            for gone in removed {
+                batch.deleteDocument(root.collection(collection).document(gone))
+                cache[gone] = nil
+                writes += 1
+            }
         }
+
+        stage(players, into: "players", cache: &pushedPlayers)
+        stage(sessions, into: "sessions", cache: &pushedSessions)
+
+        guard writes > 0 else { return }
+        batch.commit { _ in /* Firestore rejoue l'écriture au retour du réseau. */ }
     }
 
     /// Fusionne sans jamais supprimer localement : une absence côté serveur peut
@@ -414,7 +426,8 @@ final class Store: ObservableObject {
         guard !remote.isEmpty else { return }
         var byID = Dictionary(uniqueKeysWithValues: players.map { ($0.id, $0) })
         for p in remote { byID[p.id] = p }
-        players = Array(byID.values)
+        players = Array(byID.values).sorted { $0.name.localizedCompare($1.name) == .orderedAscending }
+        saveLocalCacheOnly()
     }
 
     private func mergeSessions(_ remote: [ScoreSession]) {
@@ -422,20 +435,6 @@ final class Store: ObservableObject {
         var byID = Dictionary(uniqueKeysWithValues: sessions.map { ($0.id, $0) })
         for s in remote { byID[s.id] = s }
         sessions = Array(byID.values).sorted { $0.date > $1.date }
-    }
-
-    private func wipeCloudData(wasSyncing: Bool) async {
-        guard wasSyncing else { return }
-        guard (try? await container.accountStatus()) == .available else { return }
-        let idsToDelete = knownPlayerRecordIDs.union(knownSessionRecordIDs).map { CKRecord.ID(recordName: $0) }
-        guard !idsToDelete.isEmpty else { return }
-        do {
-            _ = try await privateDB.modifyRecords(saving: [], deleting: idsToDelete)
-            knownPlayerRecordIDs = []
-            knownSessionRecordIDs = []
-            persistKnownRecordIDs()
-        } catch {
-            // best-effort : les données locales sont déjà effacées.
-        }
+        saveLocalCacheOnly()
     }
 }
