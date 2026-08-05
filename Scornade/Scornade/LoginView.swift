@@ -2,12 +2,15 @@ import SwiftUI
 import AuthenticationServices
 import CryptoKit
 import FirebaseAuth
+import FirebaseCore
+import GoogleSignIn
 
 struct LoginView: View {
     @EnvironmentObject var store: Store
     @Environment(\.locale) private var locale
     @State private var authError: String?
     @State private var currentNonce: String?
+    @State private var isWorking = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -53,18 +56,19 @@ struct LoginView: View {
                 }
                 .padding(.vertical, 2)
 
-                Button { store.signInGuest() } label: {
+                Button(action: signInWithGoogle) {
                     HStack(spacing: 10) {
-                        Image(systemName: "person")
-                        Text("Continuer en mode invité").fontWeight(.medium)
+                        Image(systemName: "g.circle")
+                        Text("Se connecter avec Google").fontWeight(.medium)
                     }
                     .frame(maxWidth: .infinity).frame(height: 50)
-                    .background(Color.brandLight)
-                    .foregroundStyle(Color.brandDark)
+                    .foregroundStyle(Color.ink)
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.hairline, lineWidth: 1))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                .disabled(isWorking)
 
-                Text("En mode invité, vos données sont sauvegardées uniquement sur cet appareil.")
+                Text("Un compte permet de retrouver vos parties sur vos autres appareils.")
                     .font(.caption2).foregroundStyle(.secondary)
                     .multilineTextAlignment(.center).padding(.top, 4)
             }
@@ -77,6 +81,64 @@ struct LoginView: View {
             Text(authError ?? "")
         }
     }
+
+    // MARK: Google
+
+    private func signInWithGoogle() {
+        guard FirebaseSupport.isAvailable,
+              let clientID = FirebaseApp.app()?.options.clientID else {
+            authError = String(localized: "La connexion Google n'est pas configurée sur cette version.",
+                               locale: locale)
+            return
+        }
+        guard let presenter = Self.topViewController() else { return }
+
+        isWorking = true
+        GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.signIn(withPresenting: presenter) { result, error in
+            if let error {
+                isWorking = false
+                // Fermer la feuille Google n'est pas une erreur à signaler.
+                if (error as NSError).code == GIDSignInError.canceled.rawValue { return }
+                authError = error.localizedDescription
+                return
+            }
+            guard let googleUser = result?.user,
+                  let idToken = googleUser.idToken?.tokenString else {
+                isWorking = false
+                authError = String(localized: "Réponse Google incomplète.", locale: locale)
+                return
+            }
+            let credential = GoogleAuthProvider.credential(
+                withIDToken: idToken,
+                accessToken: googleUser.accessToken.tokenString
+            )
+            Auth.auth().signIn(with: credential) { authResult, error in
+                isWorking = false
+                if let error {
+                    authError = error.localizedDescription
+                    return
+                }
+                let profile = googleUser.profile
+                store.signIn(id: authResult?.user.uid ?? UUID().uuidString,
+                             name: profile?.name ?? "Joueur Google",
+                             email: profile?.email,
+                             mode: .google)
+            }
+        }
+    }
+
+    /// Contrôleur à partir duquel présenter la feuille Google.
+    private static func topViewController() -> UIViewController? {
+        let scene = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }
+        var top = scene?.keyWindow?.rootViewController
+        while let presented = top?.presentedViewController { top = presented }
+        return top
+    }
+
+    // MARK: Apple
 
     private func handleApple(_ result: Result<ASAuthorization, Error>) {
         switch result {
@@ -91,13 +153,16 @@ struct LoginView: View {
                 .compactMap { $0 }.joined(separator: " ")
             let displayName = name.isEmpty ? "Joueur Apple" : name
 
-            // Sans Firebase configuré, on reste sur une session purement locale
-            // plutôt que d'échouer : l'app doit rester utilisable.
+            // Le compte est désormais obligatoire : sans Firebase derrière, ouvrir
+            // une session purement locale donnerait un compte qui ne synchronise
+            // rien. Mieux vaut le dire que le simuler.
             guard FirebaseSupport.isAvailable,
                   let nonce = currentNonce,
                   let tokenData = cred.identityToken,
                   let token = String(data: tokenData, encoding: .utf8) else {
-                store.signIn(id: cred.user, name: displayName, email: cred.email, mode: .apple)
+                currentNonce = nil
+                authError = String(localized: "La connexion n'est pas configurée sur cette version.",
+                                   locale: locale)
                 return
             }
 

@@ -210,13 +210,57 @@
         }
       }
     },
-    "Continuer en mode invité": {
+    "Se connecter avec Google": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Continue as guest"
+            "value": "Sign in with Google"
+          }
+        }
+      }
+    },
+    "Un compte permet de retrouver vos parties sur vos autres appareils.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An account lets you pick your games back up on your other devices."
+          }
+        }
+      }
+    },
+    "La connexion n'est pas configurée sur cette version.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign-in isn't configured in this build."
+          }
+        }
+      }
+    },
+    "La connexion Google n'est pas configurée sur cette version.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google sign-in isn't configured in this build."
+          }
+        }
+      }
+    },
+    "Réponse Google incomplète.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incomplete response from Google."
           }
         }
       }
@@ -283,17 +327,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "IN PROGRESS"
-          }
-        }
-      }
-    },
-    "En mode invité, vos données sont sauvegardées uniquement sur cet appareil.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "In guest mode, your data is saved only on this device."
           }
         }
       }
@@ -1328,17 +1361,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ wins the game!"
-          }
-        }
-      }
-    },
-    "Invité": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Guest"
           }
         }
       }

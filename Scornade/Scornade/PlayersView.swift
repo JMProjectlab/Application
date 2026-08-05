@@ -77,7 +77,6 @@ struct PlayersView: View {
         switch u.mode {
         case .apple: return String(localized: "\(u.name) · Apple", locale: locale)
         case .google: return String(localized: "\(u.name) · Google", locale: locale)
-        case .guest: return String(localized: "Invité", locale: locale)
         }
     }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import GoogleSignIn
 
 @main
 struct ScornadeApp: App {
@@ -30,6 +31,10 @@ struct ScornadeApp: App {
             .environmentObject(store)
             .tint(Color.brand)
             .environment(\.locale, localeOverride ?? Locale.autoupdatingCurrent)
+            .onOpenURL { url in
+                // Retour de la feuille de connexion Google.
+                _ = GIDSignIn.sharedInstance.handle(url)
+            }
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active { store.reloadFromCloud() }

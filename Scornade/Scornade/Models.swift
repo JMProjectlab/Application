@@ -138,7 +138,7 @@ struct BeloteRound: Codable, Hashable {
 
 
 enum AuthMode: String, Codable {
-    case apple, google, guest
+    case apple, google
 }
 
 struct UserAccount: Codable, Equatable {

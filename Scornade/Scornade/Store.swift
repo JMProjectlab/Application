@@ -42,12 +42,10 @@ final class Store: ObservableObject {
     private var pushedPlayers: [String: String] = [:]
     private var pushedSessions: [String: String] = [:]
 
-    /// Le mode invité reste strictement local : on ne contacte jamais Firebase,
-    /// conformément à ce qu'annonce l'écran de connexion.
+    /// La connexion est obligatoire : sans compte Firebase authentifié, il n'y a
+    /// rien à synchroniser. Le cache local sert alors de secours hors-ligne.
     private var syncEnabled: Bool {
-        guard FirebaseSupport.isAvailable, Auth.auth().currentUser != nil else { return false }
-        guard let mode = currentUser?.mode else { return false }
-        return mode != .guest
+        FirebaseSupport.isAvailable && Auth.auth().currentUser != nil && currentUser != nil
     }
 
     private var uid: String? { Auth.auth().currentUser?.uid }
@@ -251,15 +249,10 @@ final class Store: ObservableObject {
     func signIn(id: String, name: String, email: String?, mode: AuthMode) {
         currentUser = UserAccount(id: id, name: name, email: email, mode: mode)
         saveUser()
-        if mode != .guest, !players.contains(where: { $0.name == name }) {
+        if !players.contains(where: { $0.name == name }) {
             addPlayer(name: name, email: email)
         }
         startSyncIfSignedIn()
-    }
-
-    func signInGuest() {
-        currentUser = UserAccount(id: UUID().uuidString, name: "Invité", email: nil, mode: .guest)
-        saveUser()
     }
 
     func signOut() {

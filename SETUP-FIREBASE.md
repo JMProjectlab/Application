@@ -17,7 +17,10 @@ Sur <https://console.firebase.google.com> → **Ajouter un projet**.
 Puis :
 
 - **Build → Firestore Database → Créer une base** — mode production, région `eur3`.
-- **Build → Authentication → Get started** — activer le fournisseur **Apple**.
+- **Build → Authentication → Get started** — activer les fournisseurs **Apple**
+  *et* **Google**. Les deux sont obligatoires : l'application n'a plus de mode
+  invité, et la règle 4.8 d'Apple impose « Se connecter avec Apple » dès lors
+  qu'un autre service de connexion tiers est proposé.
 
 ## 2. Enregistrer l'application iOS
 
@@ -43,10 +46,28 @@ Dans Xcode : **File → Add Package Dependencies…**
   - `FirebaseFirestore`
   - `FirebaseCore` *(ajouté automatiquement par les deux précédents)*
 
+Puis un **second paquet**, pour la connexion Google :
+
+- URL : `https://github.com/google/GoogleSignIn-iOS`
+- Produit : `GoogleSignIn`
+
 > Je n'ai pas fait cette étape à ta place volontairement : ajouter une
 > référence de paquet en modifiant `project.pbxproj` à la main, sans pouvoir
 > ouvrir Xcode pour vérifier, risque de produire un projet qui refuse de
 > s'ouvrir. Trente secondes dans l'interface, et c'est fiable.
+
+## 3 bis. Déclarer le schéma d'URL de Google
+
+Sans cette étape, la feuille de connexion Google s'ouvre mais ne revient jamais
+dans l'application.
+
+1. Ouvre `GoogleService-Info.plist` et copie la valeur de **`REVERSED_CLIENT_ID`**
+   (elle ressemble à `com.googleusercontent.apps.1234567890-abcdef`).
+2. Dans Xcode, cible Scornade → onglet **Info** → **URL Types** → **+**
+3. Colle cette valeur dans le champ **URL Schemes**.
+
+Je ne peux pas préparer ce réglage : la valeur est propre à ton projet Firebase
+et n'existe que dans le fichier que tu vas télécharger.
 
 ## 4. Publier les règles de sécurité
 
@@ -74,10 +95,17 @@ Dans **Signing & Capabilities** de la cible Scornade :
    Authentication doivent disparaître (c'est ce qu'exige la règle 5.1.1(v)
    d'Apple sur la suppression de compte).
 
-## Ce que le mode invité ne fait pas
+## La connexion est obligatoire
 
-Le mode invité ne contacte jamais Firebase : aucun compte anonyme n'est créé,
-rien ne part sur le réseau. C'est ce que promet l'écran de connexion, et la
-politique de confidentialité le reprend. Si tu veux un jour que les invités
-soient synchronisés aussi, il faudra activer l'authentification anonyme **et**
-corriger ces deux textes.
+Il n'y a plus de mode invité : on entre dans l'application par Apple ou par
+Google, sans autre porte. Deux conséquences à garder en tête.
+
+**Au tout premier lancement, le réseau est indispensable.** Une fois connecté,
+Firebase conserve la session et l'application se relance et fonctionne hors
+ligne sans problème — mais quelqu'un qui installe Scornade dans un endroit sans
+réseau ne pourra pas s'en servir. C'est le prix d'un compte obligatoire.
+
+**Prévois un compte de test pour la revue Apple.** Les relecteurs refusent
+régulièrement les applications dont ils ne peuvent pas franchir l'écran de
+connexion. Renseigne des identifiants de démonstration dans App Store Connect,
+rubrique « Informations de connexion ».
