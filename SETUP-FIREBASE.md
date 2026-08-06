@@ -22,6 +22,22 @@ Puis :
   invité, et la règle 4.8 d'Apple impose « Se connecter avec Apple » dès lors
   qu'un autre service de connexion tiers est proposé.
 
+> **Le fournisseur Apple demande deux niveaux d'effort selon la cible.**
+>
+> Pour l'**app iOS**, il suffit de l'activer : rien d'autre à renseigner, Apple
+> et Firebase s'entendent via le bundle identifier.
+>
+> Pour le **site web**, Firebase réclame en plus un **Services ID**, ton **Team
+> ID**, un **Key ID** et une **clé privée `.p8`**, tous à créer côté
+> <https://developer.apple.com> (Certificates, Identifiers & Profiles). C'est
+> une demi-heure de manipulations, et la clé privée ne se télécharge qu'une
+> seule fois.
+>
+> Rien n'oblige à tout faire d'un coup : le site peut très bien sortir avec la
+> **connexion Google seule** — la règle 4.8 d'Apple encadre l'App Store, pas un
+> site web. Il suffit alors de masquer le bouton Apple dans `docs/assets/ui.js`
+> en attendant. L'app iOS, elle, a besoin des deux, mais sans cette paperasse.
+
 ## 2. Enregistrer l'application iOS
 
 Dans les réglages du projet → **Ajouter une application** → iOS.
