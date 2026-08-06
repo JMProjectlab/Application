@@ -11,10 +11,11 @@
 // sur ses propres documents.
 
 export const firebaseConfig = {
-  apiKey: "REMPLACER",
-  authDomain: "REMPLACER.firebaseapp.com",
-  projectId: "REMPLACER",
-  storageBucket: "REMPLACER.appspot.com",
-  messagingSenderId: "REMPLACER",
-  appId: "REMPLACER",
+  apiKey: "AIzaSyAwV1xPFIbhB5PQZDeKW9_o2fHmneSdXDU",
+  authDomain: "scorenade-d6ced.firebaseapp.com",
+  projectId: "scorenade-d6ced",
+  storageBucket: "scorenade-d6ced.firebasestorage.app",
+  messagingSenderId: "863817285373",
+  appId: "1:863817285373:web:8f640306916e1a4ac18894",
+  measurementId: "G-DX49YMYQ57",
 };
