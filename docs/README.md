@@ -9,9 +9,15 @@ rail de navigation et écran de score en deux colonnes à partir de 900 px.
 Dépôt GitHub → **Settings → Pages** → Source : `Deploy from a branch`,
 branche `main`, dossier **`/docs`**.
 
-Le site est alors publié sur `https://<compte>.github.io/Application/`, et la
-politique de confidentialité sur `.../politique-de-confidentialite.html` — c'est
-cette adresse-là qu'attend App Store Connect.
+Le site est alors publié à l'adresse `https://jmprojectlab.github.io/Scornade/`,
+et la politique de confidentialité sur
+`https://jmprojectlab.github.io/Scornade/politique-de-confidentialite.html` —
+c'est cette adresse-là qu'attend App Store Connect.
+
+> Le chemin suit le **nom du dépôt**. Si le dépôt est renommé, l'URL change
+> avec lui (GitHub redirige l'ancienne adresse, mais mieux vaut publier la
+> nouvelle). Le domaine autorisé côté Firebase, lui, ne bouge pas : c'est
+> `jmprojectlab.github.io`, sans le chemin.
 
 Aucune étape de compilation : ce sont des modules ES chargés directement par le
 navigateur.

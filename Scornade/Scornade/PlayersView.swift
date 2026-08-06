@@ -63,15 +63,35 @@ struct PlayersView: View {
                     Text("Supprimer mes données")
                 }
             }
+
+            // Apple exige un lien vers la politique de confidentialité accessible
+            // depuis l'application elle-même, pas seulement depuis la fiche
+            // App Store (règle 5.1.1).
+            Section("Confidentialité") {
+                Link(destination: Self.privacyPolicyURL) {
+                    HStack {
+                        Text("Politique de confidentialité")
+                        Spacer()
+                        Image(systemName: "arrow.up.right.square")
+                            .foregroundStyle(Color.inkSecondary)
+                    }
+                }
+            }
         }
         .navigationTitle("Joueurs")
         .alert("Supprimer mes données ?", isPresented: $showDeleteConfirm) {
             Button("Supprimer", role: .destructive) { store.deleteAllData() }
             Button("Annuler", role: .cancel) {}
         } message: {
-            Text("Cette action efface tous vos joueurs, vos parties et votre compte, sur cet appareil et dans iCloud. Elle est irréversible.")
+            Text("Cette action efface tous vos joueurs, vos parties et votre compte, sur cet appareil et sur le serveur. Elle est irréversible.")
         }
     }
+
+    /// Le chemin suit le nom du dépôt GitHub Pages ; il change si le dépôt est
+    /// renommé. `URL(string:)` ne peut pas échouer sur une constante littérale.
+    private static let privacyPolicyURL = URL(
+        string: "https://jmprojectlab.github.io/Scornade/politique-de-confidentialite.html"
+    )!
 
     private func accountLabel(_ u: UserAccount) -> String {
         switch u.mode {
