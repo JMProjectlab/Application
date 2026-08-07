@@ -144,13 +144,13 @@
         }
       }
     },
-    "Cette action efface tous vos joueurs, vos parties et votre compte, sur cet appareil et dans iCloud. Elle est irréversible.": {
+    "Cette action efface tous vos joueurs, vos parties et votre compte, sur cet appareil et sur le serveur. Elle est irréversible.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This erases all your players, games and account, on this device and in iCloud. This action is irreversible."
+            "value": "This erases all your players, games and account, on this device and on the server. This action is irreversible."
           }
         }
       }
@@ -199,6 +199,17 @@
         }
       }
     },
+    "Confidentialité": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy"
+          }
+        }
+      }
+    },
     "Connecté": {
       "extractionState": "manual",
       "localizations": {
@@ -206,6 +217,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Signed in"
+          }
+        }
+      }
+    },
+    "Politique de confidentialité": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy Policy"
           }
         }
       }

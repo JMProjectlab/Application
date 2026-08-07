@@ -1,9 +1,9 @@
-// Copiez ce fichier en `firebase-config.js` (même dossier) et remplissez-le avec
-// les valeurs de votre application web Firebase :
-//   console Firebase → Paramètres du projet → Vos applications → Web → Configuration
+// Configuration de l'application web Firebase du projet `scorenade-d6ced`.
+// Source : console Firebase → Paramètres du projet → Vos applications → Web.
 //
-// Tant que `firebase-config.js` n'existe pas, le site fonctionne en local :
-// les parties sont conservées dans le navigateur, sans compte ni synchronisation.
+// Tant que `apiKey` vaut « REMPLACER », le site fonctionne en local : les parties
+// sont conservées dans le navigateur, sans compte ni synchronisation, et l'écran
+// de connexion ne s'affiche pas. C'est le repli voulu, pas une panne.
 //
 // Ces clés ne sont pas des secrets — elles partent dans le navigateur de chaque
 // visiteur. Ce qui protège les données, ce sont les règles Firestore

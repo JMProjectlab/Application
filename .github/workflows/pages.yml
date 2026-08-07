@@ -1,0 +1,50 @@
+# Déploiement du site (dossier docs/) sur GitHub Pages.
+#
+# Ce workflow remplace le constructeur historique « Deploy from a branch ».
+# Ce dernier s'est retrouvé bloqué après le renommage du dépôt : ses exécutions
+# restaient trente minutes en file d'attente sans jamais démarrer, puis
+# échouaient. Le déploiement piloté par Actions repart d'une base saine et,
+# surtout, laisse voir ce qui se passe quand quelque chose coince.
+#
+# Pour l'activer : dépôt → Settings → Pages → Source → « GitHub Actions ».
+
+name: Deploy site to Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une seule mise en ligne à la fois. On ne coupe pas un déploiement en cours :
+# l'interrompre à mi-course laisserait le site dans un état partiel.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      # Le site n'a aucune étape de compilation : ce sont des modules ES chargés
+      # directement par le navigateur. On publie `docs/` tel quel.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
