@@ -46,11 +46,37 @@ function toast(message) {
 }
 
 function openSheet(title, body) {
+  openSheetHTML(title, `<p style="margin:0">${esc(body)}</p>`);
+}
+
+/** Même feuille, mais dont le contenu est du balisage déjà construit — pour
+ *  l'éditeur de manche, qui a besoin de champs de saisie. */
+function openSheetHTML(title, bodyHtml) {
   const dlg = document.getElementById("sheet");
   dlg.innerHTML = `<div class="sheet-head"><h2>${esc(title)}</h2>
       <button class="ghost" data-act="close-sheet">Fermer</button></div>
-    <div class="sheet-body">${esc(body)}</div>`;
+    <div class="sheet-body">${bodyHtml}</div>`;
   dlg.showModal();
+}
+
+/** Corrige les points d'une manche déjà jouée. */
+function openRoundEditor(session, index) {
+  const round = session.rounds[index] ?? [];
+  const fields = session.entrants.map((e, i) =>
+    `<label class="row" style="gap:12px">
+      <span class="name">${esc(e.name)}</span>
+      <input class="round-edit" type="text" inputmode="numeric" data-i="${i}"
+        value="${round[i] ?? 0}" aria-label="Points de ${esc(e.name)}"
+        style="width:90px;text-align:right"></label>`).join("");
+
+  const warning = session.beloteRounds && index < session.beloteRounds.length
+    ? `<p class="hint">Le détail de la donne (contrat, annonces) sera perdu :
+       seuls les points corrigés seront conservés.</p>`
+    : "";
+
+  openSheetHTML(`Manche ${index + 1}`,
+    `${fields}${warning}
+     <button class="btn primary" data-act="save-round" data-i="${index}">Enregistrer</button>`);
 }
 
 // --- écrans ---------------------------------------------------------------
@@ -163,6 +189,12 @@ function winnerBlock(session, detail, shareText, { belle = false, replay = "Rejo
       ? `<button class="btn primary" data-act="replay" data-keep="1">La belle (rejouer en cumulant)</button>
          <button class="btn secondary" data-act="replay">Revanche (0 – 0)</button>`
       : `<button class="btn primary" data-act="replay">${esc(replay)}</button>`) +
+    // « Reprendre » ne sert qu'aux parties closes à la main : celle qui s'est
+    // terminée sur l'objectif se refermerait aussitôt, tant que les points
+    // n'ont pas été corrigés.
+    (session.manuallyFinished
+      ? `<button class="btn secondary" data-act="reopen">Reprendre la partie</button>`
+      : "") +
     `<button class="btn secondary" data-act="home">Changer de jeu</button>`;
 }
 
@@ -175,8 +207,10 @@ function genericRows(session) {
   if (!session.rounds.length) return "";
   return session.rounds.map((r, i) => ({ r, i })).reverse().map(({ r, i }) =>
     `<div class="hist"><span class="ix">M${i + 1}</span>
-      <span class="dt tab">${session.entrants.map((e, j) =>
-        `${esc(e.name.slice(0, 3))} ${r[j] ?? 0}`).join(" · ")}</span>
+      <button class="hist-open" data-act="edit-round" data-i="${i}"
+        aria-label="Corriger la manche ${i + 1}">
+        <span class="dt tab">${session.entrants.map((e, j) =>
+          `${esc(e.name.slice(0, 3))} ${r[j] ?? 0}`).join(" · ")}</span></button>
       <button class="icon-btn" data-act="del-round" data-i="${i}"
         aria-label="Supprimer la manche ${i + 1}">✕</button></div>`).join("");
 }
@@ -223,7 +257,8 @@ function scoringGeneric(session, game) {
        </div>`;
   }
 
-  return { left: left + historyBlock(session, "Historique", genericRows(session)), right };
+  return { left: left + historyBlock(session, "Historique · touchez une manche pour la corriger",
+                                     genericRows(session)), right };
 }
 
 function scoringPayoo(session) {
@@ -547,6 +582,44 @@ function screenPlayers() {
   return html;
 }
 
+/**
+ * Les parties terminées, de la plus récente à la plus ancienne.
+ *
+ * Sans cet écran, une partie sortait de l'interface dès qu'on la quittait :
+ * elle nourrissait encore les statistiques, mais plus rien ne permettait d'y
+ * revenir pour corriger une saisie.
+ */
+function screenHistory() {
+  const finished = S.state.sessions
+    .filter(E.isFinished)
+    .slice()
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  let html = `<h1 style="font-size:28px;margin-bottom:18px">Historique</h1>`;
+  if (!finished.length) {
+    return html + `<div class="empty">Les parties que vous aurez terminées s'afficheront ici,
+      et vous pourrez y revenir pour corriger les points.</div>`;
+  }
+
+  html += `<div class="card">` + finished.map((s) => {
+    const w = E.winnerIndex(s);
+    const scores = s.entrants.map((e, i) => `${esc(e.name)} ${E.total(s, i)}`).join(" · ");
+    const when = new Date(s.date).toLocaleDateString("fr-FR",
+      { day: "numeric", month: "short", year: "numeric" });
+    return `<div class="row">
+      <span class="glyph" style="width:28px">${glyph(s.gameId, 20)}</span>
+      <button class="hist-open" data-act="open-session" data-id="${s.id}">
+        <span class="name">${esc(s.gameName)}</span>
+        <span class="sub tab">${scores}</span>
+      </button>
+      <span class="sub" style="text-align:right">
+        ${w === null ? "" : `🏆 ${esc(s.entrants[w].name)}<br>`}${when}</span>
+      <button class="icon-btn" data-act="del-session" data-id="${s.id}"
+        aria-label="Supprimer la partie de ${esc(s.gameName)}">✕</button></div>`;
+  }).join("") + `</div>`;
+  return html;
+}
+
 function screenStats() {
   if (!S.state.players.length) {
     return `<h1 style="font-size:28px;margin-bottom:18px">Statistiques</h1>
@@ -616,6 +689,7 @@ function screenStats() {
 
 const NAV = [
   ["home", "Jeux"],
+  ["history", "Historique"],
   ["players", "Joueurs"],
   ["stats", "Statistiques"],
 ];
@@ -632,6 +706,7 @@ export function render() {
   switch (view.screen) {
     case "new": body = screenNewGame(); break;
     case "score": body = screenScoring(); break;
+    case "history": body = screenHistory(); break;
     case "players": body = screenPlayers(); break;
     case "stats": body = screenStats(); break;
     default: body = screenHome();
@@ -684,7 +759,10 @@ function playTurn(session, outcome) {
 export function bindEvents() {
   const root = document.getElementById("app");
 
-  root.addEventListener("click", (ev) => {
+  // La feuille modale vit à côté de `#app`, pas dedans : ses clics ne
+  // remontaient donc pas jusqu'ici, et son bouton « Fermer » ne faisait rien.
+  // On lui accroche le même gestionnaire.
+  const onClick = (ev) => {
     const el = ev.target.closest("[data-act]");
     if (!el) return;
     const act = el.dataset.act;
@@ -767,6 +845,26 @@ export function bindEvents() {
       case "del-round": S.deleteRound(session, Number(el.dataset.i)); render(); break;
       case "undo": S.undoRound(session); scratch.note = null; render(); break;
       case "finish": S.finishSession(session); toast("Partie terminée."); render(); break;
+      case "reopen": S.reopenSession(session); toast("Partie reprise."); render(); break;
+
+      case "edit-round": openRoundEditor(session, Number(el.dataset.i)); break;
+      case "save-round": {
+        const dlg = document.getElementById("sheet");
+        const deltas = [...dlg.querySelectorAll(".round-edit")]
+          .map((input) => parseInt(input.value, 10) || 0);
+        S.updateRound(session, Number(el.dataset.i), deltas);
+        dlg.close();
+        toast("Manche corrigée.");
+        render();
+        break;
+      }
+
+      case "del-session": {
+        if (!confirm("Supprimer cette partie ? Elle disparaîtra aussi des statistiques.")) break;
+        S.deleteSession(el.dataset.id);
+        render();
+        break;
+      }
       case "replay":
         S.resetSession(session, el.dataset.keep === "1");
         scratch = {};
@@ -863,7 +961,10 @@ export function bindEvents() {
         break;
       }
     }
-  });
+  };
+
+  root.addEventListener("click", onClick);
+  document.getElementById("sheet").addEventListener("click", onClick);
 
   root.addEventListener("input", (ev) => {
     const el = ev.target;

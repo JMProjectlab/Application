@@ -173,18 +173,51 @@ final class Store: ObservableObject {
         guard let i = sessions.firstIndex(where: { $0.id == sessionID }),
               sessions[i].rounds.indices.contains(index) else { return }
         sessions[i].rounds.remove(at: index)
-        if var br = sessions[i].beloteRounds, br.indices.contains(index) {
+        removeStructuredRound(&sessions[i], at: index)
+        sessions[i].manuallyFinished = false
+        save()
+    }
+
+    /// Corrige les points d'une manche déjà jouée.
+    ///
+    /// Aux jeux à contrat, `rounds` est calculé à partir d'un enregistrement
+    /// détaillé (la donne, le contrat, les bouts…). Réécrire les deltas sans
+    /// toucher à cet enregistrement les ferait diverger : l'historique
+    /// afficherait une donne qui ne correspond plus aux points comptés. On
+    /// supprime donc l'enregistrement détaillé de cette manche-là, ce qui la
+    /// ramène à une manche ordinaire — les autres gardent leur détail.
+    func updateRound(sessionID: UUID, at index: Int, deltas: [Int]) {
+        guard let i = sessions.firstIndex(where: { $0.id == sessionID }),
+              sessions[i].rounds.indices.contains(index) else { return }
+        let n = sessions[i].entrants.count
+        sessions[i].rounds[index] = (0..<n).map { deltas.indices.contains($0) ? deltas[$0] : 0 }
+        removeStructuredRound(&sessions[i], at: index)
+        sessions[i].manuallyFinished = false
+        save()
+    }
+
+    private func removeStructuredRound(_ s: inout ScoreSession, at index: Int) {
+        if var br = s.beloteRounds, br.indices.contains(index) {
             br.remove(at: index)
-            sessions[i].beloteRounds = br
+            s.beloteRounds = br
         }
-        if var tr = sessions[i].tarotRounds, tr.indices.contains(index) {
+        if var tr = s.tarotRounds, tr.indices.contains(index) {
             tr.remove(at: index)
-            sessions[i].tarotRounds = tr
+            s.tarotRounds = tr
         }
-        if var cr = sessions[i].coincheRounds, cr.indices.contains(index) {
+        if var cr = s.coincheRounds, cr.indices.contains(index) {
             cr.remove(at: index)
-            sessions[i].coincheRounds = cr
+            s.coincheRounds = cr
         }
+    }
+
+    /// Rouvre une partie close à la main pour pouvoir la continuer.
+    ///
+    /// Une partie terminée parce qu'un joueur a atteint l'objectif reste
+    /// terminée : `reachedEnd` se recalcule à partir des scores. Il faut alors
+    /// corriger une manche pour repasser sous l'objectif.
+    func reopen(sessionID: UUID) {
+        guard let i = sessions.firstIndex(where: { $0.id == sessionID }) else { return }
         sessions[i].manuallyFinished = false
         save()
     }
@@ -226,7 +259,11 @@ final class Store: ObservableObject {
     func undoLastRound(sessionID: UUID) {
         guard let i = sessions.firstIndex(where: { $0.id == sessionID }),
               !sessions[i].rounds.isEmpty else { return }
+        let last = sessions[i].rounds.count - 1
         sessions[i].rounds.removeLast()
+        // Sans cette ligne, la donne détaillée survivait à l'annulation et
+        // l'historique d'une belote affichait une manche de plus que le score.
+        removeStructuredRound(&sessions[i], at: last)
         sessions[i].manuallyFinished = false
         save()
     }
