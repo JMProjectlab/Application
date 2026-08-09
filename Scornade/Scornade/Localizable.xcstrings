@@ -23,6 +23,17 @@
         }
       }
     },
+    "À chaque mène, l'équipe dont la boule est la plus proche du cochonnet marque un point par boule mieux placée que la meilleure de l'adversaire — donc de 1 à 6 points selon la formation.\n\nOn rejoue jusqu'à ce qu'une équipe atteigne 13 points.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In each end, the team whose boule lies closest to the jack scores one point per boule better placed than the opponent's best — so 1 to 6 points depending on the format.\n\nEnds are played until a team reaches 13 points."
+          }
+        }
+      }
+    },
     "Ajouter": {
       "extractionState": "manual",
       "localizations": {
@@ -188,6 +199,17 @@
         }
       }
     },
+    "Chacun a une grille de douze cartes face cachée, dont les valeurs vont de −2 à 12. À son tour, on échange une carte avec la pioche ou la défausse, ou on en retourne une, pour faire baisser son total.\n\nUne colonne de trois cartes identiques est retirée du jeu : elle ne compte plus rien.\n\nLa manche s'arrête dès qu'un joueur a retourné toute sa grille. Tout le monde révèle alors ses cartes et additionne. Attention à qui ferme : il doit avoir le total le plus bas, strictement, faute de quoi son score de manche est doublé.\n\nLa partie s'arrête dès qu'un joueur atteint 100 points. Le plus petit total l'emporte.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everyone has a grid of twelve face-down cards worth between −2 and 12. On your turn you swap a card with the deck or the discard pile, or flip one over, to bring your total down.\n\nA column of three identical cards is removed from play: it counts for nothing.\n\nThe round stops as soon as one player has their whole grid face up. Everyone then reveals and adds up. Watch out for whoever closes: they must have the lowest total, strictly, or their round score is doubled.\n\nThe game ends as soon as a player reaches 100 points. The smallest total wins."
+          }
+        }
+      }
+    },
     "Changer de jeu": {
       "extractionState": "manual",
       "localizations": {
@@ -195,6 +217,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Change game"
+          }
+        }
+      }
+    },
+    "Chaque joueur part de 501 et retranche ce qu'il marque à chaque volée de trois fléchettes. Le double compte deux fois la valeur du secteur, le triple trois fois, le vert extérieur 25 et le rouge central 50.\n\nIl faut tomber exactement à zéro. Une volée qui ferait passer en dessous, ou qui laisserait 1 point, est annulée : c'est le bust, et le score revient à ce qu'il était avant la volée.\n\nScornade compte en sortie simple : arriver à zéro suffit. En compétition on joue en double out, où la dernière fléchette doit se planter dans un double ou dans le rouge central — la saisie ne change pas, c'est à vous de ne valider que les sorties conformes.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each player starts at 501 and subtracts what they score with every three-dart visit. A double counts twice the segment, a treble three times, the outer bull 25 and the inner bull 50.\n\nYou must land exactly on zero. A visit that would go below, or leave 1 point, is void: that is a bust, and the score returns to what it was before the visit.\n\nScornade counts straight out: reaching zero is enough. Competition play uses double out, where the final dart must land in a double or the inner bull — entry is the same, so it is up to you to accept only valid finishes."
+          }
+        }
+      }
+    },
+    "Chaque mot posé rapporte la valeur de ses lettres, modifiée par les cases couvertes : lettre compte double ou triple, mot compte double ou triple. Les multiplicateurs de mot s'appliquent après ceux de lettre, et une case ne sert qu'une fois.\n\nPoser ses sept lettres en un seul coup — un scrabble — ajoute 50 points de prime.\n\nEn fin de partie, chacun retranche la valeur des lettres qui lui restent, et celui qui a terminé ajoute la somme de celles des autres. Le total le plus élevé gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each word scores the value of its letters, modified by the squares it covers: double or triple letter, double or triple word. Word multipliers apply after letter multipliers, and a square only counts once.\n\nLaying all seven tiles in one move — a scrabble — adds a 50-point bonus.\n\nAt the end, each player subtracts the value of their remaining letters, and whoever went out adds the sum of everyone else's. Highest total wins."
           }
         }
       }
@@ -254,6 +298,28 @@
         }
       }
     },
+    "Dix frames par partie, deux boules par frame. Un spare ajoute les quilles de la boule suivante, un strike celles des deux boules suivantes — d'où un maximum à 300.\n\nSaisissez le score final de chaque joueur, celui qu'affiche la piste. Le plus haut gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ten frames a game, two balls a frame. A spare adds the pins from the next ball, a strike those from the next two — hence a 300 maximum.\n\nEnter each player's final score, the one the lane displays. Highest wins."
+          }
+        }
+      }
+    },
+    "Douze quilles numérotées de 1 à 12, lancées avec le mölkky à la main, par en dessous.\n\nUne seule quille renversée rapporte son numéro. Plusieurs quilles renversées rapportent leur nombre : deux quilles font deux points, quels que soient leurs numéros. Les quilles se relèvent là où elles sont tombées, et le jeu s'étale au fil des lancers.\n\nIl faut atteindre exactement 50. Dépasser fait retomber le score à 25.\n\nTrois lancers ratés d'affilée éliminent le joueur.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Twelve skittles numbered 1 to 12, knocked down with the mölkky thrown underarm.\n\nA single skittle down scores its number. Several skittles down score how many they are: two skittles make two points, whatever their numbers. Skittles stand back up where they fell, so the layout spreads out over the game.\n\nYou must reach exactly 50. Going over drops the score back to 25.\n\nThree missed throws in a row knock the player out."
+          }
+        }
+      }
+    },
     "Enregistrer": {
       "extractionState": "manual",
       "localizations": {
@@ -272,6 +338,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "History"
+          }
+        }
+      }
+    },
+    "Jeu de plis à quatre, en deux équipes, avec 32 cartes et un atout choisi à chaque donne.\n\nÀ l'atout, l'ordre change : Valet 20 points, 9 14, As 11, 10 10, Roi 4, Dame 3, le 8 et le 7 rien. Dans les autres couleurs : As 11, 10 10, Roi 4, Dame 3, Valet 2, le reste rien. Les cartes totalisent 152 points, plus 10 pour le dernier pli — le dix de der — soit 162 points par donne.\n\nLe camp qui prend s'engage à faire au moins 82 points, c'est-à-dire plus de la moitié. S'il y parvient, chaque camp marque ce qu'il a ramassé. Sinon il est dedans, et les 162 points vont entièrement à la défense.\n\nLa belote-rebelote — Roi et Dame d'atout dans la même main — rapporte 20 points à son camp, qui les conserve même contrat manqué. Le capot, tous les plis pour un seul camp, vaut 252 points.\n\nPremier camp à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A four-player trick game in two teams, with 32 cards and a trump suit chosen each deal.\n\nIn trumps the order changes: Jack 20 points, 9 is 14, Ace 11, 10 is 10, King 4, Queen 3, the 8 and 7 nothing. In the other suits: Ace 11, 10 is 10, King 4, Queen 3, Jack 2, the rest nothing. The cards total 152 points, plus 10 for the last trick — the dix de der — making 162 points a deal.\n\nThe taking side commits to at least 82 points, that is more than half. If they get there, each side scores what it collected. If not they are \"dedans\", and all 162 points go to the defence.\n\nBelote-rebelote — King and Queen of trumps in the same hand — is worth 20 points to its side, kept even on a failed contract. A capot, every trick to one side, is worth 252 points.\n\nFirst side to the target wins."
+          }
+        }
+      }
+    },
+    "Jeu de plis par équipes de deux, avec 32 cartes.\n\nL'ordre est particulier : le 10 est la carte maîtresse — la manille — suivi de l'As, appelé manillon. La manille vaut 5 points, l'As 4, le Roi 3, la Dame 2, le Valet 1 ; le 9, le 8 et le 7 ne valent rien. Soit 60 points par donne.\n\nCertaines tables ajoutent un point pour le dernier pli. C'est à convenir avant de commencer.\n\nPremier camp à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A trick game in teams of two, with 32 cards.\n\nThe order is unusual: the 10 is the top card — the manille — followed by the Ace, called the manillon. The manille is worth 5 points, the Ace 4, the King 3, the Queen 2, the Jack 1; the 9, 8 and 7 nothing. That makes 60 points a deal.\n\nSome tables add a point for the last trick. Agree on it before starting.\n\nFirst side to the target wins."
+          }
+        }
+      }
+    },
+    "La belote, mais l'atout et l'engagement se décident aux enchères. On annonce un nombre de points de 80 à 160, de dix en dix, dans une couleur — ou un capot, voire une générale.\n\nLes 162 points de la donne se comptent comme à la belote : 152 aux cartes, 10 pour le dix de der, et 20 de plus pour la belote-rebelote. Le camp qui prend doit atteindre le contrat annoncé, sans quoi il perd tout et la défense encaisse.\n\nL'adversaire qui juge le contrat intenable peut coincher : l'enjeu double. Le camp coinché peut alors surcoincher, et l'enjeu quadruple.\n\nPremier camp à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Belote, but trumps and the commitment are settled by bidding. You call a number of points from 80 to 160, in tens, in a suit — or a capot, even a générale.\n\nThe deal's 162 points count as in belote: 152 in cards, 10 for the last trick, and 20 more for belote-rebelote. The taking side must reach the bid, failing which it loses everything and the defence collects.\n\nAn opponent who thinks the bid cannot be made may \"coincher\": the stake doubles. The doubled side may then \"surcoincher\", and the stake quadruples.\n\nFirst side to the target wins."
           }
         }
       }
@@ -298,6 +397,17 @@
         }
       }
     },
+    "Le premier à se défausser de toutes ses cartes remporte la manche et marque ce qui reste dans les mains adverses.\n\nValeurs : les cartes numérotées comptent leur chiffre ; Passe, Inversion et +2 valent 20 points chacune ; Joker et +4 en valent 50.\n\nNe pas annoncer « Uno » avant de poser son avant-dernière carte coûte deux cartes de pénalité si quelqu'un le remarque.\n\nOn joue jusqu'à 500 points, et c'est le score cumulé le plus haut qui gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The first player to shed every card wins the round and scores whatever is left in the other hands.\n\nValues: numbered cards count their face value; Skip, Reverse and Draw Two are 20 points each; Wild and Wild Draw Four are 50.\n\nFailing to call \"Uno\" before playing your next-to-last card costs two penalty cards if anyone notices.\n\nPlay runs to 500 points, and the highest running total wins."
+          }
+        }
+      }
+    },
     "Les parties que vous aurez terminées s'afficheront ici, et vous pourrez y revenir pour corriger les points.": {
       "extractionState": "manual",
       "localizations": {
@@ -305,6 +415,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Games you finish will show up here, and you can come back to correct their points."
+          }
+        }
+      }
+    },
+    "On avance en posant des cartes bornes, en se défendant des attaques et en jouant ses bottes. La manche s'arrête à 1000 bornes.\n\nAu décompte : les bornes parcourues comptent pour leur distance, chaque botte vaut 100 points, un coup fourré en ajoute 300, l'allonge 200, boucler les 1000 bornes sans jamais poser de carte 200 en rapporte 300, et le capot — l'adversaire n'a pas avancé d'une seule borne — 500.\n\nSaisissez le total de chaque joueur à la fin de la manche. Premier à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You advance by playing distance cards, defending against attacks and laying your safeties. A round ends at 1000 miles.\n\nScoring: distance counts for its value, each safety is worth 100 points, a coup-fourré adds 300, the extension 200, completing the 1000 without ever playing a 200 card earns 300, and a shutout — the opponent covered no distance at all — 500.\n\nEnter each player's round total. First to the target wins."
+          }
+        }
+      }
+    },
+    "On forme des combinaisons — suites d'au moins trois cartes de la même couleur, ou brelans et carrés de même valeur — jusqu'à poser toute sa main.\n\nDès qu'un joueur termine, les autres comptent ce qui leur reste : les figures valent 10, l'As 11 lorsqu'il suit le Roi et 1 lorsqu'il ouvre une suite, les autres cartes leur numéro, et le Joker 20 points à la plupart des tables.\n\nCes points s'ajoutent au passif. Le score cumulé le plus bas à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You build melds — runs of at least three cards in one suit, or three and four of a kind — until your whole hand is down.\n\nAs soon as a player goes out, the others count what is left: face cards are 10, the Ace 11 when it follows the King and 1 when it opens a run, other cards their number, and the Joker 20 at most tables.\n\nThose points go against them. Lowest running total at the target wins."
           }
         }
       }
@@ -331,6 +463,17 @@
         }
       }
     },
+    "Quand un joueur pose son dernier domino, ou que la partie est bloquée faute de coup possible, les autres comptent les points des dominos qui leur restent en main.\n\nCes points s'ajoutent à leur passif. Le score cumulé le plus bas à l'objectif gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When a player lays their last domino, or the game blocks with no move available, the others count the pips still in their hands.\n\nThose points go against them. Lowest running total at the target wins."
+          }
+        }
+      }
+    },
     "Reprendre la partie": {
       "extractionState": "manual",
       "localizations": {
@@ -338,6 +481,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Resume game"
+          }
+        }
+      }
+    },
+    "Scornade compte les manches gagnées, quelle que soit la variante — 8 américain, 9, ou partie libre.\n\nLe premier au nombre de manches convenu remporte le match.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scornade counts frames won, whatever the variant — eight-ball, nine-ball or straight pool.\n\nFirst to the agreed number of frames takes the match."
+          }
+        }
+      }
+    },
+    "Scornade suit le tapis de chaque joueur, pas les mains.\n\nÀ chaque étape, saisissez la variation de jetons : positive pour un gain, négative pour une perte. Le plus gros tapis en fin de session gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scornade tracks each player's stack, not the hands.\n\nAt each step, enter the change in chips: positive for a win, negative for a loss. The biggest stack at the end of the session wins."
+          }
+        }
+      }
+    },
+    "Scornade tient le score du match, pas la partie elle-même.\n\nUne partie gagnée vaut 1 point. Elle en vaut 2 si l'adversaire n'a sorti aucun pion — le gammon — et 3 s'il lui en reste dans votre jan intérieur ou sur la barre — le backgammon. Le videau multiplie ce résultat par la valeur qu'il a atteinte.\n\nPremier au nombre de points convenu remporte le match.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scornade keeps the match score, not the game itself.\n\nA win is worth 1 point. It is worth 2 if the opponent has borne off nothing — a gammon — and 3 if they still have a checker in your home board or on the bar — a backgammon. The doubling cube multiplies that result by whatever value it has reached.\n\nFirst to the agreed number of points takes the match."
           }
         }
       }
@@ -360,6 +536,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Delete this game?"
+          }
+        }
+      }
+    },
+    "Treize catégories à remplir, une par tour. À chaque tour on lance cinq dés, avec deux relances possibles sur les dés de son choix.\n\nSection supérieure — des 1 aux 6 — on marque la somme des dés de la valeur choisie. Si cette section atteint 63 points, elle rapporte 35 points de bonus.\n\nSection inférieure : le brelan et le carré valent la somme des cinq dés, le full 25, la petite suite 30, la grande suite 40, le Yam's 50, et la Chance la somme des dés.\n\nUne catégorie ne se remplit qu'une fois. Quand rien ne convient, il faut en barrer une à zéro. Le plus gros total gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thirteen categories to fill, one per turn. Each turn you roll five dice, with two rerolls on whichever dice you like.\n\nUpper section — ones through sixes — you score the sum of the dice showing that value. If the section reaches 63 points, it earns a 35-point bonus.\n\nLower section: three and four of a kind score the sum of all five dice, a full house 25, a small straight 30, a large straight 40, a Yahtzee 50, and Chance the sum of the dice.\n\nA category is filled only once. When nothing fits, you must cross one out at zero. Highest total wins."
+          }
+        }
+      }
+    },
+    "Trois dés, 21 jetons — 11 seulement à deux joueurs — et deux phases.\n\nLa charge : le pot se vide, et c'est le perdant de chaque coup qui ramasse les jetons. Mieux vaut en prendre le moins possible.\n\nLa décharge : une fois le pot vide, les jetons passent du meilleur au moins bon du coup. Le premier à n'en avoir plus aucun gagne.\n\nValeurs appliquées par l'application : le 421 vaut 10 jetons, le brelan d'as 7, les autres brelans leur numéro — de 6 à 2 — la tierce et la nénette 2, et toute autre combinaison 1. Ces barèmes varient d'une table à l'autre ; ce sont ceux-là que Scornade utilise.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Three dice, 21 tokens — only 11 with two players — and two phases.\n\nThe charge: the pot empties, and whoever loses each throw picks the tokens up. The fewer you take, the better.\n\nThe discharge: once the pot is empty, tokens pass from the best throw to the worst. The first player left with none wins.\n\nValues the app applies: 421 is worth 10 tokens, three aces 7, other triples their number — 6 down to 2 — a run and a nénette 2, and anything else 1. These scales vary from table to table; these are the ones Scornade uses."
           }
         }
       }
@@ -1585,13 +1783,13 @@
         }
       }
     },
-    "🎲 %@ remporte le 421, dernier avec des jetons ! Compté avec Scornade.": {
+    "🎲 %@ remporte le 421, premier débarrassé de ses jetons ! Compté avec Scornade.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "🎲 %@ wins 421, last one with tokens left! Scored with Scornade."
+            "value": "🎲 %@ wins at 421, first to shed every token! Counted with Scornade."
           }
         }
       }
@@ -1647,204 +1845,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "🏆 %@ wins Mölkky with exactly 50 points! Scored with Scornade."
-          }
-        }
-      }
-    },
-    "Le camp qui prend s'engage à faire au moins 82 des 162 points en jeu (100 en cas de belote annoncée). S'il échoue, tous les points vont à la défense. Premier camp à l'objectif gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The team that takes the bid must score at least 82 of the 162 points in play (100 if belote is announced). If they fail, all points go to the defense. First team to the target wins."
-          }
-        }
-      }
-    },
-    "Comme la belote, mais l'annonce est un contrat chiffré (80 à 160, ou capot) que l'adversaire peut coincher (×2) voire surcoincher (×4). Le camp qui prend doit atteindre son contrat aux points, sous peine de tout perdre.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Like belote, but the bid is a numbered contract (80 to 160, or capot) that the opponents can double (×2) or redouble (×4). The bidding team must reach their contract in points, or lose everything."
-          }
-        }
-      }
-    },
-    "À chaque manche, les joueurs qui n'ont pas gagné comptent les points des cartes qu'il leur reste en main. Le score cumulé le plus bas à l'objectif gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Each round, the players who didn't win count the points of the cards left in their hand. The lowest cumulative score at the target wins."
-          }
-        }
-      }
-    },
-    "Le gagnant d'une manche marque les points des cartes restées en main de ses adversaires. Premier à l'objectif, le score cumulé le plus haut gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The winner of a round scores the points of the cards left in their opponents' hands. First to the target, the highest cumulative score wins."
-          }
-        }
-      }
-    },
-    "Additionnez les valeurs de vos cartes visibles à la fin de chaque manche. Le joueur avec le score cumulé le plus bas à l'objectif remporte la partie.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add up the values of your face-up cards at the end of each round. The player with the lowest cumulative score at the target wins the game."
-          }
-        }
-      }
-    },
-    "Notez le score de chaque joueur à la fin de chaque tour. Le total le plus élevé en fin de partie gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Note each player's score at the end of every turn. The highest total at the end of the game wins."
-          }
-        }
-      }
-    },
-    "Chaque joueur part de 501 et retire les points marqués à chaque volée. Interdit de finir sur 1 ; une volée qui dépasse ou laisse 1 point est annulée (bust). Premier à 0 gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Each player starts at 501 and subtracts the points scored each throw. You can't finish on 1; a throw that goes below 0 or leaves exactly 1 point is cancelled (bust). First to 0 wins."
-          }
-        }
-      }
-    },
-    "Chaque mène rapporte des points à l'équipe la plus proche du cochonnet. Première équipe à 13 points gagne la partie.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Each end scores points for the team closest to the jack. First team to 13 points wins the game."
-          }
-        }
-      }
-    },
-    "Comptez les manches remportées. Premier joueur à 5 manches gagne le match.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Count the games won. First player to 5 games wins the match."
-          }
-        }
-      }
-    },
-    "Remplissez les 13 catégories de la grille au fil des lancers de dés. Un bonus de 35 points est offert si la partie supérieure atteint 63. Le plus gros total gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fill in the 13 categories on the scoresheet as you roll the dice. A 35-point bonus is awarded if the upper section reaches 63. The highest total wins."
-          }
-        }
-      }
-    },
-    "Chaque perdant charge des jetons dans la cave selon sa combinaison de dés. Une fois la cave vide, les jetons circulent entre joueurs : le premier à s'en délester gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Each loser puts tokens into the pot based on their dice combination. Once the pot is empty, tokens pass between players: first to get rid of theirs wins."
-          }
-        }
-      }
-    },
-    "Jeu de plis par équipes de deux où la manille (le 10) et l'as valent le plus de points. Comptez les points remportés à chaque donne ; premier camp à l'objectif gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A trick-taking game played in pairs, where the manille (the 10) and the ace are worth the most points. Count the points won each hand; first team to the target wins."
-          }
-        }
-      }
-    },
-    "Comptez les parties gagnées, en tenant compte du cube de doublement le cas échéant. Premier joueur à 7 points de match gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Count the games won, factoring in the doubling cube where applicable. First player to 7 match points wins."
-          }
-        }
-      }
-    },
-    "Notez le score final affiché par la piste (ou calculé manuellement) après les 10 frames de chaque partie. Le plus haut score gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Note the final score shown by the lane (or calculated by hand) after the 10 frames of each game. The highest score wins."
-          }
-        }
-      }
-    },
-    "Suivez l'évolution du tapis de jetons de chaque joueur au fil des mains (entrez la variation à chaque étape). Le plus gros tapis à la fin de la session gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Track each player's chip stack as hands are played (enter the change at each step). The biggest stack at the end of the session wins."
-          }
-        }
-      }
-    },
-    "À chaque manche, les joueurs qui n'ont pas gagné comptent les points des dominos qu'il leur reste en main. Le score cumulé le plus bas à l'objectif gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Each round, the players who didn't win count the points of the dominoes left in their hand. The lowest cumulative score at the target wins."
-          }
-        }
-      }
-    },
-    "Notez le total de points (bornes parcourues, primes et coups fourrés) marqué par chaque joueur à la fin de chaque manche. Premier à l'objectif gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Note the total points (distance covered, bonuses and coups fourrés) scored by each player at the end of every round. First to the target wins."
-          }
-        }
-      }
-    },
-    "Lancez le mölkky pour faire tomber les quilles : une seule quille abattue rapporte son numéro, plusieurs quilles rapportent leur nombre. Il faut atteindre exactement 50 ; un dépassement fait retomber le score à 25.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Throw the mölkky to knock down skittles: a single skittle scores its number, several skittles score their count. You must reach exactly 50; overshooting drops your score back to 25."
           }
         }
       }
