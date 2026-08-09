@@ -1,6 +1,28 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "60 cartes : quatre couleurs numérotées de 1 à 10, sans aucune valeur, qui servent seulement à jouer les plis, et 20 payoos numérotés de 1 à 20.\n\nChaque payoo vaut son numéro en points de pénalité. Avant la donne, un dé (ou une carte tirée au hasard) désigne une couleur : le 7 de cette couleur devient le Papayoo et vaut 40 points à lui seul. Une manche met donc toujours 250 points en jeu — 210 pour les payoos, 40 pour le Papayoo.\n\nCartes distribuées et taille de l'écart, selon le nombre de joueurs :\n• 3 joueurs — 20 cartes, écart de 5\n• 4 joueurs — 15 cartes, écart de 5\n• 5 joueurs — 12 cartes, écart de 4\n• 6 joueurs — 10 cartes, écart de 3\n• 7 joueurs — 8 cartes, écart de 3\n• 8 joueurs — 7 cartes, écart de 3\n\nÀ sept et à huit joueurs, on retire d'abord les 1 des quatre couleurs — jamais un payoo.\n\nChacun choisit son écart et le passe face cachée à son voisin de gauche, avant de regarder celui qu'il reçoit de sa droite. On joue ensuite aux plis : il faut fournir la couleur demandée, sinon on se défausse de ce qu'on veut. Il n'y a pas d'atout, et c'est la plus forte carte de la couleur demandée qui remporte le pli, avec toutes les pénalités qu'il contient.\n\nLe total marqué sur une manche vaut toujours 250. Le moins de points possible gagne.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "60 cards: four suits numbered 1 to 10, worth nothing and used only to play tricks, and 20 payoos numbered 1 to 20.\n\nEach payoo is worth its number in penalty points. Before dealing, a die (or a card drawn at random) picks a suit: the 7 of that suit becomes the Papayoo and is worth 40 points on its own. A round therefore always puts 250 points in play — 210 for the payoos, 40 for the Papayoo.\n\nCards dealt and size of the pass, by player count:\n• 3 players — 20 cards, pass 5\n• 4 players — 15 cards, pass 5\n• 5 players — 12 cards, pass 4\n• 6 players — 10 cards, pass 3\n• 7 players — 8 cards, pass 3\n• 8 players — 7 cards, pass 3\n\nWith seven and eight players, first remove the 1 of each of the four suits — never a payoo.\n\nEveryone picks their pass and hands it face down to the player on their left, before looking at the one coming from their right. Then play tricks: you must follow suit, otherwise discard whatever you like. There are no trumps, and the highest card of the led suit takes the trick along with every penalty in it.\n\nA round always totals 250 points. Fewest points wins."
+          }
+        }
+      }
+    },
+    "78 cartes : 21 atouts, l'Excuse, et quatre couleurs de 14 cartes (Roi, Dame, Cavalier, Valet, puis 10 à 1).\n\nLes trois bouts sont le 1 d'atout (le Petit), le 21 et l'Excuse. Ce sont eux qui fixent l'objectif du preneur : 56 points sans bout, 51 avec un, 41 avec deux, 36 avec les trois.\n\nLe preneur joue seul contre tous les autres — à cinq, il appelle un roi et s'associe à celui qui le détient. Quatre contrats, quatre multiplicateurs : Prise ×1, Garde ×2, Garde sans ×4, Garde contre ×6. En Prise et en Garde, le chien est retourné et le preneur fait son écart ; en Garde sans il lui revient sans être vu ; en Garde contre il va à la défense.\n\nScore d'une donne : (25 + écart) × contrat, l'écart étant la différence avec l'objectif. S'y ajoutent le petit au bout (10 × contrat, pour le camp qui remporte la dernière levée avec le Petit) et la poignée (20, 30 ou 40 points, jamais multipliés). Le preneur encaisse ce total autant de fois qu'il a d'adversaires, et chacun d'eux le perd une fois : la somme d'une donne est toujours nulle.\n\nSeuils de poignée : 13, 15 ou 18 atouts à trois joueurs ; 10, 13 ou 15 à quatre ; 8, 10 ou 13 à cinq.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "78 cards: 21 trumps, the Fool, and four suits of 14 cards (King, Queen, Knight, Jack, then 10 down to 1).\n\nThe three oudlers are the 1 of trumps (the Petit), the 21 and the Fool. They set the taker's objective: 56 points with no oudler, 51 with one, 41 with two, 36 with all three.\n\nThe taker plays alone against everyone else — with five players, they call a king and partner with whoever holds it. Four contracts, four multipliers: Prise ×1, Garde ×2, Garde sans ×4, Garde contre ×6. In Prise and Garde the dog is turned up and the taker discards; in Garde sans it goes to the taker unseen; in Garde contre it goes to the defence.\n\nScoring a hand: (25 + difference) × contract, the difference being the gap to the objective. Add the petit au bout (10 × contract, for the side winning the last trick with the Petit) and the poignée (20, 30 or 40 points, never multiplied). The taker collects that total once per opponent, and each of them loses it once: a hand always sums to zero.\n\nPoignée thresholds: 13, 15 or 18 trumps with three players; 10, 13 or 15 with four; 8, 10 or 13 with five."
+          }
+        }
+      }
+    },
     "Ajouter": {
       "extractionState": "manual",
       "localizations": {
@@ -1647,28 +1669,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Like belote, but the bid is a numbered contract (80 to 160, or capot) that the opponents can double (×2) or redouble (×4). The bidding team must reach their contract in points, or lose everything."
-          }
-        }
-      }
-    },
-    "Le preneur annonce prise, garde, garde sans ou garde contre et doit réunir un nombre de points dépendant de ses bouts (oudlers). Poignée et petit au bout apportent des bonus. Le total d'une donne est toujours nul.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The taker bids prise, garde, garde sans or garde contre, and must gather a number of points depending on their oudlers. Handfuls and petit au bout add bonuses. Every hand always sums to zero."
-          }
-        }
-      }
-    },
-    "Jeu à levées où chaque carte négative (dames, valets de cœur, 8 de trèfle...) rapporte des points de pénalité au joueur qui la remporte. Le moins de points possible gagne.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A trick-taking game where each negative card (queens, jack of hearts, 8 of clubs...) gives penalty points to whoever wins the trick. The lowest score wins."
           }
         }
       }
