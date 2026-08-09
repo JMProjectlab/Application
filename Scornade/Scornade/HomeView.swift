@@ -45,6 +45,11 @@ struct HomeView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink { StatsView() } label: { Image(systemName: "chart.bar") }
                 }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink { HistoryView() } label: {
+                        Image(systemName: "clock.arrow.circlepath")
+                    }
+                }
                 ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink { PlayersView() } label: { Image(systemName: "person.2") }
                 }

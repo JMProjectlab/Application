@@ -6,6 +6,11 @@ struct ScoringView: View {
     let sessionID: UUID
 
     @State private var inputs: [String] = []
+    /// `sheet(item:)` réclame un identifiable ; un `Int?` n'en est pas un, et
+    /// la manche 0 se confondrait de toute façon avec « aucune ».
+    @State private var editingRound: EditingRound?
+
+    private struct EditingRound: Identifiable { let id: Int }
 
     private var session: ScoreSession? { store.session(id: sessionID) }
 
@@ -81,9 +86,9 @@ struct ScoringView: View {
                 }
 
                 if !session.rounds.isEmpty {
-                    HistorySection(session: session) { idx in
-                        store.deleteRound(sessionID: sessionID, at: idx)
-                    }
+                    HistorySection(session: session,
+                                   onDelete: { idx in store.deleteRound(sessionID: sessionID, at: idx) },
+                                   onEdit: { idx in editingRound = EditingRound(id: idx) })
                 }
             }
             .padding()
@@ -100,7 +105,13 @@ struct ScoringView: View {
                             Label("Annuler la dernière manche", systemImage: "arrow.uturn.backward")
                         }
                     }
-                    if !session.isFinished {
+                    if session.isFinished {
+                        Button {
+                            store.reopen(sessionID: sessionID)
+                        } label: {
+                            Label("Reprendre la partie", systemImage: "play.circle")
+                        }
+                    } else {
                         Button {
                             store.finish(sessionID: sessionID)
                         } label: {
@@ -108,6 +119,15 @@ struct ScoringView: View {
                         }
                     }
                 } label: { Image(systemName: "ellipsis.circle") }
+            }
+        }
+        .sheet(item: $editingRound) { edit in
+            let idx = edit.id
+            RoundEditorSheet(entrants: session.entrants,
+                             roundNumber: idx + 1,
+                             deltas: session.rounds.indices.contains(idx) ? session.rounds[idx] : [],
+                             losesDetail: session.hasStructuredRound(at: idx)) { deltas in
+                store.updateRound(sessionID: sessionID, at: idx, deltas: deltas)
             }
         }
     }
@@ -213,9 +233,11 @@ struct WinnerBanner: View {
 struct HistorySection: View {
     let session: ScoreSession
     var onDelete: (Int) -> Void
+    var onEdit: (Int) -> Void
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("HISTORIQUE · balayez pour corriger").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+            Text("HISTORIQUE · touchez une manche pour la corriger")
+                .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
             ForEach(Array(session.rounds.enumerated().reversed()), id: \.offset) { idx, round in
                 HStack {
                     Text("M\(idx + 1)").font(.caption).foregroundStyle(.secondary).frame(width: 34, alignment: .leading)
@@ -224,11 +246,18 @@ struct HistorySection: View {
                     }.joined(separator: "  "))
                         .font(.caption)
                     Spacer()
+                    Image(systemName: "square.and.pencil")
+                        .font(.caption)
+                        .foregroundStyle(Color.inkSecondary)
                     Button(role: .destructive) { onDelete(idx) } label: {
                         Image(systemName: "trash").font(.caption)
                     }
                     .buttonStyle(.borderless)
                 }
+                // La zone tactile couvre toute la ligne, sauf la corbeille qui
+                // capte son propre appui.
+                .contentShape(Rectangle())
+                .onTapGesture { onEdit(idx) }
                 Divider()
             }
         }

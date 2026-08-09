@@ -64,7 +64,13 @@ struct CoincheScoringView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
-                    if !session.isFinished {
+                    if session.isFinished {
+                        Button {
+                            store.reopen(sessionID: sessionID)
+                        } label: {
+                            Label("Reprendre la partie", systemImage: "play.circle")
+                        }
+                    } else {
                         Button {
                             store.finish(sessionID: sessionID)
                         } label: {

@@ -78,6 +78,17 @@
         }
       }
     },
+    "Aucune partie terminée": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No finished games"
+          }
+        }
+      }
+    },
     "Avec qui (coéquipiers)": {
       "extractionState": "manual",
       "localizations": {
@@ -221,6 +232,72 @@
         }
       }
     },
+    "Enregistrer": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+    "Historique": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "History"
+          }
+        }
+      }
+    },
+    "La partie disparaîtra de l'historique et des statistiques. C'est irréversible.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The game will disappear from your history and statistics. This cannot be undone."
+          }
+        }
+      }
+    },
+    "Le détail de la donne (contrat, bouts, annonces) sera perdu : seuls les points corrigés seront conservés.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The hand details (contract, oudlers, announcements) will be lost: only the corrected points are kept."
+          }
+        }
+      }
+    },
+    "Les parties que vous aurez terminées s'afficheront ici, et vous pourrez y revenir pour corriger les points.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games you finish will show up here, and you can come back to correct their points."
+          }
+        }
+      }
+    },
+    "Points de la manche": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Round points"
+          }
+        }
+      }
+    },
     "Politique de confidentialité": {
       "extractionState": "manual",
       "localizations": {
@@ -232,6 +309,17 @@
         }
       }
     },
+    "Reprendre la partie": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume game"
+          }
+        }
+      }
+    },
     "Se connecter avec Google": {
       "extractionState": "manual",
       "localizations": {
@@ -239,6 +327,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sign in with Google"
+          }
+        }
+      }
+    },
+    "Supprimer cette partie ?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this game?"
           }
         }
       }
@@ -364,13 +463,13 @@
         }
       }
     },
-    "HISTORIQUE · balayez pour corriger": {
+    "HISTORIQUE · touchez une manche pour la corriger": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "HISTORY · swipe to fix"
+            "value": "HISTORY · tap a round to correct it"
           }
         }
       }

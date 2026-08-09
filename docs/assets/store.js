@@ -164,7 +164,11 @@ export function addRound(session, deltas) {
 
 export function undoRound(session) {
   if (!session.rounds.length) return;
+  const last = session.rounds.length - 1;
   session.rounds.pop();
+  // Sans ceci, la donne détaillée survivait à l'annulation et l'historique
+  // d'une belote affichait une manche de plus que le score.
+  dropStructuredRound(session, last);
   session.manuallyFinished = false;
   commit();
 }
@@ -172,9 +176,37 @@ export function undoRound(session) {
 export function deleteRound(session, index) {
   if (index < 0 || index >= session.rounds.length) return;
   session.rounds.splice(index, 1);
+  dropStructuredRound(session, index);
+  session.manuallyFinished = false;
+  commit();
+}
+
+/**
+ * Corrige les points d'une manche déjà jouée.
+ *
+ * À la belote, `rounds` découle de la donne détaillée. Réécrire les points sans
+ * toucher à cette donne les ferait diverger, donc on abandonne le détail de
+ * cette manche-là : elle redevient une manche ordinaire, les autres gardent le
+ * leur. Même règle que `Store.updateRound` côté iOS.
+ */
+export function updateRound(session, index, deltas) {
+  if (index < 0 || index >= session.rounds.length) return;
+  session.rounds[index] = session.entrants.map((_, i) => Number(deltas[i]) || 0);
+  dropStructuredRound(session, index);
+  session.manuallyFinished = false;
+  commit();
+}
+
+function dropStructuredRound(session, index) {
   if (session.beloteRounds && index < session.beloteRounds.length) {
     session.beloteRounds.splice(index, 1);
   }
+}
+
+/** Rouvre une partie close à la main. Une partie finie sur l'objectif reste
+ *  finie tant que les scores ne redescendent pas — c'est `isFinished` qui
+ *  tranche, pas ce drapeau seul. */
+export function reopenSession(session) {
   session.manuallyFinished = false;
   commit();
 }

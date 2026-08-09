@@ -87,8 +87,17 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -.02em; line-height: 1
   background: color-mix(in srgb, var(--bg) 86%, transparent);
   backdrop-filter: saturate(180%) blur(18px);
   border-bottom: 1px solid var(--hairline);
+  /* Sur un écran étroit, la barre défile plutôt que d'élargir la page : avec
+     quatre destinations, les libellés ne tiennent plus sur 390 px. */
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.topbar .brand { font-size: 19px; font-weight: 600; letter-spacing: -.022em; flex: 1; }
+.topbar::-webkit-scrollbar { display: none; }
+.topbar .brand {
+  font-size: 19px; font-weight: 600; letter-spacing: -.022em;
+  flex: 0 0 auto; margin-right: auto;
+}
+.topbar .ghost { flex: 0 0 auto; }
 .topbar .brand span { color: var(--ink-2); font-weight: 400; }
 
 .rail { display: none; }
@@ -246,6 +255,17 @@ label.field { display: block; font-size: 13px; color: var(--ink-2); margin-botto
 .hist .st { font-weight: 600; font-size: 12px; }
 .hist .st.ok { color: var(--green); }
 .hist .st.ko { color: var(--red); }
+
+/* Une manche se touche pour la corriger : c'est un bouton, mais il doit se
+   fondre dans la ligne plutôt que ressembler à une commande de plus. */
+.hist-open {
+  flex: 1; min-width: 0; display: flex; align-items: center;
+  background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; color: inherit; text-align: left; cursor: pointer;
+}
+.hist-open:hover .dt { color: var(--blue); }
+.hist-open:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 4px; }
+.row .hist-open { flex-direction: column; align-items: flex-start; gap: 2px; }
 
 .winner { text-align: center; border-radius: 18px; padding: 26px 18px; background: var(--green-bg); margin-bottom: 14px; }
 .winner .cup { font-size: 30px; color: var(--orange); line-height: 1; margin-bottom: 8px; }

@@ -85,6 +85,17 @@ struct ScoreSession: Identifiable, Codable, Hashable {
 
     var isFinished: Bool { manuallyFinished || reachedEnd }
 
+    /// Cette manche a-t-elle un enregistrement détaillé derrière elle ?
+    ///
+    /// Aux jeux à contrat, les points ne sont pas saisis : ils découlent de la
+    /// donne. Corriger les points à la main revient donc à jeter ce détail, et
+    /// l'interface doit le dire avant, pas après.
+    func hasStructuredRound(at index: Int) -> Bool {
+        (beloteRounds?.indices.contains(index) ?? false)
+            || (tarotRounds?.indices.contains(index) ?? false)
+            || (coincheRounds?.indices.contains(index) ?? false)
+    }
+
     // Index of the winning entrant once the game has ended.
     var winnerIndex: Int? {
         guard isFinished, !entrants.isEmpty else { return nil }
