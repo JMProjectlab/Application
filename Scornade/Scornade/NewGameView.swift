@@ -12,11 +12,18 @@ struct NewGameView: View {
     @State private var newPlayerName = ""
     @State private var showRules = false
     @FocusState private var nameFieldFocused: Bool
+    @Environment(\.locale) private var locale
 
     init(game: Game, onStart: @escaping (UUID) -> Void) {
         self.game = game
         self.onStart = onStart
         _target = State(initialValue: game.defaultTarget)
+    }
+
+    /// Les règles passent par le catalogue de chaînes comme le reste, mais on a
+    /// besoin du texte traduit — pas d'une clé — pour le découper en lignes.
+    private var localizedRules: String {
+        String(localized: String.LocalizationValue(game.rules), locale: locale)
     }
 
     private var canStart: Bool {
@@ -96,9 +103,23 @@ struct NewGameView: View {
         .sheet(isPresented: $showRules) {
             NavigationStack {
                 ScrollView {
-                    Text(LocalizedStringKey(game.rules))
-                        .font(.body)
-                        .padding()
+                    // Les règles tiennent sur plusieurs paragraphes depuis
+                    // qu'elles disent vraiment comment on joue. On les découpe
+                    // nous-mêmes : l'interprétation Markdown de
+                    // `LocalizedStringKey` ne garantit pas les sauts de ligne.
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach(Array(localizedRules.split(separator: "\n",
+                                                           omittingEmptySubsequences: false).enumerated()),
+                                id: \.offset) { _, line in
+                            let text = String(line)
+                            if !text.isEmpty {
+                                Text(text)
+                                    .font(.body)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+                    }
+                    .padding()
                 }
                 .navigationTitle("Règles · \(game.name)")
                 .navigationBarTitleDisplayMode(.inline)

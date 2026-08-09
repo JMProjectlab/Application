@@ -311,11 +311,25 @@ label.field { display: block; font-size: 13px; color: var(--ink-2); margin-botto
 dialog.sheet {
   border: none; padding: 0; border-radius: 18px; max-width: 560px; width: calc(100% - 32px);
   background: var(--bg); color: var(--ink); box-shadow: var(--shadow);
+  /* Les règles complètes dépassent la hauteur d'un téléphone : la feuille se
+     plafonne et c'est son corps qui défile, en-tête et bouton restant visibles. */
+  max-height: min(82vh, 720px);
 }
+dialog.sheet[open] { display: flex; flex-direction: column; }
 dialog.sheet::backdrop { background: rgba(0, 0, 0, .38); }
-.sheet-head { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-bottom: 1px solid var(--hairline); }
+.sheet-head {
+  display: flex; align-items: center; gap: 10px; padding: 16px 18px;
+  border-bottom: 1px solid var(--hairline); flex: 0 0 auto;
+}
 .sheet-head h2 { flex: 1; font-size: 18px; }
-.sheet-body { padding: 18px; font-size: 16px; line-height: 1.5; }
+.sheet-body { padding: 18px; font-size: 16px; line-height: 1.5; overflow-y: auto; }
+/* Rien ne remet les marges de `p` à zéro ailleurs : on fixe les nôtres. */
+.sheet-body p { margin: 0 0 12px; }
+.sheet-body p:last-child { margin-bottom: 0; }
+/* Les puces d'une liste respirent moins que des paragraphes — mais le texte
+   qui reprend après la liste retrouve son écart normal. */
+.sheet-body p.li { margin: 0 0 3px; padding-left: 4px; }
+.sheet-body p.li + p:not(.li) { margin-top: 12px; }
 
 .toast {
   position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);

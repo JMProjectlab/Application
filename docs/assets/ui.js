@@ -45,8 +45,16 @@ function toast(message) {
   setTimeout(() => el.remove(), 2400);
 }
 
+/** Feuille de texte simple — les règles, notamment. Le texte est échappé, puis
+ *  ses paragraphes sont rendus tels qu'ils ont été écrits : depuis qu'elles
+ *  expliquent vraiment comment on joue, les règles font plusieurs lignes. */
 function openSheet(title, body) {
-  openSheetHTML(title, `<p style="margin:0">${esc(body)}</p>`);
+  const html = String(body).split("\n").map((line) => {
+    const t = line.trim();
+    if (t === "") return "";
+    return `<p class="${t.startsWith("•") ? "li" : ""}">${esc(t)}</p>`;
+  }).join("");
+  openSheetHTML(title, html);
 }
 
 /** Même feuille, mais dont le contenu est du balisage déjà construit — pour

@@ -56,7 +56,7 @@ struct Game421ScoringView: View {
                 if finished(session), let w = winnerIndex(session) {
                     WinnerBanner(name: session.entrants[w].name,
                                  detail: String(localized: "Plus de jetons !", locale: locale),
-                                 shareText: String(localized: "🎲 \(session.entrants[w].name) remporte le 421, dernier avec des jetons ! Compté avec Scornade.", locale: locale))
+                                 shareText: String(localized: "🎲 \(session.entrants[w].name) remporte le 421, premier débarrassé de ses jetons ! Compté avec Scornade.", locale: locale))
                     endButtons()
                 } else if isCharge(session) {
                     chargeCard(session)
