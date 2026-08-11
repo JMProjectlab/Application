@@ -93,6 +93,51 @@ Copie son contenu dans **Firestore Database → Règles**, puis **Publier**.
 Sans cette étape, la base reste soit fermée à tout le monde, soit — pire —
 ouverte à tous si tu as choisi le mode test à la création.
 
+Ces règles couvrent deux choses : les données de chaque compte, cloisonnées par
+identifiant, et la collection `games` — le catalogue, commun à tous et en
+**lecture seule**. Aucun client ne peut y écrire, même authentifié.
+
+## Corriger une règle de jeu sans republier l'application
+
+C'est l'intérêt de la collection `games`. Un libellé maladroit ou une faute dans
+les règles se corrigent depuis la console, et les deux clients l'appliquent au
+prochain lancement — sans passer par la validation App Store, qui prend des
+jours.
+
+**Dans la console : Firestore Database → Démarrer une collection → `games`.**
+
+L'**identifiant du document** doit être celui du jeu, exactement comme dans le
+code : `belote`, `coinche`, `tarot`, `papayoo`, `rami`, `uno`, `skyjo`,
+`scrabble`, `flechettes`, `petanque`, `billard`, `yams`, `421`, `manille`,
+`backgammon`, `bowling`, `poker`, `dominos`, `millebornes`, `molkky`.
+
+Quatre champs sont acceptés, tous facultatifs — on ne met que ce qu'on corrige :
+
+| Champ | Type | Effet |
+|---|---|---|
+| `rules` | chaîne | Le texte des règles. Les sauts de ligne sont conservés. |
+| `name` | chaîne | Le nom affiché du jeu. |
+| `category` | chaîne | `cartes`, `societe`, `sport` ou `des`. |
+| `defaultTarget` | nombre | L'objectif proposé à la création d'une partie. |
+
+Un document `tarot` ne contenant que `rules` corrige les règles du tarot et ne
+touche à rien d'autre.
+
+> **Ce qui n'est délibérément pas modifiable à distance :** le moteur de calcul,
+> le mode équipe et le sens de victoire. Le moteur désigne une vue de saisie et
+> une fonction de calcul — c'est du code, pas une donnée. Quant au sens de
+> victoire, le vainqueur est recalculé à chaque affichage : l'inverser
+> réécrirait le résultat de parties déjà terminées et archivées.
+>
+> Un identifiant inconnu est ignoré, et un champ vide ou du mauvais type aussi.
+> Une faute de frappe dans la console ne peut donc pas casser l'application :
+> au pire, la correction ne s'applique pas.
+
+**Une collection `games` vide est le cas normal.** Tant que tu ne corriges rien,
+c'est le catalogue livré avec l'application qui sert — c'est lui qui fait foi au
+premier lancement et hors ligne. Les corrections reçues sont mises en cache
+localement, donc elles survivent à une coupure réseau.
+
 ## 5. Capacités Xcode
 
 Dans **Signing & Capabilities** de la cible Scornade :

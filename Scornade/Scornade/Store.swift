@@ -36,6 +36,14 @@ final class Store: ObservableObject {
     private lazy var db = Firestore.firestore()
     private var playersListener: ListenerRegistration?
     private var sessionsListener: ListenerRegistration?
+    private var catalogListener: ListenerRegistration?
+
+    /// Change de valeur quand le catalogue est corrigé depuis Firestore.
+    ///
+    /// `GameCatalog.all` n'est pas observable — c'est un type statique lu un
+    /// peu partout. Publier ici suffit à faire redessiner les écrans, qui
+    /// observent déjà le store.
+    @Published private(set) var catalogRevision = 0
 
     /// Dernier JSON réellement envoyé pour chaque document, pour ne pousser que
     /// ce qui a changé plutôt que la collection entière à chaque sauvegarde.
@@ -52,6 +60,9 @@ final class Store: ObservableObject {
 
     init() {
         load()
+        // Les corrections déjà reçues s'appliquent avant le premier écran :
+        // pas de libellé qui change sous les yeux une seconde plus tard.
+        GameCatalog.loadCached()
         if players.isEmpty {
             players = [
                 Player(name: "Jimmy", colorIndex: 0),
@@ -389,13 +400,46 @@ final class Store: ObservableObject {
             Task { @MainActor in self?.mergeSessions(remote) }
         }
 
+        // Le catalogue est commun à tous les comptes : il est en lecture seule,
+        // et c'est lui qui permet de corriger une règle sans publier une
+        // nouvelle version. Une collection vide est le cas normal.
+        catalogListener = db.collection("games").addSnapshotListener { [weak self] snap, _ in
+            guard let snap else { return }
+            let overrides = Self.decodeOverrides(snap.documents)
+            Task { @MainActor in
+                guard let self else { return }
+                GameCatalog.cache(overrides)
+                if GameCatalog.apply(overrides) { self.catalogRevision += 1 }
+            }
+        }
+
         // Ce qui existe déjà en local et pas encore côté serveur part au premier envoi.
         pushChanges()
+    }
+
+    /// Les documents `games/{id}` sont des dictionnaires plats, pas le JSON
+    /// encapsulé qu'on utilise pour les joueurs et les parties : ils sont
+    /// rédigés à la main dans la console, autant qu'ils y soient lisibles.
+    private nonisolated static func decodeOverrides(
+        _ docs: [QueryDocumentSnapshot]
+    ) -> [String: GameCatalog.Override] {
+        var out: [String: GameCatalog.Override] = [:]
+        for doc in docs {
+            let d = doc.data()
+            out[doc.documentID] = GameCatalog.Override(
+                name: d["name"] as? String,
+                rules: d["rules"] as? String,
+                category: d["category"] as? String,
+                defaultTarget: (d["defaultTarget"] as? NSNumber)?.intValue
+            )
+        }
+        return out
     }
 
     private func stopSync() {
         playersListener?.remove(); playersListener = nil
         sessionsListener?.remove(); sessionsListener = nil
+        catalogListener?.remove(); catalogListener = nil
     }
 
     private nonisolated static func decodeAll<T: Decodable>(_ type: T.Type,

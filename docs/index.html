@@ -26,14 +26,20 @@
 </noscript>
 
 <script type="module">
-  import { applyTheme, load, onChange } from "./assets/store.js";
+  import { applyTheme, load, onChange, state } from "./assets/store.js";
   import { bindEvents, render, setAuth } from "./assets/ui.js";
   import { initFirebase } from "./assets/firebase.js";
+  import { loadCachedCatalog } from "./assets/data.js";
 
   applyTheme();
   load();
+  // Les corrections du catalogue déjà reçues s'appliquent avant le premier
+  // rendu : pas de libellé qui change sous les yeux une seconde plus tard.
+  loadCachedCatalog();
   bindEvents();
   onChange(render);
+  // Firestore signale une correction arrivée en cours de route.
+  state.onCatalogChange = render;
   render();
 
   // La synchronisation ne s'active que si une configuration Firebase existe.

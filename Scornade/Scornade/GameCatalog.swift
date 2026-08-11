@@ -1,7 +1,9 @@
 import Foundation
 
 enum GameCatalog {
-    static let all: [Game] = [
+    /// Le catalogue tel qu'il est livré avec l'application. Il fait toujours
+    /// foi au premier lancement, hors ligne, et si Firestore ne dit rien.
+    private static let bundled: [Game] = [
         Game(id: "belote", name: "Belote", category: "cartes", symbol: "suit.club.fill",
              engine: .contractPoints, isTeamGame: true, defaultTarget: 501, higherWins: true,
              rules: "Jeu de plis à quatre, en deux équipes, avec 32 cartes et un atout choisi à chaque donne.\n\nÀ l'atout, l'ordre change : Valet 20 points, 9 14, As 11, 10 10, Roi 4, Dame 3, le 8 et le 7 rien. Dans les autres couleurs : As 11, 10 10, Roi 4, Dame 3, Valet 2, le reste rien. Les cartes totalisent 152 points, plus 10 pour le dernier pli — le dix de der — soit 162 points par donne.\n\nLe camp qui prend s'engage à faire au moins 82 points, c'est-à-dire plus de la moitié. S'il y parvient, chaque camp marque ce qu'il a ramassé. Sinon il est dedans, et les 162 points vont entièrement à la défense.\n\nLa belote-rebelote — Roi et Dame d'atout dans la même main — rapporte 20 points à son camp, qui les conserve même contrat manqué. Le capot, tous les plis pour un seul camp, vaut 252 points.\n\nPremier camp à l'objectif gagne."),
@@ -71,4 +73,61 @@ enum GameCatalog {
         ("societe", "Société"), ("sport", "Sport"),
         ("des", "Dés"),
     ]
+
+    // MARK: Corrections venues de Firestore
+
+    /// Le catalogue effectif : celui embarqué, corrigé par ce que dit la
+    /// collection `games` de Firestore.
+    private(set) static var all: [Game] = bundled
+
+    private static let cacheKey = "sm.catalog"
+
+    /// Ce qu'un document Firestore peut redéfinir sur un jeu.
+    ///
+    /// Uniquement de la présentation. Le moteur reste dans le code — il désigne
+    /// une vue de saisie et une fonction de calcul — et le sens de victoire
+    /// aussi : le changer à distance réécrirait le vainqueur de parties déjà
+    /// terminées, puisque `winnerIndex` se recalcule à chaque affichage.
+    struct Override: Codable {
+        var name: String?
+        var rules: String?
+        var category: String?
+        var defaultTarget: Int?
+    }
+
+    /// Applique des corrections et dit si quelque chose a bougé.
+    ///
+    /// Un identifiant inconnu est ignoré : ajouter un jeu à distance
+    /// supposerait de lui fournir un moteur, et un moteur est du code.
+    @discardableResult
+    static func apply(_ overrides: [String: Override]) -> Bool {
+        guard !overrides.isEmpty else { return false }
+        var next = bundled
+        var changed = false
+        for i in next.indices {
+            guard let o = overrides[next[i].id] else { continue }
+            if let v = o.name, !v.isEmpty, v != next[i].name { next[i].name = v; changed = true }
+            if let v = o.rules, !v.isEmpty, v != next[i].rules { next[i].rules = v; changed = true }
+            if let v = o.category, !v.isEmpty, v != next[i].category { next[i].category = v; changed = true }
+            if let v = o.defaultTarget, v >= 0, v != next[i].defaultTarget {
+                next[i].defaultTarget = v; changed = true
+            }
+        }
+        if changed { all = next }
+        return changed
+    }
+
+    /// Relit les corrections mises en cache, pour les avoir dès le premier
+    /// écran et même sans réseau.
+    static func loadCached() {
+        guard let data = UserDefaults.standard.data(forKey: cacheKey),
+              let decoded = try? JSONDecoder().decode([String: Override].self, from: data)
+        else { return }
+        apply(decoded)
+    }
+
+    static func cache(_ overrides: [String: Override]) {
+        guard let data = try? JSONEncoder().encode(overrides) else { return }
+        UserDefaults.standard.set(data, forKey: cacheKey)
+    }
 }
