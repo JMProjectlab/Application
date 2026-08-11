@@ -639,17 +639,6 @@
         }
       }
     },
-    "Taux de victoire par jeu": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Win rate by game"
-          }
-        }
-      }
-    },
     "Tous les jeux": {
       "extractionState": "manual",
       "localizations": {
@@ -1691,6 +1680,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@'s throw"
+          }
+        }
+      }
+    },
+    "Victoires par jeu": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wins by game"
           }
         }
       }

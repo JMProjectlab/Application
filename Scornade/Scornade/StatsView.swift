@@ -198,38 +198,43 @@ struct StatsView: View {
         }
     }
 
+    /// Le plus grand nombre de parties de l'écran, tous blocs confondus : une
+    /// longueur doit vouloir dire la même chose partout.
+    private func maxPlayed(_ s: PlayerStats) -> Int {
+        Swift.max(1,
+                  (s.perGame.map(\.played) + s.teammates.map(\.total) + s.opponents.map(\.total))
+                      .max() ?? 1)
+    }
+
     private func perGameSection(_ s: PlayerStats) -> some View {
-        Section("Taux de victoire par jeu") {
+        Section("Victoires par jeu") {
             ForEach(s.perGame) { g in
-                VizBar(label: g.name,
-                       ratio: g.played == 0 ? 0 : Double(g.won) / Double(g.played),
-                       display: "\(g.won)/\(g.played)")
-                .padding(.vertical, 2)
+                VizBar(label: g.name, won: g.won, played: g.played, maxPlayed: maxPlayed(s))
+                    .padding(.vertical, 2)
             }
+            VizBarsKey()
         }
     }
 
     private func teammatesSection(_ s: PlayerStats) -> some View {
         Section("Avec qui") {
             ForEach(s.teammates) { t in
-                VizBar(label: t.name,
-                       ratio: t.total == 0 ? 0 : Double(t.wins) / Double(t.total),
-                       display: "\(t.wins)/\(t.total)",
-                       avatarColorIndex: t.colorIndex)
-                .padding(.vertical, 2)
+                VizBar(label: t.name, won: t.wins, played: t.total,
+                       maxPlayed: maxPlayed(s), avatarColorIndex: t.colorIndex)
+                    .padding(.vertical, 2)
             }
+            VizBarsKey()
         }
     }
 
     private func opponentsSection(_ s: PlayerStats) -> some View {
         Section("Contre qui") {
             ForEach(s.opponents) { o in
-                VizBar(label: o.name,
-                       ratio: o.total == 0 ? 0 : Double(o.wins) / Double(o.total),
-                       display: "\(o.wins)/\(o.total)",
-                       avatarColorIndex: o.colorIndex)
-                .padding(.vertical, 2)
+                VizBar(label: o.name, won: o.wins, played: o.total,
+                       maxPlayed: maxPlayed(s), avatarColorIndex: o.colorIndex)
+                    .padding(.vertical, 2)
             }
+            VizBarsKey()
         }
     }
 

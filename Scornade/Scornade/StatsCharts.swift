@@ -157,18 +157,31 @@ struct DonutLegend: View {
     }
 }
 
-/// Une barre horizontale, teinte unique.
+/// Barre victoires / parties jouées.
 ///
-/// Comparer des grandeurs est le travail d'une longueur : colorier chaque barre
-/// selon sa valeur dépenserait le canal identité à réécrire ce que la longueur
-/// montre déjà.
+/// Une ligne porte deux informations : sa longueur totale dit combien de
+/// parties ont été jouées, la portion pleine combien ont été gagnées. Une
+/// seule teinte suffit — comparer des grandeurs est le travail d'une longueur.
+///
+/// C'est ce qui manquait à la première version, qui n'affichait que le taux :
+/// un 1/1 remplissait la barre et écrasait un 3/4, alors qu'il ne pèse rien.
 struct VizBar: View {
     let label: String
-    let ratio: Double          // 0…1
-    let display: String
+    let won: Int
+    let played: Int
+    /// Le plus grand nombre de parties de l'écran, tous blocs confondus : une
+    /// longueur doit vouloir dire la même chose partout.
+    let maxPlayed: Int
     /// Renseigné quand la barre désigne un joueur : la pastille porte alors son
     /// identité, la barre ne fait que la longueur.
     var avatarColorIndex: Int?
+
+    private var laneRatio: Double {
+        maxPlayed > 0 ? Double(played) / Double(maxPlayed) : 0
+    }
+    private var wonRatio: Double {
+        played > 0 ? Double(won) / Double(played) : 0
+    }
 
     var body: some View {
         HStack(spacing: 10) {
@@ -181,23 +194,41 @@ struct VizBar: View {
             .frame(width: 118, alignment: .leading)
 
             GeometryReader { geo in
+                let lane = geo.size.width * min(max(laneRatio, 0), 1)
                 ZStack(alignment: .leading) {
-                    Capsule().fill(VizPalette.track)
-                    // Extrémité arrondie côté valeur, carrée sur l'origine : la
-                    // barre part d'une ligne de base commune, elle ne flotte pas.
+                    Capsule().fill(VizPalette.track).frame(width: lane)
                     BarFill()
                         .fill(VizPalette.slot(0))
-                        .frame(width: geo.size.width * min(max(ratio, 0), 1))
+                        .frame(width: lane * min(max(wonRatio, 0), 1))
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(height: 10)
 
-            Text(display)
+            Text("\(won)/\(played)")
                 .font(.caption).foregroundStyle(Color.inkSecondary)
                 .monospacedDigit()
                 .frame(width: 46, alignment: .trailing)
         }
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(label))
+        .accessibilityValue(Text("\(won) sur \(played)"))
+    }
+}
+
+/// Ce que disent les deux nuances d'une barre. Deux états portent du sens : il
+/// faut les nommer, la couleur seule ne suffit jamais.
+struct VizBarsKey: View {
+    var body: some View {
+        HStack(spacing: 6) {
+            RoundedRectangle(cornerRadius: 3).fill(VizPalette.slot(0)).frame(width: 10, height: 10)
+            Text("Gagnées")
+            RoundedRectangle(cornerRadius: 3).fill(VizPalette.track)
+                .frame(width: 10, height: 10).padding(.leading, 10)
+            Text("Jouées")
+        }
+        .font(.caption2)
+        .foregroundStyle(Color.inkSecondary)
     }
 }
 

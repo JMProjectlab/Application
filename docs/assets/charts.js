@@ -98,22 +98,37 @@ export function donutLegend(entries) {
 }
 
 /**
- * Barres horizontales, une seule teinte.
+ * Barres victoires / parties jouées.
  *
- * Comparer des grandeurs est le travail d'une longueur, pas d'une couleur :
- * colorier chaque barre selon sa valeur dépenserait le canal identité à
- * réécrire ce que la longueur montre déjà.
+ * Chaque ligne porte deux informations à la fois : la longueur totale dit
+ * combien de parties ont été jouées, la portion pleine combien ont été
+ * gagnées. Une seule teinte suffit — comparer des grandeurs est le travail
+ * d'une longueur, pas d'une couleur.
+ *
+ * C'est ce qui manquait à la version précédente, qui n'affichait que le taux :
+ * un 1/1 remplissait la barre et écrasait visuellement un 3/4, alors qu'il ne
+ * pèse rien. Ici, une seule partie donne une barre courte, pleine mais courte.
  */
-export function bars(entries, { max, unit = "" } = {}) {
+export function winBars(entries, { maxPlayed } = {}) {
   if (!entries.length) return "";
-  const top = max ?? Math.max(...entries.map((e) => e.value), 1);
+  const top = maxPlayed ?? Math.max(...entries.map((e) => e.played), 1);
   return `<div class="bars">` + entries.map((e) => {
-    const pct = top ? Math.max(0, Math.min(100, (e.value / top) * 100)) : 0;
-    return `<div class="bar-row" tabindex="0" title="${esc(e.label)} — ${esc(e.hint ?? (e.value + unit))}">
+    const trackPct = top ? Math.max(0, Math.min(100, (e.played / top) * 100)) : 0;
+    const wonPct = e.played ? Math.max(0, Math.min(100, (e.won / e.played) * 100)) : 0;
+    const rate = e.played ? Math.round((e.won / e.played) * 100) : 0;
+    return `<div class="bar-row" tabindex="0"
+        title="${esc(e.label)} — ${e.won} victoire${e.won > 1 ? "s" : ""} sur ${e.played} (${rate} %)">
       <span class="bar-lb">${e.lead ?? ""}<span class="nm">${esc(e.label)}</span></span>
-      <span class="bar-track"><span class="bar-fill" style="width:${pct.toFixed(1)}%"></span></span>
-      <span class="bar-v tab">${esc(e.display ?? (e.value + unit))}</span></div>`;
+      <span class="bar-lane"><span class="bar-track" style="width:${trackPct.toFixed(1)}%"
+        ><span class="bar-fill" style="width:${wonPct.toFixed(1)}%"></span></span></span>
+      <span class="bar-v tab">${e.won}/${e.played}</span></div>`;
   }).join("") + `</div>`;
+}
+
+/** Ce que disent les deux nuances d'une barre. Deux états portent du sens : il
+ *  faut les nommer, la couleur seule ne suffit jamais. */
+export function winBarsKey() {
+  return `<p class="bars-key"><span class="k on"></span>Gagnées<span class="k off"></span>Jouées</p>`;
 }
 
 /**

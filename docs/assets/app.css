@@ -339,10 +339,24 @@ label.field { display: block; font-size: 13px; color: var(--ink-2); margin-botto
 .bar-row { display: flex; align-items: center; gap: 10px; font-size: 14px; border-radius: 8px; }
 .bar-lb { flex: 0 0 34%; min-width: 0; display: flex; align-items: center; gap: 7px; }
 .bar-lb .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bar-track { flex: 1; height: 10px; background: var(--grid); border-radius: 999px; overflow: hidden; }
+/* La piste occupe la part de couloir correspondant aux parties jouées ; le
+   remplissage, la part gagnée. Une ligne dit donc les deux à la fois : combien
+   de parties, et combien de victoires. */
+.bar-lane { flex: 1; min-width: 0; }
+/* `display: block` n'est pas cosmétique : la piste n'est plus un enfant direct
+   du flex, donc sans lui elle reste en ligne et sa largeur est ignorée. */
+.bar-track { display: block; height: 10px; background: var(--grid);
+  border-radius: 999px; overflow: hidden; min-width: 10px; }
 /* Extrémité arrondie côté valeur, carrée sur la ligne de base : la barre part
    d'une origine commune, elle ne flotte pas. */
 .bar-fill { display: block; height: 100%; background: var(--s1); border-radius: 0 5px 5px 0; }
+
+/* Deux nuances portent du sens : il faut les nommer. */
+.bars-key { display: flex; align-items: center; gap: 6px; margin: 12px 0 0;
+  font-size: 12px; color: var(--ink-2); }
+.bars-key .k { width: 10px; height: 10px; border-radius: 3px; }
+.bars-key .k.on { background: var(--s1); }
+.bars-key .k.off { background: var(--grid); margin-left: 10px; }
 .bar-v { flex: 0 0 auto; color: var(--ink-2); font-size: 13px; min-width: 46px; text-align: right; }
 
 .meter { height: 8px; background: var(--grid); border-radius: 999px; overflow: hidden; margin-top: 14px; }

@@ -735,21 +735,26 @@ function screenStats() {
         ${C.donutLegend(folded)}</div>`;
   }
 
+  // Toutes les barres de l'écran se mesurent sur la même échelle — le plus
+  // grand nombre de parties jouées, quel que soit le bloc — pour qu'une
+  // longueur veuille dire la même chose partout.
+  const maxPlayed = Math.max(
+    ...[...perGame.values(), ...teammates.values(), ...opponents.values()].map((v) => v.p), 1);
+
   const winBars = (entries, title, byPlayer) => {
     if (!entries.length) return "";
     return `<div class="section-label">${title}</div><div class="card">` +
-      C.bars(entries.map((e) => ({
+      C.winBars(entries.map((e) => ({
         label: e.name,
-        value: e.p ? Math.round((e.w / e.p) * 100) : 0,
-        display: `${e.w}/${e.p}`,
-        hint: `${e.w} victoire${e.w > 1 ? "s" : ""} sur ${e.p}`,
+        won: e.w,
+        played: e.p,
         lead: byPlayer ? avatar(e.name, e.colorIndex ?? 0, true) : "",
-      })), { max: 100, unit: " %" }) + `</div>`;
+      })), { maxPlayed }) + C.winBarsKey() + `</div>`;
   };
 
   if (perGame.size > 1) {
     html += winBars([...perGame.values()].sort((a, b) => b.p - a.p)
-      .map((v) => ({ name: v.name, p: v.p, w: v.w })), "Taux de victoire par jeu", false);
+      .map((v) => ({ name: v.name, p: v.p, w: v.w })), "Victoires par jeu", false);
   }
 
   const peers = (map) => [...map.entries()].map(([id, v]) => {
