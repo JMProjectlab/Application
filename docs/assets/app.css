@@ -21,10 +21,29 @@
   --yellow: #e5b800;
   --radius: 14px;
   --shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 8px 24px rgba(0, 0, 0, .06);
+
+  /* Teintes des graphiques.
+     L'ordre des créneaux n'est pas décoratif : c'est lui qui garantit que deux
+     parts voisines restent distinguables, y compris en vision daltonienne. Il a
+     été retenu en énumérant les ordres possibles et en ne gardant que ceux qui
+     passent toutes les portes dans les deux modes (140 sur 720). Ne pas
+     réordonner sans revalider. Écart minimal ici : ΔE 19,5 daltonien et 23,5 en
+     vision normale, sur fond clair.
+     En mode clair, l'orange et le cyan passent sous 3:1 face au fond : les
+     valeurs sont donc toujours écrites dans la légende, jamais portées par la
+     seule couleur. */
+  --s1: #0a84ff;
+  --s2: #ff9500;
+  --s3: #30b0c7;
+  --s4: #5e5ce6;
+  --s5: #ff2d55;
+  --s6: #af52de;
+  --grid: #e5e5ea;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
+    --s2: #d97200; --s3: #16a2b9; --grid: #2a2a2c;
     --ink: #f5f5f7; --ink-2: #a1a1a6; --bg: #000000; --bg-alt: #101012;
     --hairline: #2a2a2c; --blue: #2997ff; --blue-deep: #2997ff;
     --tint: rgba(41, 151, 255, .16); --neutral-tint: rgba(245, 245, 247, .10);
@@ -44,6 +63,7 @@
   --shadow: 0 1px 2px rgba(0, 0, 0, .05), 0 8px 24px rgba(0, 0, 0, .06);
 }
 :root[data-theme="dark"] {
+  --s2: #d97200; --s3: #16a2b9; --grid: #2a2a2c;
   --ink: #f5f5f7; --ink-2: #a1a1a6; --bg: #000000; --bg-alt: #101012;
   --hairline: #2a2a2c; --blue: #2997ff; --blue-deep: #2997ff;
   --tint: rgba(41, 151, 255, .16); --neutral-tint: rgba(245, 245, 247, .10);
@@ -286,9 +306,54 @@ label.field { display: block; font-size: 13px; color: var(--ink-2); margin-botto
 /* statistiques */
 .statgrid { display: flex; gap: 8px; text-align: center; }
 .statgrid > div { flex: 1; }
-.statgrid .v { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+/* Chiffres proportionnels ici : à cette taille, `tabular-nums` fait paraître
+   un « 121 » trop aéré. Les colonnes alignées, elles, gardent `.tab`. */
+.statgrid .v { font-size: 22px; font-weight: 600; letter-spacing: -.02em; }
 .statgrid .k { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
 .ratio { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 14px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+/* Les filtres tiennent sur une seule ligne, au-dessus de tout ce qu'ils
+   cadrent — jamais dans une carte de graphique, jamais un par graphique. */
+.filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+.filters label { flex: 1 1 150px; min-width: 0; }
+.filters .field { display: block; font-size: 13px; color: var(--ink-2); margin-bottom: 5px; }
+
+.chart-card { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.donut { flex: 0 0 auto; display: block; }
+.donut .arc { transition: opacity .12s ease; }
+.chart-card:hover .arc { opacity: .55; }
+.chart-card .arc:hover, .chart-card .arc:focus-visible { opacity: 1; }
+.donut .arc:focus-visible { outline: none; }
+.donut-v { font-size: 22px; font-weight: 600; fill: var(--ink); }
+.donut-k { font-size: 11px; fill: var(--ink-2); }
+
+/* Plafonnée : sans cela, sur large écran la légende s'étire et la valeur part
+   se perdre à l'autre bout de la carte, loin de son libellé. */
+.legend { flex: 1 1 190px; max-width: 320px; list-style: none; margin: 0; padding: 0; min-width: 0; }
+.legend li { display: flex; align-items: center; gap: 9px; padding: 4px 0; font-size: 14px; }
+.legend .key { width: 11px; height: 11px; border-radius: 3px; flex: 0 0 auto; }
+.legend .lb { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.legend .lv { color: var(--ink-2); font-size: 13px; flex: 0 0 auto; }
+
+.bars { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: flex; align-items: center; gap: 10px; font-size: 14px; border-radius: 8px; }
+.bar-lb { flex: 0 0 34%; min-width: 0; display: flex; align-items: center; gap: 7px; }
+.bar-lb .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { flex: 1; height: 10px; background: var(--grid); border-radius: 999px; overflow: hidden; }
+/* Extrémité arrondie côté valeur, carrée sur la ligne de base : la barre part
+   d'une origine commune, elle ne flotte pas. */
+.bar-fill { display: block; height: 100%; background: var(--s1); border-radius: 0 5px 5px 0; }
+.bar-v { flex: 0 0 auto; color: var(--ink-2); font-size: 13px; min-width: 46px; text-align: right; }
+
+.meter { height: 8px; background: var(--grid); border-radius: 999px; overflow: hidden; margin-top: 14px; }
+.meter-fill { display: block; height: 100%; background: var(--s1); border-radius: 0 4px 4px 0; }
+
+.table-view { margin-top: 4px; }
+.table-view summary { font-size: 14px; color: var(--blue); cursor: pointer; padding: 6px 0; }
+.table-view table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 8px; }
+.table-view th, .table-view td { text-align: right; padding: 7px 8px; border-bottom: 1px solid var(--hairline); }
+.table-view th:first-child, .table-view td:first-child { text-align: left; }
+.table-view th { font-size: 12px; color: var(--ink-2); font-weight: 500; }
 
 /* ---------- connexion ---------- */
 

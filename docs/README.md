@@ -48,6 +48,7 @@ ses propres documents.
 | `index.html` | Page unique, amorçage des modules |
 | `assets/data.js` | Les 20 jeux, leurs règles et leurs pictogrammes |
 | `assets/engine.js` | Calculs de score — portage de `Models.swift` |
+| `assets/charts.js` | Anneau, barres et jauge — SVG écrit à la main |
 | `assets/store.js` | État, `localStorage`, fusion avec le serveur |
 | `assets/firebase.js` | Connexion et Firestore, chargés à la demande |
 | `assets/ui.js` | Rendu des écrans et interactions |
