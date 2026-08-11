@@ -3,6 +3,8 @@ import SwiftUI
 struct StatsView: View {
     @EnvironmentObject var store: Store
     @State private var selected: UUID?
+    @State private var gameFilter: String = "all"
+    @State private var mateFilter: UUID?
 
     // MARK: Données calculées
 
@@ -29,6 +31,23 @@ struct StatsView: View {
         return store.players.first
     }
 
+    /// Les jeux et les coéquipiers proposés dans les filtres.
+    ///
+    /// Ils se lisent sur toutes les parties du joueur, sans tenir compte des
+    /// filtres en cours : autrement, choisir un jeu viderait la liste des
+    /// coéquipiers et on ne pourrait plus revenir en arrière.
+    private func choices(for p: Player) -> (games: [(String, String)], mates: [Player]) {
+        var games: [String: String] = [:]
+        var mates: Set<UUID> = []
+        for s in store.sessions where s.isFinished {
+            guard let ti = s.entrants.firstIndex(where: { $0.playerIds.contains(p.id) }) else { continue }
+            games[s.gameId] = s.gameName
+            for id in s.entrants[ti].playerIds where id != p.id { mates.insert(id) }
+        }
+        return (games.map { ($0.key, $0.value) }.sorted { $0.1 < $1.1 },
+                store.players.filter { mates.contains($0.id) })
+    }
+
     private func computeStats(for p: Player) -> PlayerStats {
         var st = PlayerStats()
         var perGame: [String: (name: String, played: Int, won: Int)] = [:]
@@ -37,6 +56,8 @@ struct StatsView: View {
 
         for s in store.sessions where s.isFinished {
             guard let ti = s.entrants.firstIndex(where: { $0.playerIds.contains(p.id) }) else { continue }
+            if gameFilter != "all", s.gameId != gameFilter { continue }
+            if let mate = mateFilter, !s.entrants[ti].playerIds.contains(mate) { continue }
             let won = (s.winnerIndex == ti)
             st.played += 1; if won { st.won += 1 }
 
@@ -84,20 +105,43 @@ struct StatsView: View {
                 Text("Ajoutez des joueurs et terminez une partie pour voir les statistiques apparaître ici.")
                     .font(.subheadline).foregroundStyle(.secondary)
             } else {
-                Section {
-                    Picker("Joueur", selection: Binding(
-                        get: { selected ?? store.players.first?.id },
-                        set: { selected = $0 }
-                    )) {
-                        ForEach(store.players) { Text($0.name).tag(Optional($0.id)) }
+                if let p = currentPlayer {
+                    let c = choices(for: p)
+                    Section {
+                        Picker("Joueur", selection: Binding(
+                            get: { selected ?? store.players.first?.id },
+                            set: { newValue in
+                                selected = newValue
+                                // Les jeux et coéquipiers du joueur précédent
+                                // n'ont aucune raison d'exister pour celui-ci :
+                                // garder la sélection afficherait « aucune
+                                // partie » sans dire pourquoi.
+                                gameFilter = "all"
+                                mateFilter = nil
+                            }
+                        )) {
+                            ForEach(store.players) { Text($0.name).tag(Optional($0.id)) }
+                        }
+                        if c.games.count > 1 {
+                            Picker("Jeu", selection: $gameFilter) {
+                                Text("Tous les jeux").tag("all")
+                                ForEach(c.games, id: \.0) { Text($0.1).tag($0.0) }
+                            }
+                        }
+                        if !c.mates.isEmpty {
+                            Picker("Coéquipier", selection: $mateFilter) {
+                                Text("Peu importe").tag(Optional<UUID>.none)
+                                ForEach(c.mates) { Text($0.name).tag(Optional($0.id)) }
+                            }
+                        }
                     }
-                    .pickerStyle(.menu)
                 }
 
                 if let p = currentPlayer {
                     let s = computeStats(for: p)
                     recordSection(p, s)
-                    if !s.perGame.isEmpty { perGameSection(s) }
+                    if s.perGame.count > 1 { distributionSection(s) }
+                    if s.perGame.count > 1 { perGameSection(s) }
                     if !s.teammates.isEmpty { teammatesSection(s) }
                     if !s.opponents.isEmpty { opponentsSection(s) }
                     if s.belotePlayed { beloteSection(s) }
@@ -119,50 +163,78 @@ struct StatsView: View {
 
     private func recordSection(_ p: Player, _ s: PlayerStats) -> some View {
         Section("Bilan") {
-            HStack {
-                statBlock("\(s.played)", "Jouées")
-                statBlock("\(s.won)", "Gagnées")
-                statBlock("\(s.lost)", "Perdues")
-                statBlock("\(s.rate)%", "Victoires")
+            VStack(spacing: 12) {
+                HStack {
+                    statBlock("\(s.played)", "Jouées")
+                    statBlock("\(s.won)", "Gagnées")
+                    statBlock("\(s.lost)", "Perdues")
+                    statBlock("\(s.rate)%", "Victoires")
+                }
+                // Une jauge, pas un camembert à deux parts : « gagnées » et
+                // « perdues » se lisent mieux écrits que découpés.
+                VizMeter(pct: s.rate)
             }
+            .padding(.vertical, 4)
         }
     }
 
-    private func perGameSection(_ s: PlayerStats) -> some View {
-        Section("Par jeu") {
-            ForEach(s.perGame) { g in
-                HStack {
-                    Text(g.name)
-                    Spacer()
-                    Text("\(g.won) V / \(g.played)").font(.jmData(14)).foregroundStyle(.secondary)
-                }
+    /// La répartition des parties — la seule vraie part-de-tout de l'écran.
+    ///
+    /// Elle ne dit quelque chose que sur plusieurs jeux : filtrée sur un seul,
+    /// elle n'aurait qu'une part.
+    private func distributionSection(_ s: PlayerStats) -> some View {
+        let slices = foldTail(s.perGame.map {
+            VizSlice(id: $0.name, label: $0.name, value: $0.played)
+        })
+        return Section("Répartition des parties") {
+            VStack(spacing: 16) {
+                DonutChart(slices: slices,
+                           centerValue: "\(s.played)",
+                           centerLabel: s.played > 1 ? String(localized: "parties") : String(localized: "partie"))
+                DonutLegend(slices: slices)
             }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 6)
+        }
+    }
+
+    /// Le plus grand nombre de parties de l'écran, tous blocs confondus : une
+    /// longueur doit vouloir dire la même chose partout.
+    private func maxPlayed(_ s: PlayerStats) -> Int {
+        Swift.max(1,
+                  (s.perGame.map(\.played) + s.teammates.map(\.total) + s.opponents.map(\.total))
+                      .max() ?? 1)
+    }
+
+    private func perGameSection(_ s: PlayerStats) -> some View {
+        Section("Victoires par jeu") {
+            ForEach(s.perGame) { g in
+                VizBar(label: g.name, won: g.won, played: g.played, maxPlayed: maxPlayed(s))
+                    .padding(.vertical, 2)
+            }
+            VizBarsKey()
         }
     }
 
     private func teammatesSection(_ s: PlayerStats) -> some View {
-        Section("Avec qui (coéquipiers)") {
+        Section("Avec qui") {
             ForEach(s.teammates) { t in
-                HStack(spacing: 10) {
-                    Avatar(name: t.name, colorIndex: t.colorIndex, size: 28)
-                    Text(t.name)
-                    Spacer()
-                    Text("\(t.wins) V / \(t.total)").font(.jmData(14)).foregroundStyle(.secondary)
-                }
+                VizBar(label: t.name, won: t.wins, played: t.total,
+                       maxPlayed: maxPlayed(s), avatarColorIndex: t.colorIndex)
+                    .padding(.vertical, 2)
             }
+            VizBarsKey()
         }
     }
 
     private func opponentsSection(_ s: PlayerStats) -> some View {
-        Section("Contre qui (adversaires)") {
+        Section("Contre qui") {
             ForEach(s.opponents) { o in
-                HStack(spacing: 10) {
-                    Avatar(name: o.name, colorIndex: o.colorIndex, size: 28)
-                    Text(o.name)
-                    Spacer()
-                    Text("\(o.wins) V / \(o.total)").font(.jmData(14)).foregroundStyle(.secondary)
-                }
+                VizBar(label: o.name, won: o.wins, played: o.total,
+                       maxPlayed: maxPlayed(s), avatarColorIndex: o.colorIndex)
+                    .padding(.vertical, 2)
             }
+            VizBarsKey()
         }
     }
 

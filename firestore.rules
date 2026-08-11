@@ -1,10 +1,22 @@
 rules_version = '2';
 
 // Chaque utilisateur ne voit et n'écrit que sous son propre identifiant.
-// Rien n'est lisible publiquement : il n'existe aucun chemin autorisé en dehors
-// de users/{uid}, donc tout le reste est refusé par défaut.
+// Hors de users/{uid} et du catalogue en lecture seule, aucun chemin n'est
+// autorisé : tout le reste est donc refusé par défaut.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Le catalogue des jeux : les mêmes données pour tout le monde, en lecture
+    // seule. C'est ce qui permet de corriger le libellé ou les règles d'un jeu
+    // sans publier une nouvelle version de l'application.
+    //
+    // Aucun client ne peut y écrire — même authentifié. Les corrections passent
+    // par la console Firebase, où c'est le compte propriétaire qui agit et non
+    // une requête venue de l'app.
+    match /games/{gameId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
 
     match /users/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;

@@ -67,7 +67,15 @@ struct PlayersView: View {
             // Apple exige un lien vers la politique de confidentialité accessible
             // depuis l'application elle-même, pas seulement depuis la fiche
             // App Store (règle 5.1.1).
-            Section("Confidentialité") {
+            Section("À propos") {
+                Link(destination: Self.websiteURL) {
+                    HStack {
+                        Text("Site web")
+                        Spacer()
+                        Image(systemName: "arrow.up.right.square")
+                            .foregroundStyle(Color.inkSecondary)
+                    }
+                }
                 Link(destination: Self.privacyPolicyURL) {
                     HStack {
                         Text("Politique de confidentialité")
@@ -89,6 +97,10 @@ struct PlayersView: View {
 
     /// Le chemin suit le nom du dépôt GitHub Pages ; il change si le dépôt est
     /// renommé. `URL(string:)` ne peut pas échouer sur une constante littérale.
+    private static let websiteURL = URL(
+        string: "https://jmprojectlab.github.io/Scornade/"
+    )!
+
     private static let privacyPolicyURL = URL(
         string: "https://jmprojectlab.github.io/Scornade/politique-de-confidentialite.html"
     )!

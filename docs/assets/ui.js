@@ -5,6 +5,7 @@
 // une douzaine de fragments de vue.
 
 import { GAMES, CATEGORIES, gameById, HUES, glyph } from "./data.js";
+import * as C from "./charts.js";
 import * as E from "./engine.js";
 import * as S from "./store.js";
 
@@ -628,6 +629,13 @@ function screenHistory() {
   return html;
 }
 
+/**
+ * Statistiques d'un joueur, filtrables.
+ *
+ * Trois filtres sur une seule ligne, au-dessus de tout ce qu'ils cadrent :
+ * joueur, jeu, coéquipier. Tout ce qui suit se recalcule sur la même tranche,
+ * pour que les chiffres ne se contredisent jamais entre deux blocs.
+ */
 function screenStats() {
   if (!S.state.players.length) {
     return `<h1 style="font-size:28px;margin-bottom:18px">Statistiques</h1>
@@ -635,61 +643,138 @@ function screenStats() {
   }
   scratch.statPlayer ??= S.state.players[0].id;
   const player = S.playerById(scratch.statPlayer) ?? S.state.players[0];
+  scratch.statGame ??= "all";
+  scratch.statMate ??= "all";
+
+  // Toutes les parties terminées où ce joueur figure — avant les filtres jeu et
+  // coéquipier, qui servent à peupler les listes déroulantes.
+  const mine = S.state.sessions.filter(E.isFinished).map((s) => {
+    const idx = s.entrants.findIndex((e) => e.playerIds.includes(player.id));
+    return idx < 0 ? null : { s, idx, win: E.winnerIndex(s) === idx };
+  }).filter(Boolean);
+
+  const gameChoices = new Map();
+  const mateChoices = new Map();
+  mine.forEach(({ s, idx }) => {
+    gameChoices.set(s.gameId, s.gameName);
+    s.entrants[idx].playerIds.filter((id) => id !== player.id)
+      .forEach((id) => mateChoices.set(id, S.playerById(id)?.name ?? "Joueur retiré"));
+  });
+
+  // Un filtre qui ne correspond plus à rien — le coéquipier a été supprimé —
+  // bloquerait l'écran sur zéro partie sans dire pourquoi. On le relâche.
+  if (scratch.statGame !== "all" && !gameChoices.has(scratch.statGame)) scratch.statGame = "all";
+  if (scratch.statMate !== "all" && !mateChoices.has(scratch.statMate)) scratch.statMate = "all";
+
+  const rows = mine.filter(({ s, idx }) =>
+    (scratch.statGame === "all" || s.gameId === scratch.statGame) &&
+    (scratch.statMate === "all" || s.entrants[idx].playerIds.includes(scratch.statMate)));
 
   let played = 0, won = 0;
   const perGame = new Map(), teammates = new Map(), opponents = new Map();
-
-  S.state.sessions.filter(E.isFinished).forEach((s) => {
-    const mine = s.entrants.findIndex((e) => e.playerIds.includes(player.id));
-    if (mine < 0) return;
-    const win = E.winnerIndex(s) === mine;
+  rows.forEach(({ s, idx, win }) => {
     played++; if (win) won++;
-
     const g = perGame.get(s.gameId) ?? { name: s.gameName, p: 0, w: 0 };
     g.p++; if (win) g.w++; perGame.set(s.gameId, g);
-
-    s.entrants[mine].playerIds.filter((id) => id !== player.id).forEach((id) => {
+    s.entrants[idx].playerIds.filter((id) => id !== player.id).forEach((id) => {
       const t = teammates.get(id) ?? { p: 0, w: 0 };
       t.p++; if (win) t.w++; teammates.set(id, t);
     });
-    s.entrants.forEach((e, idx) => {
-      if (idx === mine) return;
+    s.entrants.forEach((e, i) => {
+      if (i === idx) return;
       e.playerIds.forEach((id) => {
         const o = opponents.get(id) ?? { p: 0, w: 0 };
         o.p++; if (win) o.w++; opponents.set(id, o);
       });
     });
   });
-
   const rate = played ? Math.round((won / played) * 100) : 0;
 
-  let html = `<h1 style="font-size:28px;margin-bottom:18px">Statistiques</h1>
-    <div class="card"><label class="field" for="stat-player">Joueur</label>
-      <select id="stat-player">` + S.state.players.map((p) =>
-        `<option value="${p.id}"${p.id === player.id ? " selected" : ""}>${esc(p.name)}</option>`).join("") +
-    `</select></div>
-    <div class="section-label">Bilan</div><div class="card"><div class="statgrid">
-      <div><div class="v">${played}</div><div class="k">Jouées</div></div>
-      <div><div class="v">${won}</div><div class="k">Gagnées</div></div>
-      <div><div class="v">${Math.max(0, played - won)}</div><div class="k">Perdues</div></div>
-      <div><div class="v">${rate}%</div><div class="k">Victoires</div></div></div></div>`;
+  const option = (v, label, sel) =>
+    `<option value="${esc(v)}"${v === sel ? " selected" : ""}>${esc(label)}</option>`;
 
-  const list = (title, map, byPlayer) => {
-    if (!map.size) return "";
+  let html = `<h1 style="font-size:28px;margin-bottom:14px">Statistiques</h1>
+    <div class="filters">
+      <label><span class="field">Joueur</span>
+        <select id="stat-player">${S.state.players.map((p) =>
+          option(p.id, p.name, player.id)).join("")}</select></label>
+      <label><span class="field">Jeu</span>
+        <select id="stat-game">${option("all", "Tous les jeux", scratch.statGame)}${
+          [...gameChoices].map(([id, name]) => option(id, name, scratch.statGame)).join("")}</select></label>
+      <label><span class="field">Coéquipier</span>
+        <select id="stat-mate">${option("all", "Peu importe", scratch.statMate)}${
+          [...mateChoices].map(([id, name]) => option(id, name, scratch.statMate)).join("")}</select></label>
+    </div>`;
+
+  if (!played) {
+    return html + `<div class="empty">Aucune partie terminée ne correspond à ces filtres.</div>`;
+  }
+
+  // Bilan : quatre nombres et une jauge. Un camembert « gagnées / perdues »
+  // dirait la même chose en moins lisible.
+  html += `<div class="card">
+      <div class="statgrid">
+        <div><div class="v">${played}</div><div class="k">Jouées</div></div>
+        <div><div class="v">${won}</div><div class="k">Gagnées</div></div>
+        <div><div class="v">${played - won}</div><div class="k">Perdues</div></div>
+        <div><div class="v">${rate} %</div><div class="k">Victoires</div></div>
+      </div>
+      ${C.meter(rate, "Taux de victoire")}</div>`;
+
+  // L'anneau ne dit quelque chose que sur plusieurs jeux : filtré sur un seul,
+  // il n'aurait qu'une part.
+  const gameEntries = [...perGame.entries()]
+    .map(([id, v]) => ({ key: id, label: v.name, value: v.p }))
+    .sort((a, b) => b.value - a.value);
+
+  if (gameEntries.length > 1) {
+    const folded = C.foldTail(gameEntries);
+    html += `<div class="section-label">Répartition des parties</div>
+      <div class="card chart-card">
+        ${C.donut(folded, { centerValue: played, centerLabel: played > 1 ? "parties" : "partie" })}
+        ${C.donutLegend(folded)}</div>`;
+  }
+
+  // Toutes les barres de l'écran se mesurent sur la même échelle — le plus
+  // grand nombre de parties jouées, quel que soit le bloc — pour qu'une
+  // longueur veuille dire la même chose partout.
+  const maxPlayed = Math.max(
+    ...[...perGame.values(), ...teammates.values(), ...opponents.values()].map((v) => v.p), 1);
+
+  const winBars = (entries, title, byPlayer) => {
+    if (!entries.length) return "";
     return `<div class="section-label">${title}</div><div class="card">` +
-      [...map.entries()].map(([key, v]) => {
-        const who = byPlayer ? S.playerById(key) : null;
-        const name = byPlayer ? (who?.name ?? "Joueur retiré") : v.name;
-        return `<div class="row">${byPlayer ? avatar(name, who?.colorIndex ?? 0, true) : ""}
-          <span class="name">${esc(name)}</span>
-          <span class="ratio">${v.w} V / ${v.p}</span></div>`;
-      }).join("") + `</div>`;
+      C.winBars(entries.map((e) => ({
+        label: e.name,
+        won: e.w,
+        played: e.p,
+        lead: byPlayer ? avatar(e.name, e.colorIndex ?? 0, true) : "",
+      })), { maxPlayed }) + C.winBarsKey() + `</div>`;
   };
 
-  html += list("Par jeu", perGame, false);
-  html += list("Avec qui (coéquipiers)", teammates, true);
-  html += list("Contre qui (adversaires)", opponents, true);
-  if (!played) html += `<div class="empty">Ce joueur n'a pas encore de partie terminée.</div>`;
+  if (perGame.size > 1) {
+    html += winBars([...perGame.values()].sort((a, b) => b.p - a.p)
+      .map((v) => ({ name: v.name, p: v.p, w: v.w })), "Victoires par jeu", false);
+  }
+
+  const peers = (map) => [...map.entries()].map(([id, v]) => {
+    const who = S.playerById(id);
+    return { name: who?.name ?? "Joueur retiré", colorIndex: who?.colorIndex ?? 0, p: v.p, w: v.w };
+  }).sort((a, b) => b.p - a.p);
+
+  html += winBars(peers(teammates), "Avec qui", true);
+  html += winBars(peers(opponents), "Contre qui", true);
+
+  // Le tableau est l'équivalent lisible sans couleur, exigé dès qu'une teinte
+  // porte une information. Il n'est pas un repli : il dit exactement la même
+  // chose que les graphiques.
+  html += `<details class="table-view"><summary>Voir les chiffres</summary>
+    <table><thead><tr><th>Jeu</th><th>Jouées</th><th>Gagnées</th><th>Taux</th></tr></thead><tbody>` +
+    [...perGame.values()].sort((a, b) => b.p - a.p).map((v) =>
+      `<tr><td>${esc(v.name)}</td><td class="tab">${v.p}</td><td class="tab">${v.w}</td>
+        <td class="tab">${v.p ? Math.round((v.w / v.p) * 100) : 0} %</td></tr>`).join("") +
+    `</tbody></table></details>`;
+
   return html;
 }
 
@@ -1003,7 +1088,17 @@ export function bindEvents() {
   });
 
   root.addEventListener("change", (ev) => {
-    if (ev.target.id === "stat-player") { scratch.statPlayer = ev.target.value; render(); }
+    // Changer de joueur remet les deux autres filtres à zéro : ses jeux et ses
+    // coéquipiers ne sont pas ceux du précédent, et garder la sélection
+    // afficherait « aucune partie » sans raison apparente.
+    if (ev.target.id === "stat-player") {
+      scratch.statPlayer = ev.target.value;
+      scratch.statGame = "all";
+      scratch.statMate = "all";
+      render();
+    }
+    if (ev.target.id === "stat-game") { scratch.statGame = ev.target.value; render(); }
+    if (ev.target.id === "stat-mate") { scratch.statMate = ev.target.value; render(); }
     if (ev.target.id === "theme-select") S.setTheme(ev.target.value);
   });
 

@@ -24,6 +24,8 @@ export const state = {
   filter: "all",
   /** Renseigné par firebase.js quand la synchronisation est active. */
   sync: null,
+  /** Posé par l'amorçage : appelé quand une correction du catalogue arrive. */
+  onCatalogChange: null,
 };
 
 const listeners = new Set();

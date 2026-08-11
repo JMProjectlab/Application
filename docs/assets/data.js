@@ -52,6 +52,82 @@ export const CATEGORIES = [
 
 export const gameById = (id) => GAMES.find((g) => g.id === id);
 
+// --- Corrections venues de Firestore --------------------------------------
+//
+// La collection `games` peut redéfinir certains champs d'un jeu, jeu par jeu.
+// C'est ce qui permet de corriger une faute dans une règle sans republier
+// l'application sur l'App Store.
+//
+// Seuls des champs de présentation sont concernés. `engine`, `team` et `high`
+// restent dans le code : le moteur désigne une fonction de calcul, et changer
+// le sens de victoire à distance réécrirait le vainqueur de parties déjà
+// terminées.
+// Clé dans le document Firestore → champ local. Les deux diffèrent : le
+// document parle la langue d'iOS (`category`, `defaultTarget`), que ce fichier
+// abrège depuis toujours. Sans cette table, une correction de catégorie
+// s'appliquerait sur iOS et pas ici.
+const OVERRIDABLE = {
+  name: "name",
+  rules: "rules",
+  category: "cat",
+  defaultTarget: "target",
+};
+
+const CACHE_KEY = "sm.catalog";
+
+/**
+ * Applique des corrections sur le catalogue en place.
+ *
+ * Un identifiant inconnu est ignoré : un jeu ne peut pas être ajouté à
+ * distance, puisqu'il lui faudrait un moteur, et un moteur est du code.
+ * Renvoie le nombre de jeux réellement modifiés.
+ */
+export function applyCatalogOverrides(overrides) {
+  if (!overrides || typeof overrides !== "object") return 0;
+  let changed = 0;
+  for (const [id, fields] of Object.entries(overrides)) {
+    const game = GAMES.find((g) => g.id === id);
+    if (!game || !fields || typeof fields !== "object") continue;
+    let touched = false;
+    for (const [remoteKey, localKey] of Object.entries(OVERRIDABLE)) {
+      if (!(remoteKey in fields)) continue;
+      const value = fields[remoteKey];
+      // Une valeur du mauvais type ferait plus de dégâts que pas de correction
+      // du tout : un objectif en chaîne casserait toutes les comparaisons.
+      const expected = localKey === "target" ? "number" : "string";
+      if (typeof value !== expected) continue;
+      if (expected === "number" && (!Number.isFinite(value) || value < 0)) continue;
+      // Un champ vidé par erreur effacerait le nom d'un jeu ou ses règles :
+      // mieux vaut garder la valeur embarquée.
+      if (expected === "string" && value.trim() === "") continue;
+      if (game[localKey] === value) continue;
+      game[localKey] = value;
+      touched = true;
+    }
+    if (touched) changed += 1;
+  }
+  return changed;
+}
+
+/** Relit les corrections mises en cache, pour les avoir dès le premier écran
+ *  et même sans réseau. */
+export function loadCachedCatalog() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    return raw ? applyCatalogOverrides(JSON.parse(raw)) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function cacheCatalog(overrides) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(overrides));
+  } catch {
+    /* quota ou navigation privée : on se contentera du catalogue embarqué */
+  }
+}
+
 // Teintes des avatars — mêmes couleurs système qu'iOS (Palette dans Theme.swift).
 export const HUES = ["#0a84ff", "#30b0c7", "#ff9500", "#5e5ce6", "#ff2d55", "#af52de"];
 

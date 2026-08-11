@@ -122,13 +122,24 @@
         }
       }
     },
-    "Avec qui (coéquipiers)": {
+    "Autres": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "With whom (teammates)"
+            "value": "Other"
+          }
+        }
+      }
+    },
+    "Avec qui": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playing with"
           }
         }
       }
@@ -243,6 +254,17 @@
         }
       }
     },
+    "Coéquipier": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teammate"
+          }
+        }
+      }
+    },
     "Compléter à 250": {
       "extractionState": "manual",
       "localizations": {
@@ -298,6 +320,17 @@
         }
       }
     },
+    "Contre qui": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playing against"
+          }
+        }
+      }
+    },
     "Dix frames par partie, deux boules par frame. Un spare ajoute les quilles de la boule suivante, un strike celles des deux boules suivantes — d'où un maximum à 300.\n\nSaisissez le score final de chaque joueur, celui qu'affiche la piste. Le plus haut gagne.": {
       "extractionState": "manual",
       "localizations": {
@@ -342,6 +375,17 @@
         }
       }
     },
+    "Jeu": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Game"
+          }
+        }
+      }
+    },
     "Jeu de plis à quatre, en deux équipes, avec 32 cartes et un atout choisi à chaque donne.\n\nÀ l'atout, l'ordre change : Valet 20 points, 9 14, As 11, 10 10, Roi 4, Dame 3, le 8 et le 7 rien. Dans les autres couleurs : As 11, 10 10, Roi 4, Dame 3, Valet 2, le reste rien. Les cartes totalisent 152 points, plus 10 pour le dernier pli — le dix de der — soit 162 points par donne.\n\nLe camp qui prend s'engage à faire au moins 82 points, c'est-à-dire plus de la moitié. S'il y parvient, chaque camp marque ce qu'il a ramassé. Sinon il est dedans, et les 162 points vont entièrement à la défense.\n\nLa belote-rebelote — Roi et Dame d'atout dans la même main — rapporte 20 points à son camp, qui les conserve même contrat manqué. Le capot, tous les plis pour un seul camp, vaut 252 points.\n\nPremier camp à l'objectif gagne.": {
       "extractionState": "manual",
       "localizations": {
@@ -360,6 +404,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "A trick game in teams of two, with 32 cards.\n\nThe order is unusual: the 10 is the top card — the manille — followed by the Ace, called the manillon. The manille is worth 5 points, the Ace 4, the King 3, the Queen 2, the Jack 1; the 9, 8 and 7 nothing. That makes 60 points a deal.\n\nSome tables add a point for the last trick. Agree on it before starting.\n\nFirst side to the target wins."
+          }
+        }
+      }
+    },
+    "Joueur": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player"
           }
         }
       }
@@ -441,6 +496,39 @@
         }
       }
     },
+    "partie": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "game"
+          }
+        }
+      }
+    },
+    "parties": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "games"
+          }
+        }
+      }
+    },
+    "Peu importe": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anyone"
+          }
+        }
+      }
+    },
     "Points de la manche": {
       "extractionState": "manual",
       "localizations": {
@@ -470,6 +558,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "When a player lays their last domino, or the game blocks with no move available, the others count the pips still in their hands.\n\nThose points go against them. Lowest running total at the target wins."
+          }
+        }
+      }
+    },
+    "Répartition des parties": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Games played"
           }
         }
       }
@@ -536,6 +635,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Delete this game?"
+          }
+        }
+      }
+    },
+    "Tous les jeux": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All games"
           }
         }
       }
@@ -624,17 +734,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bid contract"
-          }
-        }
-      }
-    },
-    "Contre qui (adversaires)": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Against whom (opponents)"
           }
         }
       }
@@ -833,17 +932,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "UPPER SECTION"
-          }
-        }
-      }
-    },
-    "Par jeu": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "By game"
           }
         }
       }
@@ -1596,6 +1684,17 @@
         }
       }
     },
+    "Victoires par jeu": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wins by game"
+          }
+        }
+      }
+    },
     "Volée de %@": {
       "extractionState": "manual",
       "localizations": {
@@ -2142,6 +2241,28 @@
           "stringUnit": {
             "state": "translated",
             "value": "Capot T2"
+          }
+        }
+      }
+    },
+    "À propos": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        }
+      }
+    },
+    "Site web": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Website"
           }
         }
       }

@@ -7,6 +7,7 @@
 // et écrivent les mêmes données.
 
 import { mergeRemote, setUser, state } from "./store.js";
+import { applyCatalogOverrides, cacheCatalog } from "./data.js";
 
 const SDK = "https://www.gstatic.com/firebasejs/10.12.2";
 
@@ -60,6 +61,7 @@ export async function initFirebase() {
         mode: user.providerData[0]?.providerId === "apple.com" ? "apple" : "google",
       });
       startListening(user.uid);
+      watchCatalog();
     } else {
       stopListening();
       setUser(null);
@@ -67,6 +69,33 @@ export async function initFirebase() {
   });
 
   return { signInGoogle, signInApple, signOut: doSignOut, isReady: true };
+}
+
+// --- Catalogue des jeux ---------------------------------------------------
+
+let unsubCatalog = null;
+
+/**
+ * Écoute les corrections du catalogue.
+ *
+ * Les documents `games/{id}` redéfinissent, jeu par jeu, un libellé, des règles,
+ * une catégorie ou un objectif par défaut. Une collection vide est le cas
+ * normal : le catalogue embarqué s'applique alors tel quel.
+ *
+ * Les règles Firestore interdisent l'écriture depuis le client, donc ce flux
+ * est à sens unique — l'application lit, la console corrige.
+ */
+function watchCatalog() {
+  unsubCatalog?.();
+  unsubCatalog = mods.onSnapshot(mods.collection(db, "games"), (snap) => {
+    const overrides = {};
+    snap.forEach((doc) => { overrides[doc.id] = doc.data(); });
+    const changed = applyCatalogOverrides(overrides);
+    cacheCatalog(overrides);
+    // Rien ne sert de tout redessiner si aucun jeu n'a bougé : les écrans de
+    // score sont pleins de champs de saisie qui perdraient le focus.
+    if (changed > 0) state.onCatalogChange?.();
+  }, () => { /* hors ligne : le cache local a déjà été appliqué au démarrage */ });
 }
 
 // --- Connexion ------------------------------------------------------------
@@ -118,6 +147,7 @@ function startListening(userId) {
 function stopListening() {
   unsubPlayers?.(); unsubPlayers = null;
   unsubSessions?.(); unsubSessions = null;
+  unsubCatalog?.(); unsubCatalog = null;
 }
 
 /** N'écrit que les documents dont le JSON a changé depuis le dernier envoi. */
