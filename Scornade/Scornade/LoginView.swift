@@ -8,6 +8,7 @@ import GoogleSignIn
 struct LoginView: View {
     @EnvironmentObject var store: Store
     @Environment(\.locale) private var locale
+    @Environment(\.dismiss) private var dismiss
     @State private var authError: String?
     @State private var currentNonce: String?
     @State private var isWorking = false
@@ -68,7 +69,16 @@ struct LoginView: View {
                 }
                 .disabled(isWorking)
 
-                Text("Un compte permet de retrouver vos parties sur vos autres appareils.")
+                Button("Continuer sans compte") {
+                    store.continueAsGuest()
+                    dismiss()
+                }
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Color.ink)
+                .frame(maxWidth: .infinity).frame(height: 44)
+                .padding(.top, 4)
+
+                Text("Un compte permet de retrouver vos parties sur vos autres appareils. Sans compte, tout reste sur cet appareil.")
                     .font(.caption2).foregroundStyle(.secondary)
                     .multilineTextAlignment(.center).padding(.top, 4)
             }
@@ -79,6 +89,12 @@ struct LoginView: View {
             Button("OK") { authError = nil }
         } message: {
             Text(authError ?? "")
+        }
+        // Quand la vue est présentée depuis l'onglet Joueurs pour rattacher un
+        // compte à une session locale, elle se referme d'elle-même une fois la
+        // connexion faite. À la racine de l'app, `dismiss()` ne fait rien.
+        .onChange(of: store.currentUser) { user in
+            if let user, !user.isGuest { dismiss() }
         }
     }
 

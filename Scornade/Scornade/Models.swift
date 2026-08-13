@@ -150,6 +150,11 @@ struct BeloteRound: Codable, Hashable {
 
 enum AuthMode: String, Codable {
     case apple, google
+    /// Usage sans compte : tout reste sur l'appareil, rien n'est synchronisé.
+    /// La règle 5.1.1(v) de l'App Store interdit d'exiger une inscription pour
+    /// des fonctionnalités qui n'en ont pas besoin — compter des points n'en a
+    /// pas besoin.
+    case guest
 }
 
 struct UserAccount: Codable, Equatable {
@@ -157,6 +162,8 @@ struct UserAccount: Codable, Equatable {
     var name: String
     var email: String?
     var mode: AuthMode
+
+    var isGuest: Bool { mode == .guest }
 }
 
 
