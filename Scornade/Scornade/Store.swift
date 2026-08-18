@@ -303,6 +303,23 @@ final class Store: ObservableObject {
         startSyncIfSignedIn()
     }
 
+    /// Ouvre une session locale, sans compte : l'application est utilisable
+    /// immédiatement et tout reste sur l'appareil. `syncEnabled` reste faux
+    /// puisque `Auth.auth().currentUser` est nil, donc rien ne part sur le
+    /// réseau.
+    ///
+    /// Les parties créées ici ne sont pas perdues si l'utilisateur se connecte
+    /// plus tard : `startSyncIfSignedIn()` termine par `pushChanges()`, qui
+    /// envoie ce qui existe déjà en local.
+    func continueAsGuest() {
+        guard currentUser == nil else { return }
+        currentUser = UserAccount(id: UUID().uuidString,
+                                  name: "Joueur",
+                                  email: nil,
+                                  mode: .guest)
+        saveUser()
+    }
+
     func signOut() {
         stopSync()
         try? Auth.auth().signOut()

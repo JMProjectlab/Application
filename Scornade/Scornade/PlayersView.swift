@@ -5,6 +5,7 @@ struct PlayersView: View {
     @State private var newName = ""
     @State private var newEmail = ""
     @State private var showDeleteConfirm = false
+    @State private var showLogin = false
     @AppStorage("sm.languagePreference") private var languagePreference = "system"
     @Environment(\.locale) private var locale
 
@@ -51,13 +52,21 @@ struct PlayersView: View {
             Section("Compte") {
                 if let u = store.currentUser {
                     HStack {
-                        Text("Connecté")
+                        Text(u.isGuest ? "Mode local" : "Connecté")
                         Spacer()
                         Text(accountLabel(u)).foregroundStyle(.secondary)
                     }
                 }
-                Button(role: .destructive) { store.signOut() } label: {
-                    Text("Se déconnecter")
+                // Sans compte, la seule action utile est d'en créer un ; se
+                // « déconnecter » d'une session locale n'aurait aucun sens.
+                if store.currentUser?.isGuest ?? true {
+                    Button { showLogin = true } label: {
+                        Text("Se connecter pour synchroniser")
+                    }
+                } else {
+                    Button(role: .destructive) { store.signOut() } label: {
+                        Text("Se déconnecter")
+                    }
                 }
                 Button(role: .destructive) { showDeleteConfirm = true } label: {
                     Text("Supprimer mes données")
@@ -93,6 +102,9 @@ struct PlayersView: View {
         } message: {
             Text("Cette action efface tous vos joueurs, vos parties et votre compte, sur cet appareil et sur le serveur. Elle est irréversible.")
         }
+        .sheet(isPresented: $showLogin) {
+            LoginView().environmentObject(store)
+        }
     }
 
     /// Le chemin suit le nom du dépôt GitHub Pages ; il change si le dépôt est
@@ -109,6 +121,7 @@ struct PlayersView: View {
         switch u.mode {
         case .apple: return String(localized: "\(u.name) · Apple", locale: locale)
         case .google: return String(localized: "\(u.name) · Google", locale: locale)
+        case .guest: return String(localized: "Sur cet appareil", locale: locale)
         }
     }
 }
