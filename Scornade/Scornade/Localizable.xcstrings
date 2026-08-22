@@ -726,13 +726,13 @@
         }
       }
     },
-    "Compléter à 250" : {
+    "Compléter %@ à 250" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Complete to 250"
+            "value" : "Complete %@ to 250"
           }
         }
       }
