@@ -76,6 +76,8 @@ struct HomeView: View {
                     Game421ScoringView(sessionID: id)
                 } else if let s = store.session(id: id), s.gameId == "molkky" {
                     MolkkyScoringView(sessionID: id)
+                } else if let s = store.session(id: id), s.gameId == "phase10" {
+                    Phase10ScoringView(sessionID: id)
                 } else {
                     ScoringView(sessionID: id)
                 }

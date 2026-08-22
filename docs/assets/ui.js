@@ -164,7 +164,7 @@ function screenNewGame() {
       <button class="ghost" data-act="quick-add">Ajouter</button>
     </div></div>`;
 
-  if (g.engine !== "grid") {
+  if (g.engine !== "grid" && g.engine !== "phase" && !g.roundLimit) {
     const step = g.target > 0 && g.target < 50 ? 1 : (g.engine === "countdown" ? 100 : 50);
     html += `<div class="section-label">Objectif</div><div class="card">
       <div style="display:flex;align-items:center;gap:14px">
@@ -229,7 +229,8 @@ function scoringGeneric(session, game) {
   scratch.inputs ??= session.entrants.map(() => "");
 
   let left = `<div class="card" style="display:flex;justify-content:space-between;font-size:15px;color:var(--ink-2)">
-      <span>Manche ${session.rounds.length + (fin ? 0 : 1)}</span>
+      <span>Manche ${session.rounds.length + (fin ? 0 : 1)}${
+        session.roundLimit > 0 ? ` / ${session.roundLimit}` : ""}</span>
       ${session.target > 0 ? `<span class="tab">Objectif ${session.target}</span>` : ""}</div>`;
 
   session.entrants.forEach((e, i) => {
@@ -268,6 +269,74 @@ function scoringGeneric(session, game) {
 
   return { left: left + historyBlock(session, "Historique · touchez une manche pour la corriger",
                                      genericRows(session)), right };
+}
+
+/**
+ * Phase 10.
+ *
+ * Ce jeu ne se gagne pas aux points : on gagne en posant sa dixième phase, et
+ * les points ne servent qu'à départager ceux qui y arrivent dans la même
+ * manche. Une manche demande donc deux choses par joueur — sa phase est-elle
+ * passée, et combien de points lui restaient en main.
+ */
+function scoringPhase10(session) {
+  const fin = E.isFinished(session);
+  scratch.inputs ??= session.entrants.map(() => "");
+  scratch.phaseDone ??= session.entrants.map(() => false);
+
+  let left = `<div class="card" style="display:flex;justify-content:space-between;font-size:15px;color:var(--ink-2)">
+      <span>Manche ${session.rounds.length + (fin ? 0 : 1)}</span>
+      <span class="tab">Les points départagent</span></div>`;
+
+  left += session.entrants.map((e, i) => {
+    const phase = E.phaseOf(session, i);
+    return `<div class="score-row">${avatar(e.name, e.colorIndex, true)}
+      <span class="nm">${esc(e.name)}<br>
+        <span class="sub">${phase > 10 ? "Dix phases posées" : `Phase ${phase} sur 10`}</span></span>
+      <span class="sc">${E.total(session, i)}</span></div>`;
+  }).join("");
+
+  let right = "";
+  if (fin) {
+    const w = E.winnerIndex(session);
+    right = winnerBlock(session,
+      `Dix phases posées · ${E.total(session, w)} pts de pénalité`,
+      `🏆 ${session.entrants[w].name} boucle les dix phases de ${session.gameName} avec ${E.total(session, w)} points de pénalité ! Compté avec Scornade.`,
+      { replay: "Rejouer (0 – 0)" });
+  } else {
+    right = `<div class="card"><p class="hint">Phase posée, et points restés en main</p>` +
+      session.entrants.map((e, i) => {
+        const phase = E.phaseOf(session, i);
+        return `<div class="row" style="border:none;padding:7px 0">
+          <button class="chip fixed" data-act="phase-done" data-i="${i}"
+            aria-pressed="${scratch.phaseDone[i]}"
+            aria-label="Phase ${phase} posée par ${esc(e.name)}">${scratch.phaseDone[i] ? "✓" : "—"}</button>
+          <span class="name">${esc(e.name)}<br>
+            <span class="sub">Phase ${phase} — ${esc(E.PHASE10_PHASES[Math.min(phase, 10) - 1])}</span></span>
+          <input type="number" inputmode="numeric" class="num short entry" data-i="${i}"
+            value="${esc(scratch.inputs[i])}" placeholder="0"
+            aria-label="Points restants de ${esc(e.name)}"></div>`;
+      }).join("") +
+      `<p class="hint">5 points par carte de 1 à 9, 10 de 10 à 12, 15 pour un « Passe », 25 pour un joker.</p>
+       <button class="btn primary" data-act="validate-phase">Valider la manche</button>
+       </div>`;
+  }
+
+  return { left: left + historyBlock(session, "Manches jouées", phaseRows(session)), right };
+}
+
+/** Comme `genericRows`, mais la coche dit en plus qui a posé sa phase. */
+function phaseRows(session) {
+  if (!session.rounds.length) return "";
+  return session.rounds.map((r, i) => ({ r, i })).reverse().map(({ r, i }) =>
+    `<div class="hist"><span class="ix">M${i + 1}</span>
+      <button class="hist-open" data-act="edit-round" data-i="${i}"
+        aria-label="Corriger la manche ${i + 1}">
+        <span class="dt tab">${session.entrants.map((e, j) =>
+          `${esc(e.name.slice(0, 3))} ${session.phaseRounds?.[i]?.[j] ? "✓" : "·"} ${r[j] ?? 0}`)
+          .join(" · ")}</span></button>
+      <button class="icon-btn" data-act="del-round" data-i="${i}"
+        aria-label="Supprimer la manche ${i + 1}">✕</button></div>`).join("");
 }
 
 function scoringPayoo(session) {
@@ -544,6 +613,7 @@ function screenScoring() {
   else if (game.engine === "countdown") parts = scoringDarts(session);
   else if (game.engine === "molkky") parts = scoringMolkky(session);
   else if (game.engine === "grid") parts = scoringYams(session);
+  else if (game.engine === "phase") parts = scoringPhase10(session);
   else parts = scoringGeneric(session, game);
 
   const head = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
@@ -917,6 +987,19 @@ export function bindEvents() {
       case "validate-generic": {
         S.addRound(session, scratch.inputs.map((v) => parseInt(v, 10) || 0));
         scratch.inputs = null;
+        render();
+        break;
+      }
+      case "phase-done": {
+        const i = Number(el.dataset.i);
+        scratch.phaseDone[i] = !scratch.phaseDone[i];
+        render();
+        break;
+      }
+      case "validate-phase": {
+        S.addPhaseRound(session, scratch.inputs.map((v) => parseInt(v, 10) || 0), scratch.phaseDone);
+        scratch.inputs = null;
+        scratch.phaseDone = null;
         render();
         break;
       }

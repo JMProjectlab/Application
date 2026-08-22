@@ -4,6 +4,138 @@
     "" : {
 
     },
+    "5 points par carte de 1 à 9, 10 de 10 à 12, 15 pour un « Passe », 25 pour un joker." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 points per card from 1 to 9, 10 from 10 to 12, 15 for a Skip, 25 for a wild card."
+          }
+        }
+      }
+    },
+    "Cent cartes numérotées de 1 à 10, dix de chaque. Chacun étale devant lui seize cartes face cachée, en une grille de quatre sur quatre.\n\nLa manche dure seize tours. À chaque tour, tout le monde retourne en même temps une carte de sa grille, puis la réinsère en la glissant par l'extérieur d'une ligne ou d'une colonne : toute la rangée se décale d'un cran et vient combler le trou laissé par la carte retirée.\n\nAu décompte, deux cartes de même valeur côte à côte — horizontalement ou verticalement — s'annulent et sortent de la grille. Le score de la manche est la somme de ce qui reste.\n\nCes points s'ajoutent au passif. Dès qu'un joueur atteint 100, la partie s'arrête : le plus petit total gagne." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One hundred cards numbered 1 to 10, ten of each. Everyone lays out sixteen face-down cards in front of them, in a four-by-four grid.\n\nA round lasts sixteen turns. On each turn everyone flips one card from their grid at the same time, then slides it back in from the outside of a row or a column: the whole line shifts along by one and fills the gap left by the card that was taken out.\n\nWhen scoring, two cards of the same value side by side — horizontally or vertically — cancel each other out and leave the grid. The round's score is the sum of what remains.\n\nThose points go onto your tally. As soon as a player reaches 100 the game stops: the lowest total wins."
+          }
+        }
+      }
+    },
+    "Deux jeux de 58 cartes en cinq couleurs — cœur, carreau, trèfle, pique et étoile — allant du 3 au Roi, plus six jokers.\n\nOnze manches, et une seule distribution possible à chaque fois : trois cartes à la première, quatre à la deuxième, et ainsi de suite jusqu'à treize à la onzième. On forme des séries — au moins trois cartes de même valeur, couleurs différentes — ou des suites d'au moins trois cartes qui se suivent dans la même couleur.\n\nL'atout de la manche est la valeur distribuée : les 3 à la première manche, les 4 à la deuxième, et les Rois à la onzième. Il remplace n'importe quelle carte, comme un joker.\n\nDès qu'un joueur pose toute sa main, chacun des autres joue un dernier tour puis compte ce qui lui reste : les cartes valent leur numéro, le Valet 11, la Dame 12, le Roi 13, un atout 20 et un joker 50.\n\nAu bout des onze manches, le plus petit total gagne." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Two identical decks of 58 cards in five suits — hearts, diamonds, clubs, spades and stars — running from 3 to King, plus six jokers.\n\nEleven rounds, each with its own deal: three cards in the first, four in the second, and so on up to thirteen in the eleventh. You build sets — at least three cards of the same value in different suits — or runs of at least three consecutive cards in the same suit.\n\nThe round's wild card is the value dealt: threes in the first round, fours in the second, and Kings in the eleventh. It stands in for any card, like a joker.\n\nAs soon as a player lays down their whole hand, everyone else takes one last turn and then counts what is left: cards are worth their number, Jack 11, Queen 12, King 13, a wild card 20 and a joker 50.\n\nAfter the eleven rounds, the lowest total wins."
+          }
+        }
+      }
+    },
+    "Dix phases à réussir dans l'ordre, une par manche. Il faut avoir posé la sienne pour passer à la suivante ; qui la manque rejoue la même phase à la manche d'après.\n\nLes dix phases :\n• 1 — deux brelans\n• 2 — un brelan et une suite de 4\n• 3 — un carré et une suite de 4\n• 4 — une suite de 7\n• 5 — une suite de 8\n• 6 — une suite de 9\n• 7 — deux carrés\n• 8 — sept cartes d'une même couleur\n• 9 — cinq cartes de même valeur et une paire\n• 10 — cinq cartes de même valeur et un brelan\n\nDès qu'un joueur se débarrasse de sa dernière carte, la manche s'arrête et les autres comptent ce qui leur reste en main : 5 points par carte de 1 à 9, 10 points de 10 à 12, 15 points pour un « Passe » et 25 pour un joker.\n\nCes points ne servent qu'à départager. Le vainqueur est le premier à poser sa dixième phase — et si plusieurs y arrivent dans la même manche, celui des deux qui a le moins de points." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten phases to complete in order, one per round. You must lay yours down to move on to the next; anyone who misses it plays the same phase again next round.\n\nThe ten phases:\n• 1 — two sets of three\n• 2 — one set of three and a run of 4\n• 3 — one set of four and a run of 4\n• 4 — a run of 7\n• 5 — a run of 8\n• 6 — a run of 9\n• 7 — two sets of four\n• 8 — seven cards of one colour\n• 9 — five cards of the same value and a pair\n• 10 — five cards of the same value and a set of three\n\nAs soon as a player gets rid of their last card the round stops and everyone else counts what is left in hand: 5 points per card from 1 to 9, 10 points from 10 to 12, 15 points for a Skip and 25 for a wild card.\n\nThose points are only there to break ties. The winner is the first to lay down their tenth phase — and if several manage it in the same round, whichever of them has the fewest points."
+          }
+        }
+      }
+    },
+    "Dix phases posées" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten phases down"
+          }
+        }
+      }
+    },
+    "Dix phases posées · %lld pts de pénalité" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten phases down · %lld penalty pts"
+          }
+        }
+      }
+    },
+    "Les points départagent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Points break ties"
+          }
+        }
+      }
+    },
+    "Manche %lld / %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Round %lld of %lld"
+          }
+        }
+      }
+    },
+    "Phase %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phase %lld"
+          }
+        }
+      }
+    },
+    "Phase %lld posée par %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phase %1$lld laid down by %2$@"
+          }
+        }
+      }
+    },
+    "Phase %lld sur 10" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phase %lld of 10"
+          }
+        }
+      }
+    },
+    "Phase posée, et points restés en main" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phase laid down, and points left in hand"
+          }
+        }
+      }
+    },
     "—" : {
 
     },
@@ -261,6 +393,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "🎲 %@ wins Yam's with %lld points! Scored with Scornade."
+          }
+        }
+      }
+    },
+    "🏆 %@ boucle les dix phases de %@ avec %lld points de pénalité ! Compté avec Scornade." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🏆 %1$@ finishes all ten phases of %2$@ with %3$lld penalty points! Counted with Scornade."
           }
         }
       }

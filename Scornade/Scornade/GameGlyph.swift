@@ -20,6 +20,9 @@ struct GameGlyph: View {
             case "scrabble":    letterTile
             case "dominos":     dominoTile
             case "millebornes": milestone
+            case "dekal":       shiftedGrid
+            case "phase10":     phaseList
+            case "cinqrois":    crown
             default:            fallbackSymbol
             }
         }
@@ -117,7 +120,63 @@ struct GameGlyph: View {
         }
     }
 
+    /// Dékal — la carte qu'on glisse par le côté pour décaler une rangée.
+    ///
+    /// La grille seule ressemblait trop à celle de Skyjo : c'est le décalage
+    /// qui fait le jeu, donc c'est lui qu'on dessine.
+    private var shiftedGrid: some View {
+        ZStack(alignment: .topLeading) {
+            Color.clear
+            RoundedRectangle(cornerRadius: 0.9 * u)
+                .stroke(tint, lineWidth: 1.4 * u)
+                .frame(width: 4.4 * u, height: 4.4 * u)
+                .offset(x: 0.7 * u, y: 8.8 * u)
+            ForEach(0..<9, id: \.self) { i in
+                let row = i / 3, col = i % 3
+                RoundedRectangle(cornerRadius: 0.9 * u)
+                    .fill(tint)
+                    .frame(width: 4.4 * u, height: 4.4 * u)
+                    .offset(x: (6.7 + CGFloat(col) * 5.0) * u,
+                            y: (3.4 + CGFloat(row) * 5.4) * u)
+            }
+        }
+    }
+
+    /// Phase 10 — la liste des phases à franchir, sur une carte.
+    private var phaseList: some View {
+        ZStack {
+            card(w: 13, h: 17)
+            VStack(alignment: .leading, spacing: 1.9 * u) {
+                bar(8)
+                bar(8)
+                bar(5)
+            }
+        }
+    }
+
+    /// Les Cinq Rois — une couronne à cinq pointes.
+    private var crown: some View {
+        Path { p in
+            p.move(to: CGPoint(x: 4 * u, y: 17 * u))
+            p.addLine(to: CGPoint(x: 4 * u, y: 8 * u))
+            p.addLine(to: CGPoint(x: 7.5 * u, y: 11.5 * u))
+            p.addLine(to: CGPoint(x: 11 * u, y: 5.5 * u))
+            p.addLine(to: CGPoint(x: 14.5 * u, y: 11.5 * u))
+            p.addLine(to: CGPoint(x: 18 * u, y: 8 * u))
+            p.addLine(to: CGPoint(x: 18 * u, y: 17 * u))
+            p.closeSubpath()
+        }
+        .fill(tint)
+    }
+
     // MARK: Briques de dessin
+
+    private func bar(_ w: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: 0.7 * u)
+            .fill(tint)
+            .frame(width: w * u, height: 1.4 * u)
+    }
+
 
     private var pip: some View {
         Circle().fill(tint).frame(width: 2.4 * u, height: 2.4 * u)

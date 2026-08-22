@@ -100,7 +100,9 @@ final class Store: ObservableObject {
             target: target,
             higherWins: game.higherWins,
             direction: game.engine.direction,
-            entrants: entrants
+            entrants: entrants,
+            roundLimit: game.roundLimit > 0 ? game.roundLimit : nil,
+            phaseRounds: game.engine == .phaseRace ? [] : nil
         )
         sessions.insert(session, at: 0)
         save()
@@ -135,6 +137,18 @@ final class Store: ObservableObject {
         guard let i = sessions.firstIndex(where: { $0.id == sessionID }) else { return }
         sessions[i].coincheRounds = (sessions[i].coincheRounds ?? []) + [round]
         sessions[i].rounds.append(round.deltas())
+        save()
+    }
+
+    /// Phase 10 : une manche, ce sont des points de pénalité **et** la liste de
+    /// ceux qui ont posé leur phase. Les deux vont ensemble — annuler la manche
+    /// doit rendre sa phase à chacun.
+    func addPhaseRound(sessionID: UUID, deltas: [Int], completed: [Bool]) {
+        guard let i = sessions.firstIndex(where: { $0.id == sessionID }) else { return }
+        let n = sessions[i].entrants.count
+        let flags = (0..<n).map { completed.indices.contains($0) && completed[$0] }
+        sessions[i].phaseRounds = (sessions[i].phaseRounds ?? []) + [flags]
+        sessions[i].rounds.append((0..<n).map { deltas.indices.contains($0) ? deltas[$0] : 0 })
         save()
     }
 
@@ -202,12 +216,16 @@ final class Store: ObservableObject {
               sessions[i].rounds.indices.contains(index) else { return }
         let n = sessions[i].entrants.count
         sessions[i].rounds[index] = (0..<n).map { deltas.indices.contains($0) ? deltas[$0] : 0 }
-        removeStructuredRound(&sessions[i], at: index)
+        removeStructuredRound(&sessions[i], at: index, keepPhases: true)
         sessions[i].manuallyFinished = false
         save()
     }
 
-    private func removeStructuredRound(_ s: inout ScoreSession, at index: Int) {
+    /// `keepPhases` sert à la correction de points : à Phase 10, la phase posée
+    /// pendant la manche reste acquise même si son décompte était faux. La
+    /// suppression d'une manche, elle, la reprend.
+    private func removeStructuredRound(_ s: inout ScoreSession, at index: Int,
+                                       keepPhases: Bool = false) {
         if var br = s.beloteRounds, br.indices.contains(index) {
             br.remove(at: index)
             s.beloteRounds = br
@@ -219,6 +237,10 @@ final class Store: ObservableObject {
         if var cr = s.coincheRounds, cr.indices.contains(index) {
             cr.remove(at: index)
             s.coincheRounds = cr
+        }
+        if !keepPhases, var pr = s.phaseRounds, pr.indices.contains(index) {
+            pr.remove(at: index)
+            s.phaseRounds = pr
         }
     }
 
@@ -262,6 +284,9 @@ final class Store: ObservableObject {
         s.yamsGrid = nil
         s.pot = nil
         s.jetons = nil
+        // Le tableau vide dit « cette partie suit des phases » ; le mettre à nil
+        // ferait retomber Phase 10 sur le décompte ordinaire.
+        if s.phaseRounds != nil { s.phaseRounds = [] }
         s.manuallyFinished = false
         sessions[i] = s
         save()

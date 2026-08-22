@@ -150,6 +150,8 @@ export function createSession(game, entrants, target) {
       : null,
     molkkyMisses: game.engine === "molkky" ? entrants.map(() => 0) : null,
     molkkyOut: game.engine === "molkky" ? entrants.map(() => false) : null,
+    roundLimit: game.roundLimit ?? 0,
+    phaseRounds: game.engine === "phase" ? [] : null,
   };
   state.sessions.unshift(session);
   commit();
@@ -161,6 +163,18 @@ export const activeSession = () => state.sessions.find((s) => !isFinished(s));
 
 export function addRound(session, deltas) {
   session.rounds.push(deltas);
+  commit();
+}
+
+/**
+ * Phase 10 : une manche, ce sont des points de pénalité **et** la liste de ceux
+ * qui ont posé leur phase. Les deux vont ensemble — annuler la manche doit
+ * rendre sa phase à chacun. Même règle que `Store.addPhaseRound` côté iOS.
+ */
+export function addPhaseRound(session, deltas, completed) {
+  session.phaseRounds ??= [];
+  session.phaseRounds.push(session.entrants.map((_, i) => Boolean(completed[i])));
+  session.rounds.push(session.entrants.map((_, i) => Number(deltas[i]) || 0));
   commit();
 }
 
@@ -194,14 +208,20 @@ export function deleteRound(session, index) {
 export function updateRound(session, index, deltas) {
   if (index < 0 || index >= session.rounds.length) return;
   session.rounds[index] = session.entrants.map((_, i) => Number(deltas[i]) || 0);
-  dropStructuredRound(session, index);
+  dropStructuredRound(session, index, true);
   session.manuallyFinished = false;
   commit();
 }
 
-function dropStructuredRound(session, index) {
+/** `keepPhases` sert à la correction de points : à Phase 10, la phase posée
+ *  pendant la manche reste acquise même si son décompte était faux. La
+ *  suppression d'une manche, elle, la reprend. */
+function dropStructuredRound(session, index, keepPhases = false) {
   if (session.beloteRounds && index < session.beloteRounds.length) {
     session.beloteRounds.splice(index, 1);
+  }
+  if (!keepPhases && session.phaseRounds && index < session.phaseRounds.length) {
+    session.phaseRounds.splice(index, 1);
   }
 }
 
@@ -227,6 +247,9 @@ export function resetSession(session, keepSeries) {
   }
   session.rounds = [];
   if (session.beloteRounds) session.beloteRounds = [];
+  // Le tableau vide dit « cette partie suit des phases » ; le mettre à null
+  // ferait retomber Phase 10 sur le décompte ordinaire.
+  if (session.phaseRounds) session.phaseRounds = [];
   if (session.yamsGrid) session.yamsGrid = session.entrants.map(() => Array(13).fill(-1));
   if (session.molkkyMisses) {
     session.molkkyMisses = session.entrants.map(() => 0);

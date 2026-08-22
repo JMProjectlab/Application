@@ -43,6 +43,13 @@ export const GAMES = [
     rules: "On avance en posant des cartes bornes, en se défendant des attaques et en jouant ses bottes. La manche s'arrête à 1000 bornes.\n\nAu décompte : les bornes parcourues comptent pour leur distance, chaque botte vaut 100 points, un coup fourré en ajoute 300, l'allonge 200, boucler les 1000 bornes sans jamais poser de carte 200 en rapporte 300, et le capot — l'adversaire n'a pas avancé d'une seule borne — 500.\n\nSaisissez le total de chaque joueur à la fin de la manche. Premier à l'objectif gagne." },
   { id: "molkky", name: "Mölkky", cat: "sport", engine: "molkky", team: false, target: 50, high: true,
     rules: "Douze quilles numérotées de 1 à 12, lancées avec le mölkky à la main, par en dessous.\n\nUne seule quille renversée rapporte son numéro. Plusieurs quilles renversées rapportent leur nombre : deux quilles font deux points, quels que soient leurs numéros. Les quilles se relèvent là où elles sont tombées, et le jeu s'étale au fil des lancers.\n\nIl faut atteindre exactement 50. Dépasser fait retomber le score à 25.\n\nTrois lancers ratés d'affilée éliminent le joueur." },
+  { id: "dekal", name: "Dékal", cat: "societe", engine: "cumul", team: false, target: 100, high: false,
+    rules: "Cent cartes numérotées de 1 à 10, dix de chaque. Chacun étale devant lui seize cartes face cachée, en une grille de quatre sur quatre.\n\nLa manche dure seize tours. À chaque tour, tout le monde retourne en même temps une carte de sa grille, puis la réinsère en la glissant par l'extérieur d'une ligne ou d'une colonne : toute la rangée se décale d'un cran et vient combler le trou laissé par la carte retirée.\n\nAu décompte, deux cartes de même valeur côte à côte — horizontalement ou verticalement — s'annulent et sortent de la grille. Le score de la manche est la somme de ce qui reste.\n\nCes points s'ajoutent au passif. Dès qu'un joueur atteint 100, la partie s'arrête : le plus petit total gagne." },
+  { id: "phase10", name: "Phase 10", cat: "societe", engine: "phase", team: false, target: 0, high: false,
+    rules: "Dix phases à réussir dans l'ordre, une par manche. Il faut avoir posé la sienne pour passer à la suivante ; qui la manque rejoue la même phase à la manche d'après.\n\nLes dix phases :\n• 1 — deux brelans\n• 2 — un brelan et une suite de 4\n• 3 — un carré et une suite de 4\n• 4 — une suite de 7\n• 5 — une suite de 8\n• 6 — une suite de 9\n• 7 — deux carrés\n• 8 — sept cartes d'une même couleur\n• 9 — cinq cartes de même valeur et une paire\n• 10 — cinq cartes de même valeur et un brelan\n\nDès qu'un joueur se débarrasse de sa dernière carte, la manche s'arrête et les autres comptent ce qui leur reste en main : 5 points par carte de 1 à 9, 10 points de 10 à 12, 15 points pour un « Passe » et 25 pour un joker.\n\nCes points ne servent qu'à départager. Le vainqueur est le premier à poser sa dixième phase — et si plusieurs y arrivent dans la même manche, celui des deux qui a le moins de points." },
+  { id: "cinqrois", name: "Les Cinq Rois", cat: "societe", engine: "cumul", team: false, target: 0, high: false,
+    roundLimit: 11,
+    rules: "Deux jeux de 58 cartes en cinq couleurs — cœur, carreau, trèfle, pique et étoile — allant du 3 au Roi, plus six jokers.\n\nOnze manches, et une seule distribution possible à chaque fois : trois cartes à la première, quatre à la deuxième, et ainsi de suite jusqu'à treize à la onzième. On forme des séries — au moins trois cartes de même valeur, couleurs différentes — ou des suites d'au moins trois cartes qui se suivent dans la même couleur.\n\nL'atout de la manche est la valeur distribuée : les 3 à la première manche, les 4 à la deuxième, et les Rois à la onzième. Il remplace n'importe quelle carte, comme un joker.\n\nDès qu'un joueur pose toute sa main, chacun des autres joue un dernier tour puis compte ce qui lui reste : les cartes valent leur numéro, le Valet 11, la Dame 12, le Roi 13, un atout 20 et un joker 50.\n\nAu bout des onze manches, le plus petit total gagne." },
 ];
 
 export const CATEGORIES = [
@@ -195,6 +202,25 @@ const GLYPHS = {
       <path d="M11.2 17.5l2.4-6 2.4 6z" fill="currentColor"/>`,
   bowling: `<path d="M11 3.4c2.4 0 3.6 2.6 3.4 6-.2 2.6-.6 4.4-.6 6.4 0 1.8-1.2 2.8-2.8 2.8s-2.8-1-2.8-2.8c0-2-.4-3.8-.6-6.4-.2-3.4 1-6 3.4-6z"
       fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="11" cy="6.6" r="1.1" fill="currentColor"/>`,
+  // Dékal — la carte qu'on glisse par le côté pour décaler une rangée.
+  // La grille seule ressemblait trop à celle de Skyjo.
+  dekal: `<rect x="0.7" y="8.8" width="4.4" height="4.4" rx="0.9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="6.7" y="3.4" width="4.4" height="4.4" rx="0.9" fill="currentColor"/>
+      <rect x="11.7" y="3.4" width="4.4" height="4.4" rx="0.9" fill="currentColor"/>
+      <rect x="16.7" y="3.4" width="4.4" height="4.4" rx="0.9" fill="currentColor"/>
+      <rect x="6.7" y="8.8" width="4.4" height="4.4" rx="0.9" fill="currentColor"/>
+      <rect x="11.7" y="8.8" width="4.4" height="4.4" rx="0.9" fill="currentColor"/>
+      <rect x="16.7" y="8.8" width="4.4" height="4.4" rx="0.9" fill="currentColor"/>
+      <rect x="6.7" y="14.2" width="4.4" height="4.4" rx="0.9" fill="currentColor"/>
+      <rect x="11.7" y="14.2" width="4.4" height="4.4" rx="0.9" fill="currentColor"/>
+      <rect x="16.7" y="14.2" width="4.4" height="4.4" rx="0.9" fill="currentColor"/>`,
+  // Phase 10 — la liste des phases à franchir, sur une carte.
+  phase10: `<rect x="4.5" y="2.5" width="13" height="17" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="7" y="6.75" width="8" height="1.4" rx="0.7" fill="currentColor"/>
+      <rect x="7" y="10.05" width="8" height="1.4" rx="0.7" fill="currentColor"/>
+      <rect x="7" y="13.35" width="5" height="1.4" rx="0.7" fill="currentColor"/>`,
+  // Les Cinq Rois — une couronne à cinq pointes.
+  cinqrois: `<path d="M4 17V8l3.5 3.5L11 5.5l3.5 6L18 8v9z" fill="currentColor"/>`,
 };
 
 export function glyph(gameId, size = 24) {

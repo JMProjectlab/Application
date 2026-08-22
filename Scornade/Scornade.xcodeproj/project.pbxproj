@@ -10,6 +10,9 @@
 		0444B47B52ECB5B597C01AC3 /* StatsCharts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A19FBF747EE3E6A5552B3C27 /* StatsCharts.swift */; };
 		051A70913AF7364053DAA475 /* GameGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2406A7D244492F436A9EFA4 /* GameGlyph.swift */; };
 		0B8A91FB9F95CDE263CE99AA /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9BAFA8FFB2FE287120F2D4 /* HistoryView.swift */; };
+		2BA1C0010001000000000002 /* Phase10ScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA1C0010001000000000001 /* Phase10ScoringView.swift */; };
+		2BA1C0010001000000000003 /* Phase10ScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA1C0010001000000000001 /* Phase10ScoringView.swift */; };
+		2BA1C0010001000000000004 /* Phase10ScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BA1C0010001000000000001 /* Phase10ScoringView.swift */; };
 		18CEAEE99D4BA51A302F592A /* MolkkyScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */; };
 		2B780A622FE092F400B4E0E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B780A612FE092F400B4E0E3 /* Assets.xcassets */; };
 		2B780A652FE092F400B4E0E3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B780A642FE092F400B4E0E3 /* Preview Assets.xcassets */; };
@@ -144,6 +147,7 @@
 		2B780AF72FE09D2A00B4E0E3 /* GameCatalog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameCatalog.swift; sourceTree = "<group>"; };
 		2B780AF82FE09D2A00B4E0E3 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		2B780B082FE09D4F00B4E0E3 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		2BA1C0010001000000000001 /* Phase10ScoringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase10ScoringView.swift; sourceTree = "<group>"; };
 		31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MolkkyScoringView.swift; sourceTree = "<group>"; };
 		39B929D90F2A1B1DDC458F7F /* FirebaseSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseSupport.swift; sourceTree = "<group>"; };
 		71D0F52B79DE89AB805F249D /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -223,6 +227,7 @@
 				2B780ADD2FE09B1B00B4E0E3 /* YamsScoringView.swift */,
 				2B780ACD2FE0999400B4E0E3 /* CoincheScoringView.swift */,
 				31CF21EA041DDF69063F7F18 /* MolkkyScoringView.swift */,
+				2BA1C0010001000000000001 /* Phase10ScoringView.swift */,
 				D2406A7D244492F436A9EFA4 /* GameGlyph.swift */,
 				EA9BAFA8FFB2FE287120F2D4 /* HistoryView.swift */,
 				EB21285DB190638FCAF2B8F9 /* RoundEditorSheet.swift */,
@@ -432,6 +437,7 @@
 				2B780AC12FE0932200B4E0E3 /* Theme.swift in Sources */,
 				2B780B022FE09D2A00B4E0E3 /* GameCatalog.swift in Sources */,
 				FF2C3721EBD162444AF4C595 /* MolkkyScoringView.swift in Sources */,
+				2BA1C0010001000000000002 /* Phase10ScoringView.swift in Sources */,
 				DC0D1D2559D15C0712C73D0F /* GameGlyph.swift in Sources */,
 				E050BA32DDE4838A938F9015 /* HistoryView.swift in Sources */,
 				73E656652875FB92FEFAC5D8 /* RoundEditorSheet.swift in Sources */,
@@ -464,6 +470,7 @@
 				2B780AF22FE09CF000B4E0E3 /* Game421ScoringView.swift in Sources */,
 				2B780B062FE09D2A00B4E0E3 /* Models.swift in Sources */,
 				18CEAEE99D4BA51A302F592A /* MolkkyScoringView.swift in Sources */,
+				2BA1C0010001000000000003 /* Phase10ScoringView.swift in Sources */,
 				565118EACA54992A26A8315C /* GameGlyph.swift in Sources */,
 				7EE1A2B212FA806355709844 /* HistoryView.swift in Sources */,
 				41A415A5BE7EB0FEE909B1A9 /* RoundEditorSheet.swift in Sources */,
@@ -497,6 +504,7 @@
 				2B780A792FE092F500B4E0E3 /* ScornadeUITests.swift in Sources */,
 				2B780AB72FE0932200B4E0E3 /* BeloteScoringView.swift in Sources */,
 				557412B687F5EA26A542B399 /* MolkkyScoringView.swift in Sources */,
+				2BA1C0010001000000000004 /* Phase10ScoringView.swift in Sources */,
 				051A70913AF7364053DAA475 /* GameGlyph.swift in Sources */,
 				0B8A91FB9F95CDE263CE99AA /* HistoryView.swift in Sources */,
 				52B2E3DD6EE6FB65251AB565 /* RoundEditorSheet.swift in Sources */,
