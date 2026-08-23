@@ -106,14 +106,16 @@ dans `docs/` ne sert donc à rien.
 
 Deux façons de s'en sortir :
 
-- **Créer le dépôt `JMProjectlab/jmprojectlab.github.io`** (dépôt public, Pages
-  activé). Il sert la racine du domaine, et donc `.well-known/`. Il lui faut un
-  fichier `.nojekyll` vide, sans quoi Jekyll ignore les dossiers commençant par
-  un point et le fichier n'est jamais servi. C'est le chemin le plus court, et
-  il ne change rien à l'adresse actuelle du site.
+- **Créer le dépôt `JMProjectlab/jmprojectlab.github.io`** (public, Pages
+  activé). Il sert la racine du domaine, et donc `.well-known/`. C'est le chemin
+  le plus court, et il ne change rien à l'adresse actuelle du site. S'il est
+  publié par « Deploy from a branch », il lui faut un fichier `.nojekyll` vide :
+  sans lui, Jekyll ignore les dossiers commençant par un point et le fichier
+  n'est jamais servi.
 - **Attacher un nom de domaine** au site Scornade (`CNAME` dans `docs/`). La
   racine du domaine devient alors `docs/`, et `docs/.well-known/assetlinks.json`
-  fait l'affaire — avec le même `.nojekyll`.
+  suffit. Ici, rien à ajouter : le site est publié par `.github/workflows/pages.yml`,
+  qui téléverse `docs/` tel quel, sans passer par Jekyll.
 
 Vérifier ensuite, avant de soumettre quoi que ce soit :
 
