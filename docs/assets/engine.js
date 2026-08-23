@@ -8,8 +8,27 @@ export function total(session, i) {
   return session.direction === "countdown" ? Math.max(0, session.target - sum) : sum;
 }
 
+/** Phase 10 : la phase en cours d'un joueur, de 1 à 10, puis 11 une fois les
+ *  dix franchies. */
+export function phaseOf(session, i) {
+  if (!session.phaseRounds) return 1;
+  const done = session.phaseRounds.reduce((acc, r) => acc + (r[i] ? 1 : 0), 0);
+  return Math.min(done + 1, 11);
+}
+
+/** Phase 10 : les joueurs qui ont posé leur dixième phase. */
+export function phaseFinishers(session) {
+  if (!session.phaseRounds) return [];
+  return session.entrants.map((_, i) => i).filter((i) => phaseOf(session, i) > 10);
+}
+
 export function reachedEnd(session) {
   const idx = session.entrants.map((_, i) => i);
+  // Phase 10 : ce sont les phases qui terminent la partie, pas les points, qui
+  // ne sont que des pénalités et n'ont pas d'objectif à atteindre.
+  if (session.phaseRounds) return phaseFinishers(session).length > 0;
+  // Les Cinq Rois se jouent en onze manches, ni plus ni moins.
+  if (session.roundLimit > 0 && session.rounds.length >= session.roundLimit) return true;
   if (session.direction === "countdown") return idx.some((i) => total(session, i) <= 0);
   return session.target > 0 && idx.some((i) => total(session, i) >= session.target);
 }
@@ -19,6 +38,12 @@ export const isFinished = (s) => s.manuallyFinished || reachedEnd(s);
 export function winnerIndex(session) {
   if (!isFinished(session) || !session.entrants.length) return null;
   const totals = session.entrants.map((_, i) => total(session, i));
+  // Phase 10 : avoir fini les dix phases prime sur le total ; si deux joueurs
+  // finissent dans la même manche, le plus petit score départage.
+  const finishers = phaseFinishers(session);
+  if (finishers.length) {
+    return finishers.reduce((best, i) => (totals[i] < totals[best] ? i : best), finishers[0]);
+  }
   if (session.direction === "countdown") return totals.indexOf(Math.min(...totals));
   return session.higherWins ? totals.indexOf(Math.max(...totals)) : totals.indexOf(Math.min(...totals));
 }
@@ -104,3 +129,18 @@ export function molkkyThrow(session, playerIndex, score) {
   if (next > 50) return { delta: 25 - current, note: "Raté ! Retour à 25 points.", advance: true };
   return { delta: score, note: null, advance: next !== 50 };
 }
+
+// --- Phase 10 -------------------------------------------------------------
+
+export const PHASE10_PHASES = [
+  "deux brelans",
+  "un brelan et une suite de 4",
+  "un carré et une suite de 4",
+  "une suite de 7",
+  "une suite de 8",
+  "une suite de 9",
+  "deux carrés",
+  "sept cartes d'une même couleur",
+  "cinq cartes de même valeur et une paire",
+  "cinq cartes de même valeur et un brelan",
+];

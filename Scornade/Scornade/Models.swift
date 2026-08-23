@@ -13,6 +13,8 @@ enum ScoringEngine: String, Codable {
     case mancheWinner       // Petanque, 8 pool, Backgammon
     case countdown          // Darts 301/501
     case gridScore          // Yam's, Bowling
+    case phaseRace          // Phase 10 : on marque des pénalités, mais c'est la
+                            // dixième phase franchie qui gagne
 
     var direction: ScoreDirection {
         self == .countdown ? .countdown : .accumulate
@@ -35,6 +37,11 @@ struct Game: Identifiable, Hashable {
     var isTeamGame: Bool
     var defaultTarget: Int
     var higherWins: Bool    // true: highest total wins; false: lowest wins
+    /// Nombre de manches fixé par la règle du jeu, 0 s'il est libre.
+    ///
+    /// Les Cinq Rois se jouent en onze manches, ni plus ni moins : la partie
+    /// s'arrête d'elle-même, sans objectif de points à atteindre.
+    var roundLimit: Int = 0
     var rules: String = ""  // rappel rapide des règles, affiché depuis NewGameView
 }
 
@@ -66,6 +73,12 @@ struct ScoreSession: Identifiable, Codable, Hashable {
     var yamsGrid: [[Int]]? = nil   // [joueur][catégorie], -1 = vide
     var pot: Int? = nil           // 421 : jetons restant dans la cave
     var jetons: [Int]? = nil      // 421 : jetons par joueur
+    var roundLimit: Int? = nil    // nombre de manches imposé par la règle (Cinq Rois : 11)
+    /// Phase 10 : pour chaque manche, qui a validé sa phase.
+    ///
+    /// C'est la trace qui compte, pas un compteur : une manche annulée doit
+    /// rendre sa phase au joueur, et un compteur ne saurait pas le faire.
+    var phaseRounds: [[Bool]]? = nil
 
     func total(_ i: Int) -> Int {
         let sum = rounds.reduce(0) { acc, round in
@@ -74,7 +87,25 @@ struct ScoreSession: Identifiable, Codable, Hashable {
         return direction == .countdown ? max(0, target - sum) : sum
     }
 
+    /// Phase 10 : la phase en cours d'un joueur, de 1 à 10, puis 11 une fois
+    /// les dix franchies.
+    func phase(of i: Int) -> Int {
+        guard let flags = phaseRounds else { return 1 }
+        let done = flags.reduce(0) { $0 + (($1.indices.contains(i) && $1[i]) ? 1 : 0) }
+        return min(done + 1, 11)
+    }
+
+    /// Phase 10 : les joueurs qui ont posé leur dixième phase.
+    var phaseFinishers: [Int] {
+        guard phaseRounds != nil else { return [] }
+        return entrants.indices.filter { phase(of: $0) > 10 }
+    }
+
     var reachedEnd: Bool {
+        // Phase 10 : ce sont les phases qui terminent la partie, pas les points
+        // — qui ne sont que des pénalités et n'ont pas d'objectif à atteindre.
+        if phaseRounds != nil { return !phaseFinishers.isEmpty }
+        if let limit = roundLimit, limit > 0, rounds.count >= limit { return true }
         switch direction {
         case .countdown:
             return entrants.indices.contains { total($0) <= 0 }
@@ -100,6 +131,12 @@ struct ScoreSession: Identifiable, Codable, Hashable {
     var winnerIndex: Int? {
         guard isFinished, !entrants.isEmpty else { return nil }
         let totals = entrants.indices.map { total($0) }
+        // Phase 10 : avoir fini les dix phases prime sur le total ; si deux
+        // joueurs finissent dans la même manche, le plus petit score départage.
+        let finishers = phaseFinishers
+        if !finishers.isEmpty {
+            return finishers.min { totals[$0] < totals[$1] }
+        }
         switch direction {
         case .countdown:
             return totals.firstIndex(of: totals.min() ?? 0)

@@ -69,7 +69,11 @@ struct NewGameView: View {
                 Text(game.isTeamGame ? "Touchez pour assigner · re-touchez pour retirer" : "Touchez pour ajouter ou retirer")
             }
 
-            if game.engine != .gridScore, game.id != "421" {
+            // Pas d'objectif à régler quand la règle du jeu le fixe elle-même :
+            // Phase 10 se gagne aux phases, les Cinq Rois tiennent en onze
+            // manches, et le Yam's comme le 421 ont leur propre fin de partie.
+            if game.engine != .gridScore, game.engine != .phaseRace,
+               game.roundLimit == 0, game.id != "421" {
                 Section("Objectif") {
                     Stepper(value: $target, in: 0...10000, step: stepSize) {
                         HStack {

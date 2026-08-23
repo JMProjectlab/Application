@@ -39,8 +39,16 @@ struct ScoringView: View {
         ScrollView {
             VStack(spacing: 14) {
                 HStack {
-                    Label("Manche \(session.rounds.count + (session.isFinished ? 0 : 1))",
-                          systemImage: "arrow.triangle.2.circlepath")
+                    // Les Cinq Rois tiennent en onze manches : afficher le
+                    // compte à part rend visible ce qu'il reste à jouer, là où
+                    // les autres jeux visent un objectif de points.
+                    let number = session.rounds.count + (session.isFinished ? 0 : 1)
+                    if let limit = session.roundLimit, limit > 0 {
+                        Label("Manche \(number) / \(limit)",
+                              systemImage: "arrow.triangle.2.circlepath")
+                    } else {
+                        Label("Manche \(number)", systemImage: "arrow.triangle.2.circlepath")
+                    }
                     Spacer()
                     if session.target > 0 {
                         Text("Objectif \(session.target)").foregroundStyle(.secondary)

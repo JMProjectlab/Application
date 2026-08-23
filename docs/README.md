@@ -46,7 +46,7 @@ ses propres documents.
 | Fichier | Rôle |
 |---|---|
 | `index.html` | Page unique, amorçage des modules |
-| `assets/data.js` | Les 20 jeux, leurs règles et leurs pictogrammes |
+| `assets/data.js` | Les 23 jeux, leurs règles et leurs pictogrammes |
 | `assets/engine.js` | Calculs de score — portage de `Models.swift` |
 | `assets/charts.js` | Anneau, barres et jauge — SVG écrit à la main |
 | `assets/store.js` | État, `localStorage`, fusion avec le serveur |
@@ -60,6 +60,12 @@ ses propres documents.
 langages. **Une correction d'un côté doit être reportée de l'autre** : c'est ce
 que coûte le choix de deux clients natifs sur une base de données commune.
 
-Les moteurs sont couverts par des tests (donnes de belote, bust aux fléchettes,
-retour à 25 au mölkky, bonus du Yam's, détection du vainqueur) — voir la section
-correspondante dans l'historique du dépôt si tu veux les rejouer.
+Les moteurs sont couverts par des tests. Côté web, ils sont versionnés dans
+`tests/engine.test.mjs` et se rejouent sans rien installer :
+
+```
+node --test tests/engine.test.mjs
+```
+
+Côté iOS, la cible `ScornadeTests` couvre les mêmes règles — phases de Phase 10,
+nombre de manches des Cinq Rois, fin de partie sur objectif.
