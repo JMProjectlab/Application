@@ -6,6 +6,7 @@ struct PayooScoringView: View {
     let sessionID: UUID
 
     @State private var inputs: [String] = []
+    @FocusState private var focusedField: Int?
 
     private let roundTotal = 250
     private var session: ScoreSession? { store.session(id: sessionID) }
@@ -106,11 +107,15 @@ struct PayooScoringView: View {
                     TextField("0", text: binding(for: i))
                         .keyboardType(.numberPad).multilineTextAlignment(.trailing)
                         .frame(width: 70).textFieldStyle(.roundedBorder)
+                        .focused($focusedField, equals: i)
                 }
             }
+            let target = fillIndex(session)
+            let targetName = session.entrants.indices.contains(target) ? session.entrants[target].name : ""
             HStack {
                 Button { autoComplete(session) } label: {
-                    Label("Compléter à 250", systemImage: "wand.and.stars").font(.caption)
+                    Label("Compléter \(targetName) à 250", systemImage: "wand.and.stars")
+                        .font(.caption).lineLimit(1)
                 }
                 .buttonStyle(.bordered)
                 Spacer()
@@ -189,16 +194,39 @@ struct PayooScoringView: View {
         )
     }
 
+    /// Saisies redimensionnées au nombre de joueurs : `ensureInputs` diffère sa
+    /// mise à jour au prochain tour de boucle, on ne peut pas indexer `inputs`
+    /// directement sans risquer un tableau encore à l'ancienne taille.
+    private func currentInputs(_ session: ScoreSession) -> [String] {
+        let n = session.entrants.count
+        guard inputs.count == n else { return Array(repeating: "", count: n) }
+        return inputs
+    }
+
+    /// Le complément à 250 va au joueur qu'on n'a pas saisi, et non au dernier de
+    /// la liste : celui qui n'a rien ramassé n'est presque jamais le dernier.
+    /// Si plusieurs cases sont vides, la case active tranche, sinon la dernière
+    /// vide. Sans case vide, on recalcule celle qui a le curseur, à défaut la
+    /// dernière.
+    private func fillIndex(_ session: ScoreSession) -> Int {
+        let current = currentInputs(session)
+        let last = max(0, current.count - 1)
+        let blanks = current.indices.filter { current[$0].trimmingCharacters(in: .whitespaces).isEmpty }
+        let focused = current.indices.contains(focusedField ?? -1) ? focusedField : nil
+        if !blanks.isEmpty {
+            if let focused, blanks.contains(focused) { return focused }
+            return blanks[blanks.count - 1]
+        }
+        return focused ?? last
+    }
+
     private func autoComplete(_ session: ScoreSession) {
         let n = session.entrants.count
         guard n > 0 else { return }
-        // `ensureInputs` diffère sa mise à jour au prochain tour de boucle : on
-        // redimensionne ici une copie locale plutôt que d'indexer un tableau
-        // qui peut encore être à l'ancienne taille.
-        var current = inputs
-        if current.count != n { current = Array(repeating: "", count: n) }
-        let others = (0..<(n - 1)).reduce(0) { $0 + (Int(current[$1]) ?? 0) }
-        current[n - 1] = String(max(0, roundTotal - others))
+        var current = currentInputs(session)
+        let i = fillIndex(session)
+        let others = current.indices.reduce(0) { $0 + (i == $1 ? 0 : (Int(current[$1]) ?? 0)) }
+        current[i] = String(max(0, roundTotal - others))
         inputs = current
     }
 
@@ -207,5 +235,6 @@ struct PayooScoringView: View {
         let deltas = (0..<n).map { i in i < inputs.count ? (Int(inputs[i]) ?? 0) : 0 }
         store.addRound(sessionID: sessionID, deltas: deltas)
         inputs = Array(repeating: "", count: n)
+        focusedField = nil
     }
 }

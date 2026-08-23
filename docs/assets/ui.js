@@ -339,11 +339,23 @@ function phaseRows(session) {
         aria-label="Supprimer la manche ${i + 1}">✕</button></div>`).join("");
 }
 
+// Le complément à 250 va au joueur qu'on n'a pas saisi, et non au dernier de la
+// liste : celui qui n'a rien ramassé n'est presque jamais le dernier joueur.
+// Si plusieurs cases sont vides, la case active tranche, sinon la dernière vide.
+// Sans case vide, on recalcule celle qui a le curseur, à défaut la dernière.
+function payooFillIndex(inputs, focus) {
+  const blanks = inputs.reduce((a, v, i) => (String(v).trim() === "" ? [...a, i] : a), []);
+  const focused = Number.isInteger(focus) && focus >= 0 && focus < inputs.length ? focus : null;
+  if (blanks.length) return blanks.includes(focused) ? focused : blanks[blanks.length - 1];
+  return focused ?? inputs.length - 1;
+}
+
 function scoringPayoo(session) {
   const fin = E.isFinished(session);
   scratch.inputs ??= session.entrants.map(() => "");
   const sum = scratch.inputs.reduce((a, v) => a + (parseInt(v, 10) || 0), 0);
   const exact = sum === E.PAYOO_ROUND_TOTAL;
+  const fillIdx = payooFillIndex(scratch.inputs, scratch.entryFocus);
 
   const totals = session.entrants.map((_, i) => E.total(session, i));
   const lead = totals.indexOf(Math.min(...totals));
@@ -368,7 +380,7 @@ function scoringPayoo(session) {
           <input type="number" inputmode="numeric" class="num short entry" data-i="${i}"
             value="${esc(scratch.inputs[i])}" placeholder="0" aria-label="Points de ${esc(e.name)}"></div>`).join("") +
       `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px">
-         <button class="chip fixed" data-act="payoo-fill">Compléter à 250</button>
+         <button class="chip fixed" data-act="payoo-fill">Compléter ${esc(session.entrants[fillIdx].name)} à 250</button>
          <span class="tab" style="font-weight:500;color:${exact ? "var(--green)" : "var(--red)"}">${sum} / 250</span>
        </div>
        <button class="btn primary" style="margin-top:12px" data-act="payoo-validate"
@@ -1004,9 +1016,9 @@ export function bindEvents() {
         break;
       }
       case "payoo-fill": {
-        const n = session.entrants.length;
-        const others = scratch.inputs.slice(0, n - 1).reduce((a, v) => a + (parseInt(v, 10) || 0), 0);
-        scratch.inputs[n - 1] = String(Math.max(0, E.PAYOO_ROUND_TOTAL - others));
+        const i = payooFillIndex(scratch.inputs, scratch.entryFocus);
+        const others = scratch.inputs.reduce((a, v, j) => a + (j === i ? 0 : parseInt(v, 10) || 0), 0);
+        scratch.inputs[i] = String(Math.max(0, E.PAYOO_ROUND_TOTAL - others));
         render();
         break;
       }
@@ -1015,6 +1027,7 @@ export function bindEvents() {
         if (values.reduce((a, b) => a + b, 0) !== E.PAYOO_ROUND_TOTAL) return;
         S.addRound(session, values);
         scratch.inputs = null;
+        scratch.entryFocus = null;
         render();
         break;
       }
@@ -1141,6 +1154,12 @@ export function bindEvents() {
 
   root.addEventListener("click", onClick);
   document.getElementById("sheet").addEventListener("click", onClick);
+
+  // Retenir la case de saisie active : cliquer sur « Compléter » lui fait perdre
+  // le focus avant que l'action ne s'exécute.
+  root.addEventListener("focusin", (ev) => {
+    if (ev.target.classList?.contains("entry")) scratch.entryFocus = Number(ev.target.dataset.i);
+  });
 
   root.addEventListener("input", (ev) => {
     const el = ev.target;
