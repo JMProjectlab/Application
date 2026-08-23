@@ -7,8 +7,9 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Le catalogue des jeux : les mêmes données pour tout le monde, en lecture
-    // seule. C'est ce qui permet de corriger le libellé ou les règles d'un jeu
-    // sans publier une nouvelle version de l'application.
+    // seule. C'est ce qui permet de corriger le libellé ou les règles d'un jeu,
+    // et d'en ajouter un qui se compte avec un total par manche, sans publier
+    // une nouvelle version de l'application.
     //
     // La lecture est ouverte, y compris sans compte. Ce n'est pas un
     // relâchement : le catalogue est déjà public — il est embarqué dans le
