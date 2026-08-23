@@ -223,8 +223,15 @@ const GLYPHS = {
   cinqrois: `<path d="M4 17V8l3.5 3.5L11 5.5l3.5 6L18 8v9z" fill="currentColor"/>`,
 };
 
+// Pictogramme par défaut, pour un jeu que ce client ne connaît pas encore —
+// un jeu venu du catalogue distant, ou une partie synchronisée depuis une
+// version plus récente. Un dé convient à n'importe quel jeu, là où le SVG vide
+// qu'on rendait avant passait pour un défaut d'affichage.
+const DEFAULT_GLYPH = `<rect x="3" y="3" width="16" height="16" rx="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="7.4" cy="7.4" r="1.3" fill="currentColor"/><circle cx="14.6" cy="7.4" r="1.3" fill="currentColor"/>
+      <circle cx="7.4" cy="14.6" r="1.3" fill="currentColor"/><circle cx="14.6" cy="14.6" r="1.3" fill="currentColor"/>`;
+
 export function glyph(gameId, size = 24) {
-  const d = GLYPHS[gameId];
-  if (!d) return `<svg viewBox="0 0 22 22" width="${size}" height="${size}" aria-hidden="true"></svg>`;
+  const d = GLYPHS[gameId] ?? DEFAULT_GLYPH;
   return `<svg viewBox="0 0 22 22" width="${size}" height="${size}" aria-hidden="true" focusable="false">${d}</svg>`;
 }

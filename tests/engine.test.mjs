@@ -106,11 +106,30 @@ test("les fléchettes comptent toujours à rebours", () => {
 
 // --- Catalogue ------------------------------------------------------------
 
-test("chaque jeu du catalogue a des règles et un pictogramme", () => {
+test("chaque jeu du catalogue a des règles et un pictogramme qui lui est propre", () => {
+  // Le repli est le même pour tous : le comparer suffit à distinguer un jeu
+  // réellement dessiné d'un jeu qui retombe sur le pictogramme par défaut.
+  const fallback = glyph("jeu-qui-n-existe-pas", 22);
   for (const g of GAMES) {
     assert.ok(g.rules?.length > 40, `${g.id} n'a pas de règles`);
-    assert.ok(glyph(g.id, 22).includes("<"), `${g.id} n'a pas de pictogramme`);
+    assert.notEqual(glyph(g.id, 22), fallback, `${g.id} n'a pas de pictogramme`);
   }
+});
+
+test("un jeu inconnu reçoit un pictogramme par défaut, pas un SVG vide", () => {
+  // Un jeu venu du catalogue distant, ou une partie synchronisée depuis une
+  // version plus récente : il faut dessiner quelque chose, sans quoi la case
+  // vide passe pour un défaut d'affichage.
+  const svg = glyph("jeu-qui-n-existe-pas", 22);
+  assert.match(svg, /^<svg /);
+  assert.ok(svg.includes("currentColor"), "le repli ne dessine rien");
+  assert.ok(!/<svg[^>]*><\/svg>/.test(svg), "le repli est un SVG vide");
+});
+
+test("gameById ne connaît pas un jeu absent du catalogue", () => {
+  // Le contrat sur lequel s'appuie le repli de l'écran de score : c'est bien
+  // `undefined` qu'il faut savoir rattraper, pas une exception.
+  assert.equal(gameById("jeu-qui-n-existe-pas"), undefined);
 });
 
 test("les trois derniers jeux ajoutés sont bien configurés", () => {

@@ -63,6 +63,11 @@ final class Store: ObservableObject {
         // Les corrections déjà reçues s'appliquent avant le premier écran :
         // pas de libellé qui change sous les yeux une seconde plus tard.
         GameCatalog.loadCached()
+        // Le catalogue ne dépend pas du compte : il est commun à tous, et les
+        // règles Firestore le laissent lire sans authentification. L'écouter
+        // ici, et non depuis la synchronisation, est ce qui permet à un
+        // utilisateur « Continuer sans compte » de recevoir les corrections.
+        startCatalogListener()
         if players.isEmpty {
             players = [
                 Player(name: "Jimmy", colorIndex: 0),
@@ -442,9 +447,17 @@ final class Store: ObservableObject {
             Task { @MainActor in self?.mergeSessions(remote) }
         }
 
-        // Le catalogue est commun à tous les comptes : il est en lecture seule,
-        // et c'est lui qui permet de corriger une règle sans publier une
-        // nouvelle version. Une collection vide est le cas normal.
+        // Ce qui existe déjà en local et pas encore côté serveur part au premier envoi.
+        pushChanges()
+    }
+
+    /// Écoute les corrections du catalogue, avec ou sans compte.
+    ///
+    /// C'est en lecture seule, et la collection est la même pour tout le monde :
+    /// il n'y a donc rien à attendre d'une connexion. Une collection vide est le
+    /// cas normal, le catalogue embarqué s'applique alors tel quel.
+    private func startCatalogListener() {
+        guard FirebaseSupport.isAvailable, catalogListener == nil else { return }
         catalogListener = db.collection("games").addSnapshotListener { [weak self] snap, _ in
             guard let snap else { return }
             let overrides = Self.decodeOverrides(snap.documents)
@@ -454,9 +467,6 @@ final class Store: ObservableObject {
                 if GameCatalog.apply(overrides) { self.catalogRevision += 1 }
             }
         }
-
-        // Ce qui existe déjà en local et pas encore côté serveur part au premier envoi.
-        pushChanges()
     }
 
     /// Les documents `games/{id}` sont des dictionnaires plats, pas le JSON
@@ -478,10 +488,11 @@ final class Store: ObservableObject {
         return out
     }
 
+    /// Arrête la synchronisation du compte — mais pas l'écoute du catalogue,
+    /// qui ne dépend d'aucun compte et survit donc à la déconnexion.
     private func stopSync() {
         playersListener?.remove(); playersListener = nil
         sessionsListener?.remove(); sessionsListener = nil
-        catalogListener?.remove(); catalogListener = nil
     }
 
     private nonisolated static func decodeAll<T: Decodable>(_ type: T.Type,
