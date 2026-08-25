@@ -52,6 +52,15 @@ mise en vente, et douze adresses Google réelles à réunir.
   plus de temps.
 - Les inscrire dans *Test et publication → Tests → Tests fermés → Testeurs*.
 - Un testeur qui se désinscrit avant les 14 jours fait repartir le compteur.
+- Depuis 2026, Google vérifie en plus que les testeurs ont **réellement utilisé**
+  l'application : les inscrire ne suffit pas, il faut leur demander de l'ouvrir.
+
+Une porte de sortie existe, et elle mérite d'être pesée avant de créer le
+compte : un compte **organisation**, adossé à une entité légale, est exempté de
+cette obligation — et son adresse publique est celle de la structure, pas la
+sienne. Il suppose en revanche une entité déclarée et un numéro DUNS. Comme la
+question d'une micro-entreprise se pose de toute façon pour encaisser (voir
+`À vérifier avant d'encaisser` côté App Store), autant trancher une seule fois.
 
 Rien d'équivalent chez Apple, où TestFlight est facultatif. C'est le pendant
 Google du refus « Guideline 2.1 » : administratif, pas technique.
@@ -64,6 +73,16 @@ Google du refus « Guideline 2.1 » : administratif, pas technique.
   impossible ensuite (l'inverse est permis).
 - Nom de paquet : `com.jmprojectlab.scornade`, **définitif**. Même règle que le
   bundle id iOS : ni modifiable, ni réutilisable après publication.
+
+## C bis. Viser la bonne API — non négociable
+
+À partir du **31 août 2026**, toute nouvelle application soumise à Google Play
+doit viser **l'API 36** (Android 16). Le premier envoi tombera nécessairement
+après cette date : les quatorze jours de test fermé l'imposent.
+
+Le module est déjà en `targetSdk 36` et `compileSdk 36`, avec l'AGP qui va avec
+(8.10 minimum le supporte ; 8.9 plafonne à l'API 35). Rien à faire, donc — mais
+ça n'allait pas de soi, et une soumission en API 35 serait refusée.
 
 ## D. Construire l'AAB signé
 
