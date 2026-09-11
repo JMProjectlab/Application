@@ -4,9 +4,13 @@ Marche à suivre pour la **v1.0 Android, gratuite et sans achat intégré**.
 L'application est une *Trusted Web Activity* : voir [`android/README.md`](android/README.md)
 pour ce que ça implique techniquement.
 
-Ce document suit l'ordre réel des blocages, pas l'ordre du formulaire. Les deux
-premières étapes ne demandent aucun code et sont les plus longues en **temps
-d'attente** — les commencer d'abord.
+Ce document suit l'ordre réel des blocages, pas l'ordre du formulaire.
+
+> **L'ordre qui compte, en une ligne.** Compte → compiler → fiche → AAB signé
+> déposé en test fermé → les douze testeurs s'inscrivent → **là** les quatorze
+> jours démarrent → production. Le dépôt du premier AAB est donc sur le chemin
+> critique, avant l'attente et non pendant : chaque jour qui le précède
+> s'ajoute au total.
 
 ---
 
@@ -48,8 +52,15 @@ une version de production » reste inactif tant que la condition n'est pas
 remplie. Concrètement, **deux semaines minimum** entre le premier envoi et la
 mise en vente, et douze adresses Google réelles à réunir.
 
-- Réunir les douze adresses **maintenant**, pas à la fin — c'est ce qui prend le
-  plus de temps.
+**Le compteur ne démarre pas à la création du compte.** On ne s'inscrit qu'à un
+test fermé qui existe, c'est-à-dire qui porte déjà une version déposée. Il faut
+donc avoir compilé (**C**), créé la fiche (**D**) et déposé un AAB signé
+(**E**) avant que le premier des quatorze jours puisse commencer. Recruter les
+douze personnes se fait dès maintenant ; leur inscription, elle, attend la
+version.
+
+- Réunir les douze adresses **maintenant**, pas à la fin — les prévenir tôt
+  coûte zéro et évite de chercher des volontaires le jour du dépôt.
 - Les inscrire dans *Test et publication → Tests → Tests fermés → Testeurs*.
 - Un testeur qui se désinscrit avant les 14 jours fait repartir le compteur.
 - Depuis 2026, Google vérifie en plus que les testeurs ont **réellement utilisé**
