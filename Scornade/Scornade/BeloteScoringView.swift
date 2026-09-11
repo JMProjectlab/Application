@@ -174,13 +174,23 @@ struct BeloteScoringView: View {
     }
 
     private func donneCard(_ session: ScoreSession) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let pending = session.belotePending
+        return VStack(alignment: .leading, spacing: 12) {
             takerSection(session)
+            if pending > 0 {
+                Text("\(pending) points sont en jeu, laissés par le litige : ils reviennent au camp qui remporte cette donne.")
+                    .font(.caption)
+                    .foregroundStyle(Color.brandDark)
+                    .padding(10)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.brandLight)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
             atoutSection()
             pointsSection()
             bonusSection()
             if let t = taker, capot != nil || sum == total {
-                resultPreview(takerName: session.entrants[t].name)
+                resultPreview(takerName: session.entrants[t].name, pending: pending)
             }
             Button(action: validate) {
                 Label("Valider la donne", systemImage: "checkmark").frame(maxWidth: .infinity)
@@ -306,20 +316,27 @@ struct BeloteScoringView: View {
         .buttonStyle(.plain)
     }
 
-    private func resultPreview(takerName: String) -> some View {
-        let round = buildRound()
+    private func resultPreview(takerName: String, pending: Int) -> some View {
+        let round = buildRound(pending: pending)
         let d = round.deltas()
+        let litige = round.isLitige
         let made = round.contractMade
         return VStack(alignment: .leading, spacing: 3) {
-            Text(made ? "\(takerName) réussit son contrat \(suit ?? "")" : "\(takerName) est dedans — chute !")
-                .font(.caption.weight(.semibold))
+            if litige {
+                Text("Litige — 81 partout").font(.caption.weight(.semibold))
+                Text("\(takerName) ne marque rien : ses \(BeloteRound.litigePoints) points sont remis en jeu pour la donne suivante, où \(pending + BeloteRound.litigePoints) points seront en jeu.")
+                    .font(.caption2)
+            } else {
+                Text(made ? "\(takerName) réussit son contrat \(suit ?? "")" : "\(takerName) est dedans — chute !")
+                    .font(.caption.weight(.semibold))
+            }
             HStack { Text("Équipe 1"); Spacer(); Text("+\(d[0]) pts") }.font(.caption)
             HStack { Text("Équipe 2"); Spacer(); Text("+\(d[1]) pts") }.font(.caption)
         }
         .padding(11)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(made ? Color.successLight : Color.dangerLight)
-        .foregroundStyle(made ? Color.success : Color.danger)
+        .background(litige ? Color.brandLight : (made ? Color.successLight : Color.dangerLight))
+        .foregroundStyle(litige ? Color.brandDark : (made ? Color.success : Color.danger))
         .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 
@@ -333,9 +350,9 @@ struct BeloteScoringView: View {
                 HStack(spacing: 8) {
                     Text("D\(idx + 1)").font(.caption).foregroundStyle(.secondary).frame(width: 28, alignment: .leading)
                     Text("É\(r.takerTeam + 1) prend \(r.suit)").font(.caption)
-                    Text(r.contractMade ? "✓" : "chute")
+                    Text(r.isLitige ? "litige" : (r.contractMade ? "✓" : "chute"))
                         .font(.caption2.weight(.medium))
-                        .foregroundStyle(r.contractMade ? Color.success : Color.danger)
+                        .foregroundStyle(r.isLitige ? Color.brandDark : (r.contractMade ? Color.success : Color.danger))
                     Spacer()
                     Text("\(d[0]) – \(d[1])").font(.caption.weight(.medium))
                     Button { loadForEdit(idx) } label: { Image(systemName: "pencil").font(.caption) }
@@ -370,13 +387,17 @@ struct BeloteScoringView: View {
         }
     }
 
-    private func buildRound() -> BeloteRound {
+    private func buildRound(pending: Int) -> BeloteRound {
         BeloteRound(takerTeam: taker ?? 0, suit: suit ?? "♠",
-                    cardPoints: [p0, p1], belote: [belote0, belote1], capotTeam: capot)
+                    cardPoints: [p0, p1], belote: [belote0, belote1], capotTeam: capot,
+                    pending: pending)
     }
 
     private func validate() {
-        store.addBeloteRound(sessionID: sessionID, round: buildRound())
+        // Les points en jeu sont inscrits dans la donne : le détail affiché
+        // reste celui qui a servi au calcul, même des mois plus tard.
+        let pending = session?.belotePending ?? 0
+        store.addBeloteRound(sessionID: sessionID, round: buildRound(pending: pending))
         resetForm()
     }
 
