@@ -275,25 +275,52 @@ struct BeloteScoringView: View {
         .buttonStyle(.plain)
     }
 
+    /// Pas de réglage des points aux cartes.
+    ///
+    /// Deux pas plutôt qu'un seul : les points d'une donne tombent rarement
+    /// sur une dizaine, et n'avancer que de 10 en 10 obligeait à saisir le
+    /// chiffre exact au clavier pour la moindre correction.
+    private static let pointSteps = [-10, -1, 1, 10]
+
     private func pointsBox(team: Int) -> some View {
         let value = team == 0 ? p0 : p1
         return VStack(spacing: 6) {
             Text(team == 0 ? "Équipe 1" : "Équipe 2").font(.caption2).foregroundStyle(.secondary)
+            TextField("0", text: pointsBinding(team: team))
+                .keyboardType(.numberPad).multilineTextAlignment(.center)
+                .font(.jmScore(20, weight: .medium))
+                .frame(maxWidth: .infinity).disabled(capot != nil)
             HStack(spacing: 4) {
-                Button { setTeam(team, to: value - 10) } label: { Image(systemName: "minus") }
+                ForEach(Self.pointSteps, id: \.self) { step in
+                    Button { setTeam(team, to: value + step) } label: {
+                        Text(verbatim: step > 0 ? "+\(step)" : "\(step)")
+                            .font(.caption2.weight(.medium))
+                            .frame(maxWidth: .infinity, minHeight: 24)
+                    }
                     .buttonStyle(.bordered).disabled(capot != nil)
-                TextField("0", text: team == 0 ? $p0Str : $p1Str)
-                    .keyboardType(.numberPad).multilineTextAlignment(.center)
-                    .frame(width: 44).disabled(capot != nil)
-                    .onSubmit { setTeam(team, to: team == 0 ? p0 : p1) }
-                Button { setTeam(team, to: value + 10) } label: { Image(systemName: "plus") }
-                    .buttonStyle(.bordered).disabled(capot != nil)
+                }
             }
         }
         .frame(maxWidth: .infinity)
         .padding(8)
         .background(team == 0 ? Color.brandLight : Color.teamTwoLight)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+
+    /// Saisie au clavier : taper un score doit compléter l'autre camp comme le
+    /// font les boutons. Sans cela, corriger à la main laissait les deux cases
+    /// incohérentes jusqu'à ce qu'on retouche aussi la seconde.
+    private func pointsBinding(team: Int) -> Binding<String> {
+        Binding(
+            get: { team == 0 ? p0Str : p1Str },
+            set: { raw in
+                guard let n = Int(raw.filter(\.isNumber)) else {
+                    if team == 0 { p0Str = "" } else { p1Str = "" }
+                    return
+                }
+                setTeam(team, to: n)
+            }
+        )
     }
 
     private func bonusToggle(_ label: String, on: Bool, action: @escaping () -> Void) -> some View {
